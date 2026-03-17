@@ -51,6 +51,13 @@ body:
       required: true
 
   - type: textarea
+    id: flutter_version
+    attributes:
+      label: Flutter version
+      description: Which version of Flutter are you using?
+      placeholder: "Paste `flutter --version` output here."
+
+  - type: textarea
     id: logs_screenshots
     attributes:
       label: Screenshots and/or logs
