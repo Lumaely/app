@@ -1,0 +1,68 @@
+name: Bug Report － App
+description: Report a bug in the Lumaely application
+title: "BUG － "
+labels: ["bug", "app"]
+body:
+  - type: textarea
+    id: bug_description
+    attributes:
+      label: Bug description
+      description: A clear and concise description of the issue.
+      placeholder: "ex: The application crashes when I try to attach a picture to my journal entry."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction_steps
+    attributes:
+      label: Steps to reproduce
+      description: How can we trigger this bug?
+      value: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected behavior
+      description: What should have happened instead?
+
+  - type: input
+    id: device_info
+    attributes:
+      label: Device & OS
+      description: What device and operating system are you using?
+      placeholder: "ex: iPhone 17 (iOS 26.3.1), macOS Tahoe 26.3 (build 25D2128), Pixel 10a (Android 16)"
+    validations:
+      required: true
+
+  - type: input
+    id: app_version
+    attributes:
+      label: App version / Commit
+      description: Which version of the app or commit hash are you testing?
+      placeholder: "ex: v1.0.0-alpha or commit a1b2c3d"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs_screenshots
+    attributes:
+      label: Screenshots and/or logs
+      description: Drag and drop screenshots, screen recordings, or paste your Flutter console stacktrace here.
+      placeholder: "Paste your flutter run logs or drop your images here."
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      description: Please verify the following before submitting.
+      options:
+        - label: I have checked that this bug hasn't been reported already.
+          required: true
+        - label: I will manually link this issue to the Lumaely GitHub Project after creation.
+          required: true
