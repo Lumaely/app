@@ -1,0 +1,51 @@
+name: Change Request
+description: Suggest feature modification for the Lumaely application
+title: "‎ "
+labels: ["app"]
+type: "Change"
+body:
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: Current behavior
+      description: How does the feature work right now, and why is it not optimal?
+      placeholder: "ex: Currently, the mood graph only displays data for the last 7 days, which prevents me from seeing long-term trends."
+    validations:
+      required: true
+
+  - type: textarea
+    id: user_story
+    attributes:
+      label: User story
+      description: Describe the feature using a user story.
+      placeholder: |
+        As a [type of user, ex: long-term user],
+        I want to [action, ex: filter the mood graph by month and year],
+        So that [goal, ex: I can analyze my statistics over a longer period].
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed solution
+      description: How do you see this feature working technically and/or visually?
+      placeholder: "ex: Add a dropdown menu above the graph to select the time range (week, month, year, custom) instead of the hardcoded 7-day view."
+    validations:
+      required: true
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups
+      description: Add any other context, UI/UX wireframes, Figma links, or sketches about the feature request here.
+      placeholder: "Drop your links or UI sketches here."
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      description: Please verify the following before submitting.
+      options:
+        - label: I have checked that this feature hasn't been requested already.
+          required: true
