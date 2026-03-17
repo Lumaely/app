@@ -1,7 +1,8 @@
-name: Bug Report － App
+name: Bug Report
 description: Report a bug in the Lumaely application
-title: "BUG － "
-labels: ["bug", "app"]
+title: ""
+labels: ["app"]
+type: "Bug"
 body:
   - type: textarea
     id: bug_description
@@ -17,7 +18,7 @@ body:
     attributes:
       label: Steps to reproduce
       description: How can we trigger this bug?
-      value: |
+      placeholder: |
         1. Go to '...'
         2. Click on '....'
         3. Scroll down to '....'
@@ -63,6 +64,4 @@ body:
       description: Please verify the following before submitting.
       options:
         - label: I have checked that this bug hasn't been reported already.
-          required: true
-        - label: I will manually link this issue to the Lumaely GitHub Project after creation.
           required: true
