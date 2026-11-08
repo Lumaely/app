@@ -10,6 +10,7 @@ resolution: workspace
 
 # Add regular dependencies here.
 dependencies:
+  crypto: ^3.0.8
   meta: ^1.19.0
   sodium: ^4.1.2+1
   # path: ^1.9.0
