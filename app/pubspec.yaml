@@ -9,9 +9,14 @@ version: 1.0.0+1
 environment:
   sdk: ^3.13.5
 
+resolution: workspace
+
 dependencies:
   flutter:
     sdk: flutter
+
+  lumaely_core:
+    path: ../packages/lumaely_core
 
   cupertino_icons: ^1.0.8
   go_router: ^18.0.2
