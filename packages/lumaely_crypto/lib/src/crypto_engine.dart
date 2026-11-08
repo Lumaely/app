@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:lumaely_crypto/src/key_purpose.dart';
-import 'package:lumaely_crypto/src/password_lock.dart';
+import 'package:lumaely_crypto/lumaely_crypto.dart';
 import 'package:sodium/sodium_sumo.dart';
 
 /// Lumaely's cryptography engine
@@ -27,12 +26,17 @@ class LmCryptoEngine {
   /// over 64 MB of memory
   static const int _memLimit = 64 * 1024 * 1024;
 
-  /// Ties a cipher text to its role, so a lock can't be used as another one.
   static final Uint8List _passwordLockLabel = utf8.encode(
     'lumaely.master_key.password.v1',
   );
 
+  static final Uint8List _recoveryLockLabel = utf8.encode(
+    'lumaely.master_key.recovery.v1',
+  );
+
   Aead get _aead => _sodium.crypto.aeadXChaCha20Poly1305IETF;
+
+  // === key ===
 
   /// Creates a new random master key, once, when a diary is created.
   SecureKey generateMasterKey() => _sodium.crypto.kdf.keygen();
@@ -58,6 +62,8 @@ class LmCryptoEngine {
       subkeyLen: keyLength,
     );
   }
+
+  // === password ===
 
   /// Locks [masterKey] with [password].
   PasswordLock lockWithPassword(SecureKey masterKey, String password) {
@@ -132,5 +138,78 @@ class LmCryptoEngine {
       memLimit: memLimit,
       alg: CryptoPwhashAlgorithm.argon2id13,
     );
+  }
+
+  // === recovery key ===
+
+  /// Creates a new random recovery key, shown once to the person.
+  RecoveryKey generateRecoveryKey() {
+    final entropy = _sodium.randombytes.buf(RecoveryKey.entropyLength);
+
+    try {
+      return RecoveryKey.fromEntropy(entropy);
+    } finally {
+      entropy.fillRange(0, entropy.length, 0);
+    }
+  }
+
+  /// Locks [masterKey] with [recoveryKey].
+  RecoveryLock lockWithRecoveryKey(
+    SecureKey masterKey,
+    RecoveryKey recoveryKey,
+  ) {
+    final lockKey = _keyFromRecovery(recoveryKey);
+
+    try {
+      final nonce = _sodium.randombytes.buf(_aead.nonceBytes);
+      final cipherText = masterKey.runUnlockedSync(
+        (bytes) => _aead.encrypt(
+          message: bytes,
+          nonce: nonce,
+          key: lockKey,
+          additionalData: _recoveryLockLabel,
+        ),
+      );
+
+      return RecoveryLock(nonce: nonce, cipherText: cipherText);
+    } finally {
+      lockKey.dispose();
+    }
+  }
+
+  /// Opens [lock] with [recoveryKey] and returns the master key.
+  ///
+  /// Throws [WrongSecretException] if the recovery key is wrong.
+  SecureKey unlockWithRecoveryKey(RecoveryLock lock, RecoveryKey recoveryKey) {
+    final lockKey = _keyFromRecovery(recoveryKey);
+
+    try {
+      final bytes = _aead.decrypt(
+        cipherText: lock.cipherText,
+        nonce: lock.nonce,
+        key: lockKey,
+        additionalData: _recoveryLockLabel,
+      );
+
+      try {
+        return _sodium.secureCopy(bytes);
+      } finally {
+        bytes.fillRange(0, bytes.length, 0);
+      }
+    } on SodiumException {
+      throw const WrongSecretException();
+    } finally {
+      lockKey.dispose();
+    }
+  }
+
+  SecureKey _keyFromRecovery(RecoveryKey recoveryKey) {
+    final entropy = recoveryKey.extractEntropy();
+
+    try {
+      return _sodium.secureCopy(entropy);
+    } finally {
+      entropy.fillRange(0, entropy.length, 0);
+    }
   }
 }
