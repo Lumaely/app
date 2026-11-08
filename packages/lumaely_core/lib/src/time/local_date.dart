@@ -1,7 +1,10 @@
+import 'package:meta/meta.dart';
+
 /// A calendar day as the person lived it, with no time and no time zone.
 ///
 /// Stored as `YYYY-MM-DD`. Two entries on "Oct 29" are the same day
 /// wherever the phone was.
+@immutable
 final class LocalDate implements Comparable<LocalDate> {
   /// Creates a date, or throws if it does not exist (e.g. Feb 30).
   new(this.year, this.month, this.day) {
