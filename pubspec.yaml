@@ -7,3 +7,5 @@ environment:
 workspace:
   - app
   - packages/*
+dev_dependencies:
+  very_good_analysis: ^11.0.0
