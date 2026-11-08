@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 
 class SamplePage extends StatelessWidget {
-  const SamplePage({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text('HI'),
-      ),
-    );
+    return const Scaffold(body: Center(child: Text('HI')));
   }
 }

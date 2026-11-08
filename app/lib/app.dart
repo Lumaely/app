@@ -4,16 +4,12 @@ import 'package:lumaely/core/constants.dart';
 import 'package:lumaely/core/router.dart';
 
 class App extends ConsumerWidget {
-  const App({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
 
-    return MaterialApp.router(
-      routerConfig: router,
-      title: Constants.appName,
-      debugShowCheckedModeBanner: true,
-    );
+    return MaterialApp.router(routerConfig: router, title: Constants.appName);
   }
 }

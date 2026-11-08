@@ -1,8 +1,7 @@
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:test/test.dart';
 
-void main()
-{
+void main() {
   group('MoodScore.fromValue', () {
     test('mood 1-5', () {
       expect(MoodScore.fromValue(1), MoodScore.rough);

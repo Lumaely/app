@@ -1,8 +1,7 @@
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:test/test.dart';
 
-void main()
-{
+void main() {
   group('LocalDate', () {
     test('invalid dates', () {
       expect(() => LocalDate(2026, 2, 30), throwsArgumentError);

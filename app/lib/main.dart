@@ -28,7 +28,7 @@ void main() async {
 }
 
 class _App extends StatefulWidget {
-  const _App();
+  const new();
 
   @override
   State<_App> createState() => _AppState();
@@ -38,8 +38,9 @@ class _AppState extends State<_App> {
   Brightness _brightness = Brightness.dark;
 
   void _toggle() => setState(() {
-    _brightness =
-    _brightness == Brightness.dark ? Brightness.light : Brightness.dark;
+    _brightness = _brightness == Brightness.dark
+        ? Brightness.light
+        : Brightness.dark;
   });
 
   @override
@@ -54,7 +55,7 @@ class _AppState extends State<_App> {
 }
 
 class _HomePage extends StatefulWidget {
-  const _HomePage({required this.brightness, required this.onToggle});
+  const new({required this.brightness, required this.onToggle});
   final Brightness brightness;
   final VoidCallback onToggle;
 
@@ -84,15 +85,15 @@ class _HomePageState extends State<_HomePage> {
             end: Alignment.bottomRight,
             colors: isDark
                 ? const [
-              Color(0xFF0A0A2E),
-              Color(0xFF1A0A3E),
-              Color(0xFF0D1B2A)
-            ]
+                    Color(0xFF0A0A2E),
+                    Color(0xFF1A0A3E),
+                    Color(0xFF0D1B2A),
+                  ]
                 : const [
-              Color(0xFFE8F0FE),
-              Color(0xFFF3E8FF),
-              Color(0xFFE8F4FD)
-            ],
+                    Color(0xFFE8F0FE),
+                    Color(0xFFF3E8FF),
+                    Color(0xFFE8F4FD),
+                  ],
           ),
         ),
       ),
@@ -134,7 +135,7 @@ class _HomePageState extends State<_HomePage> {
                   const SizedBox(height: 8),
                   const Text(
                     'Shader-based refraction · jelly physics · dynamic lighting. '
-                        'Tap ☀/☾ to toggle the app brightness independently of the OS.',
+                    'Tap ☀/☾ to toggle the app brightness independently of the OS.',
                     style: TextStyle(height: 1.5),
                   ),
                   const SizedBox(height: 20),
@@ -159,35 +160,34 @@ class _HomePageState extends State<_HomePage> {
             const SizedBox(height: 20),
             for (final item in [
               (
-              CupertinoIcons.square_grid_2x2_fill,
-              'Containers',
-              'GlassContainer.card · GlassContainer · GlassListTile'
+                CupertinoIcons.square_grid_2x2_fill,
+                'Containers',
+                'GlassContainer.card · GlassContainer · GlassListTile',
               ),
               (
-              CupertinoIcons.hand_point_left,
-              'Interactive',
-              'GlassButton · GlassSwitch · GlassSlider · GlassChip'
+                CupertinoIcons.hand_point_left,
+                'Interactive',
+                'GlassButton · GlassSwitch · GlassSlider · GlassChip',
               ),
               (
-              CupertinoIcons.layers_fill,
-              'Surfaces',
-              'GlassTabBar · GlassAppBar · GlassToolbar'
+                CupertinoIcons.layers_fill,
+                'Surfaces',
+                'GlassTabBar · GlassAppBar · GlassToolbar',
               ),
               (
-              CupertinoIcons.rectangle_stack_fill,
-              'Overlays',
-              'GlassSheet · GlassMenu · GlassDialog · GlassToast'
+                CupertinoIcons.rectangle_stack_fill,
+                'Overlays',
+                'GlassSheet · GlassMenu · GlassDialog · GlassToast',
               ),
               (
-              CupertinoIcons.textformat,
-              'Input',
-              'GlassTextField · GlassSearchBar · GlassPicker'
+                CupertinoIcons.textformat,
+                'Input',
+                'GlassTextField · GlassSearchBar · GlassPicker',
               ),
             ])
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: GlassContainer.card(
-                  padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
                       Icon(item.$1, size: 26),
@@ -196,9 +196,12 @@ class _HomePageState extends State<_HomePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(item.$2,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600)),
+                            Text(
+                              item.$2,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                             const SizedBox(height: 2),
                             Text(item.$3, style: const TextStyle(fontSize: 12)),
                           ],
