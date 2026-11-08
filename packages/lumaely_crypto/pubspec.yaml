@@ -1,0 +1,18 @@
+name: lumaely_crypto
+description: A starting point for Dart libraries or applications.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.13.5
+
+resolution: workspace
+
+# Add regular dependencies here.
+dependencies:
+  meta: ^1.19.0
+  sodium: ^4.1.2+1
+  # path: ^1.9.0
+
+dev_dependencies:
+  test: ^1.25.6
