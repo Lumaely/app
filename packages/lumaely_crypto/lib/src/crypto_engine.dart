@@ -95,11 +95,11 @@ class LmCryptoEngine {
       );
 
       return PasswordLock(
-        salt: salt,
+        salt: Uint8List.fromList(salt),
         opsLimit: _opsLimit,
         memLimit: _memLimit,
-        nonce: nonce,
-        cipherText: cipherText,
+        nonce: Uint8List.fromList(nonce),
+        cipherText: Uint8List.fromList(cipherText),
       );
     } finally {
       lockKey.dispose();
