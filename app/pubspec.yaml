@@ -17,12 +17,17 @@ dependencies:
 
   lumaely_core:
     path: ../packages/lumaely_core
+  lumaely_crypto:
+    path: ../packages/lumaely_crypto
+  lumaely_data:
+    path: ../packages/lumaely_data
 
   cupertino_icons: ^1.0.8
   go_router: ^18.0.2
   flutter_riverpod: ^3.4.3
   flutter_launcher_icons: ^0.14.4
   liquid_glass_widgets: ^1.17.0
+  flutter_secure_storage: ^11.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
