@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:lumaely_data/lumaely_data.dart';
 import 'package:lumaely_data/src/database/tables/database_meta.dart';
+import 'package:lumaely_data/src/exceptions/wrong_database_key_exception.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart';
 
