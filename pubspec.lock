@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "13.3.0"
+  analyzer_buffer:
+    dependency: transitive
+    description:
+      name: analyzer_buffer
+      sha256: f890a2e708e38fbf4238ad2f9fd3d506538acdddb0cd8eb2c3e8c7bd17784b57
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.4"
   archive:
     dependency: transitive
     description:
@@ -741,6 +749,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.5.0"
+  riverpod_analyzer_utils:
+    dependency: transitive
+    description:
+      name: riverpod_analyzer_utils
+      sha256: a9ac757dd927b8b52ee4d3c5f8b7ecba523e140a8df916a88d5d54fef5bff72f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  riverpod_annotation:
+    dependency: transitive
+    description:
+      name: riverpod_annotation
+      sha256: "61baad25ae2164778032a4dd1fabf97372eb314bcd81fd2645ed9ec7fadb0208"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.8"
+  riverpod_generator:
+    dependency: transitive
+    description:
+      name: riverpod_generator
+      sha256: "3d5dc44c50452633ee700d8c31d680d80306dd19733c653b4117b9fc3e1d7399"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.10"
   shelf:
     dependency: transitive
     description:
