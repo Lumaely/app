@@ -2,6 +2,7 @@ name: lumaely_core
 description: A starting point for Dart libraries or applications.
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
+publish_to: none
 
 environment:
   sdk: ^3.13.5
@@ -10,10 +11,9 @@ resolution: workspace
 
 dependencies:
   lumaely_crypto:
-    path: ../../packages/lumaely_crypto
+    path: ../lumaely_crypto
 
   meta: ^1.19.0
-  # path: ^1.9.0
 
 dev_dependencies:
   test: ^1.25.6
