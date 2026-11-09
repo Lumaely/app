@@ -20,7 +20,9 @@ void main() {
 
   setUp(() async {
     FlutterSecureStorage.setMockInitialValues({});
-    final folder = await Directory.systemTemp.createTemp('lumaely_test__vault_');
+    final folder = await Directory.systemTemp.createTemp(
+      'lumaely_test__vault_',
+    );
     addTearDown(() => folder.delete(recursive: true));
     files = DiaryFiles(Directory(p.join(folder.path, 'diary')));
   });

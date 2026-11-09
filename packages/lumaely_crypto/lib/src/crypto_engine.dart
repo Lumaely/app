@@ -65,8 +65,21 @@ class LmCryptoEngine {
 
   // === password ===
 
+  /// Locks [masterKey] with [password], in an isolate.
+  Future<PasswordLock> lockWithPassword(SecureKey masterKey, String password) =>
+      _sodium.runIsolated(
+        (secureKeys, _) => _lockWithPassword(secureKeys.single, password),
+        secureKeys: [masterKey],
+      );
+
+  /// Opens [lock] with [password] and returns the master key, in an isolate.
+  ///
+  /// Throws [WrongSecretException] if the password is wrong.
+  Future<SecureKey> unlockWithPassword(PasswordLock lock, String password) =>
+      _sodium.runIsolated((_, _) => _unlockWithPassword(lock, password));
+
   /// Locks [masterKey] with [password].
-  PasswordLock lockWithPassword(SecureKey masterKey, String password) {
+  PasswordLock _lockWithPassword(SecureKey masterKey, String password) {
     final salt = _sodium.randombytes.buf(_sodium.crypto.pwhash.saltBytes);
     final lockKey = _keyFromPassword(password, salt, _opsLimit, _memLimit);
 
@@ -81,12 +94,14 @@ class LmCryptoEngine {
         ),
       );
 
+      // we're recreating lists (Uint8List.fromList()) because otherwise
+      // a segfault happens (use-after-free, after isolate ends).
       return PasswordLock(
-        salt: salt,
+        salt: Uint8List.fromList(salt),
         opsLimit: _opsLimit,
         memLimit: _memLimit,
-        nonce: nonce,
-        cipherText: cipherText,
+        nonce: Uint8List.fromList(nonce),
+        cipherText: Uint8List.fromList(cipherText),
       );
     } finally {
       lockKey.dispose();
@@ -96,7 +111,7 @@ class LmCryptoEngine {
   /// Opens [lock] with [password] and returns the master key.
   ///
   /// Throws [WrongSecretException] if the password is wrong.
-  SecureKey unlockWithPassword(PasswordLock lock, String password) {
+  SecureKey _unlockWithPassword(PasswordLock lock, String password) {
     final lockKey = _keyFromPassword(
       password,
       lock.salt,

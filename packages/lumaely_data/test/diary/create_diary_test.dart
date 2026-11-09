@@ -62,7 +62,10 @@ void main() {
     await createDiary();
 
     final keyFile = await files.readKeyFile();
-    final master = crypto.unlockWithPassword(keyFile.passwordLock, 'hilol');
+    final master = await crypto.unlockWithPassword(
+      keyFile.passwordLock,
+      'hilol',
+    );
     addTearDown(master.dispose);
 
     expect(await cache.read(), equals(master.extractBytes()));

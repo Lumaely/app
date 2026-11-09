@@ -22,13 +22,13 @@ void main() {
     await root.delete(recursive: true);
   });
 
-  KeyFile newKeyFile(String password) {
+  Future<KeyFile> newKeyFile(String password) async {
     final master = crypto.generateMasterKey();
 
     addTearDown(master.dispose);
 
     return KeyFile(
-      passwordLock: crypto.lockWithPassword(master, password),
+      passwordLock: await crypto.lockWithPassword(master, password),
       recoveryLock: crypto.lockWithRecoveryKey(
         master,
         crypto.generateRecoveryKey(),
@@ -39,13 +39,13 @@ void main() {
   test('no diary until a key file is written', () async {
     expect(files.exists(), isFalse);
 
-    await files.writeKeyFile(newKeyFile('hilol'));
+    await files.writeKeyFile(await newKeyFile('hilol'));
 
     expect(files.exists(), isTrue);
   });
 
   test('reads back the key file it wrote', () async {
-    final written = newKeyFile('hilol');
+    final written = await newKeyFile('hilol');
     await files.writeKeyFile(written);
 
     final read = await files.readKeyFile();
@@ -54,14 +54,14 @@ void main() {
   });
 
   test('leaves no temporary file behind', () async {
-    await files.writeKeyFile(newKeyFile('hilol'));
+    await files.writeKeyFile(await newKeyFile('hilol'));
 
     expect(File('${files.keyFile.path}.tmp').existsSync(), isFalse);
   });
 
   test('a second write replaces the first', () async {
-    await files.writeKeyFile(newKeyFile('first'));
-    final second = newKeyFile('second');
+    await files.writeKeyFile(await newKeyFile('first'));
+    final second = await newKeyFile('second');
     await files.writeKeyFile(second);
 
     expect((await files.readKeyFile()).encode(), second.encode());

@@ -10,34 +10,41 @@ void main() {
     crypto = await LmCryptoEngine.init();
   });
 
-  test('a written key file opens with the password and the recovery key', () {
+  test(
+    'a written key file opens with the password and the recovery key',
+    () async {
+      final master = crypto.generateMasterKey();
+      addTearDown(master.dispose);
+      final recovery = crypto.generateRecoveryKey();
+
+      final text = KeyFile(
+        passwordLock: await crypto.lockWithPassword(master, 'hilol'),
+        recoveryLock: crypto.lockWithRecoveryKey(master, recovery),
+      ).encode();
+      final file = KeyFile.decode(text);
+
+      final byPassword = await crypto.unlockWithPassword(
+        file.passwordLock,
+        'hilol',
+      );
+      final byRecovery = crypto.unlockWithRecoveryKey(
+        file.recoveryLock,
+        recovery,
+      );
+
+      addTearDown(byPassword.dispose);
+      addTearDown(byRecovery.dispose);
+
+      expect(byPassword.extractBytes(), equals(master.extractBytes()));
+      expect(byRecovery.extractBytes(), equals(master.extractBytes()));
+    },
+  );
+
+  test('the file never contains the master key itself', () async {
     final master = crypto.generateMasterKey();
     addTearDown(master.dispose);
-    final recovery = crypto.generateRecoveryKey();
-
     final text = KeyFile(
-      passwordLock: crypto.lockWithPassword(master, 'hilol'),
-      recoveryLock: crypto.lockWithRecoveryKey(master, recovery),
-    ).encode();
-    final file = KeyFile.decode(text);
-
-    final byPassword = crypto.unlockWithPassword(file.passwordLock, 'hilol');
-    final byRecovery = crypto.unlockWithRecoveryKey(
-      file.recoveryLock,
-      recovery,
-    );
-    addTearDown(byPassword.dispose);
-    addTearDown(byRecovery.dispose);
-
-    expect(byPassword.extractBytes(), equals(master.extractBytes()));
-    expect(byRecovery.extractBytes(), equals(master.extractBytes()));
-  });
-
-  test('the file never contains the master key itself', () {
-    final master = crypto.generateMasterKey();
-    addTearDown(master.dispose);
-    final text = KeyFile(
-      passwordLock: crypto.lockWithPassword(master, 'pw'),
+      passwordLock: await crypto.lockWithPassword(master, 'pw'),
       recoveryLock: crypto.lockWithRecoveryKey(
         master,
         crypto.generateRecoveryKey(),
@@ -47,25 +54,25 @@ void main() {
     expect(text, isNot(contains(base64Encode(master.extractBytes()))));
   });
 
-  test('a new password keeps the recovery lock', () {
+  test('a new password keeps the recovery lock', () async {
     final master = crypto.generateMasterKey();
     addTearDown(master.dispose);
     final recovery = crypto.generateRecoveryKey();
     final file = KeyFile(
-      passwordLock: crypto.lockWithPassword(master, 'old password'),
+      passwordLock: await crypto.lockWithPassword(master, 'old password'),
       recoveryLock: crypto.lockWithRecoveryKey(master, recovery),
     );
 
     final changed = file.withPasswordLock(
-      crypto.lockWithPassword(master, 'new password'),
+      await crypto.lockWithPassword(master, 'new password'),
     );
 
     expect(changed.recoveryLock, same(file.recoveryLock));
-    expect(
-      () => crypto.unlockWithPassword(changed.passwordLock, 'old password'),
+    await expectLater(
+      crypto.unlockWithPassword(changed.passwordLock, 'old password'),
       throwsA(isA<WrongSecretException>()),
     );
-    final unlocked = crypto.unlockWithPassword(
+    final unlocked = await crypto.unlockWithPassword(
       changed.passwordLock,
       'new password',
     );
