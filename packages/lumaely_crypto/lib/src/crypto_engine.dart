@@ -94,6 +94,8 @@ class LmCryptoEngine {
         ),
       );
 
+      // we're recreating lists (Uint8List.fromList()) because otherwise
+      // a segfault happens (use-after-free, after isolate ends).
       return PasswordLock(
         salt: Uint8List.fromList(salt),
         opsLimit: _opsLimit,

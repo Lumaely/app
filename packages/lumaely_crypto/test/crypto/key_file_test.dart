@@ -68,8 +68,8 @@ void main() {
     );
 
     expect(changed.recoveryLock, same(file.recoveryLock));
-    expect(
-      () => crypto.unlockWithPassword(changed.passwordLock, 'old password'),
+    await expectLater(
+      crypto.unlockWithPassword(changed.passwordLock, 'old password'),
       throwsA(isA<WrongSecretException>()),
     );
     final unlocked = await crypto.unlockWithPassword(

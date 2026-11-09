@@ -56,8 +56,8 @@ void main() {
       cipherText: Uint8List.fromList(lock.cipherText)..[0] ^= 1,
     );
 
-    expect(
-      () => crypto.unlockWithPassword(tampered, 'hilol'),
+    await expectLater(
+      crypto.unlockWithPassword(tampered, 'hilol'),
       throwsA(isA<WrongSecretException>()),
     );
   });
