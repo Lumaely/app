@@ -20,7 +20,7 @@ void main() {
   late File file;
 
   setUp(() async {
-    folder = await Directory.systemTemp.createTemp('lumaely__test_db_');
+    folder = await Directory.systemTemp.createTemp('lumaely_test__db_');
     file = File('${folder.path}/diary.db');
   });
 
