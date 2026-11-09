@@ -15,8 +15,7 @@ Future<void> bootstrap() async {
 
   final crypto = await LmCryptoEngine.init();
   final supportFolder = await getApplicationSupportDirectory();
-  final diaryFiles =
-  DiaryFiles(Directory(p.join(supportFolder.path, 'diary')));
+  final diaryFiles = DiaryFiles(Directory(p.join(supportFolder.path, 'diary')));
 
   runApp(
     ProviderScope(

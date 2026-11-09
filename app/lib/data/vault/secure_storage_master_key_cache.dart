@@ -9,13 +9,14 @@ import 'package:lumaely_data/lumaely_data.dart';
 class SecureStorageMasterKeyCache implements MasterKeyCache {
   /// Uses [storage] if given (which is the case in tests).
   /// Otherwise, uses the platform's secure storage otherwise.
-  new({ FlutterSecureStorage? storage })
-      : _storage = storage ??
-      const FlutterSecureStorage(
-        iOptions: IOSOptions(
-          accessibility: KeychainAccessibility.first_unlock_this_device,
-        ),
-      );
+  new({FlutterSecureStorage? storage})
+    : _storage =
+          storage ??
+          const FlutterSecureStorage(
+            iOptions: IOSOptions(
+              accessibility: KeychainAccessibility.first_unlock_this_device,
+            ),
+          );
 
   @visibleForTesting
   static const entryName = 'lumaely.master_key.v1';

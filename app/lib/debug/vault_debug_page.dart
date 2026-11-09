@@ -125,8 +125,9 @@ class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
   }
 
   Future<String?> _create() async {
-    final recoveryKey =
-    await ref.read(vaultProvider.notifier).create(_password.text);
+    final recoveryKey = await ref
+        .read(vaultProvider.notifier)
+        .create(_password.text);
     final words = recoveryKey.words.join(' ');
     // Debug only: the real app must never put the recovery key in the
     // clipboard, which other apps can read.
