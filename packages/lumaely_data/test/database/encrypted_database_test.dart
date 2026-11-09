@@ -3,9 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:drift/drift.dart';
-import 'package:drift/remote.dart' show DriftRemoteException;
 import 'package:lumaely_data/lumaely_data.dart';
-import 'package:sqlite3/sqlite3.dart' show SqliteException;
 import 'package:test/test.dart';
 
 /// 32 random bytes, like a real database key.
@@ -16,19 +14,6 @@ Uint8List randomKey() {
     List.generate(AppDatabase.keyLength, (_) => random.nextInt(256)),
   );
 }
-
-/// A wrong key surfaces as a SQLite error, sometimes wrapped by drift
-/// because the database runs in another isolate.
-final Matcher throwsWrongKey = throwsA(
-  anyOf(
-    isA<SqliteException>(),
-    isA<DriftRemoteException>().having(
-      (e) => e.remoteCause,
-      'remoteCause',
-      isA<SqliteException>(),
-    ),
-  ),
-);
 
 void main() {
   late Directory folder;
@@ -45,7 +30,7 @@ void main() {
 
   /// Opens the database, writes one row, and closes it.
   Future<void> writeStorageMode(Uint8List key) async {
-    final db = AppDatabase.open(file, key);
+    final db = await AppDatabase.open(file, key);
 
     await db
         .into(db.databaseMeta)
@@ -63,7 +48,7 @@ void main() {
     final key = randomKey();
     await writeStorageMode(key);
 
-    final db = AppDatabase.open(file, key);
+    final db = await AppDatabase.open(file, key);
     addTearDown(db.close);
     final rows = await db.select(db.databaseMeta).get();
 
@@ -74,10 +59,10 @@ void main() {
   test('refuses another key', () async {
     await writeStorageMode(randomKey());
 
-    final db = AppDatabase.open(file, randomKey());
-    addTearDown(db.close);
-
-    await expectLater(db.select(db.databaseMeta).get(), throwsWrongKey);
+    await expectLater(
+      AppDatabase.open(file, randomKey()),
+      throwsA(isA<WrongDatabaseKeyException>()),
+    );
   });
 
   test('the file on disk is not a readable SQLite file', () async {
@@ -92,7 +77,10 @@ void main() {
     expect(header, isNot(equals(plainSqliteHeader)));
   });
 
-  test('refuses a key of the wrong size', () {
-    expect(() => AppDatabase.open(file, Uint8List(16)), throwsArgumentError);
+  test('refuses a key of the wrong size', () async {
+    await expectLater(
+      AppDatabase.open(file, Uint8List(16)),
+      throwsArgumentError,
+    );
   });
 }
