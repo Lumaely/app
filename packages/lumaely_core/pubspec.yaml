@@ -8,8 +8,10 @@ environment:
 
 resolution: workspace
 
-# Add regular dependencies here.
 dependencies:
+  lumaely_crypto:
+    path: ../../packages/lumaely_crypto
+
   meta: ^1.19.0
   # path: ^1.9.0
 
