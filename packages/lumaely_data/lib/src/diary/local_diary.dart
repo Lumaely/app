@@ -46,7 +46,7 @@ final class LocalDiary {
 
       await files.writeKeyFile(
         KeyFile(
-          passwordLock: crypto.lockWithPassword(masterKey, password),
+          passwordLock: await crypto.lockWithPassword(masterKey, password),
           recoveryLock: crypto.lockWithRecoveryKey(masterKey, recoveryKey),
         ),
       );
@@ -117,7 +117,10 @@ final class LocalDiary {
     _ensureExists(files);
 
     final keyFile = await files.readKeyFile();
-    final masterKey = crypto.unlockWithPassword(keyFile.passwordLock, password);
+    final masterKey = await crypto.unlockWithPassword(
+      keyFile.passwordLock,
+      password,
+    );
 
     return await _openAndCache(files, masterKey, crypto, cache);
   }
@@ -173,7 +176,10 @@ final class LocalDiary {
 
     final keyFile = await _files.readKeyFile();
 
-    _crypto.unlockWithPassword(keyFile.passwordLock, currentPassword).dispose();
+    (await _crypto.unlockWithPassword(
+      keyFile.passwordLock,
+      currentPassword,
+    )).dispose();
     await _lockWithNewPassword(keyFile, newPassword);
   }
 
@@ -240,7 +246,10 @@ final class LocalDiary {
   }
 
   Future<void> _lockWithNewPassword(KeyFile keyFile, String newPassword) async {
-    final passwordLock = _crypto.lockWithPassword(_masterKey, newPassword);
+    final passwordLock = await _crypto.lockWithPassword(
+      _masterKey,
+      newPassword,
+    );
     await _files.writeKeyFile(keyFile.withPasswordLock(passwordLock));
   }
 
