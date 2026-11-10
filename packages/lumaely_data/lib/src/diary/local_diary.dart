@@ -1,7 +1,10 @@
+import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_crypto/lumaely_crypto.dart';
 import 'package:lumaely_data/src/database/app_database.dart';
+import 'package:lumaely_data/src/database/record_ids.dart';
 import 'package:lumaely_data/src/diary/diary_files.dart';
 import 'package:lumaely_data/src/diary/master_key_cache.dart';
+import 'package:lumaely_data/src/entries/drift_entry_repository.dart';
 import 'package:lumaely_data/src/exceptions/diary_already_exists_exception.dart';
 import 'package:lumaely_data/src/exceptions/diary_not_found_exception.dart';
 import 'package:lumaely_data/src/exceptions/wrong_database_key_exception.dart';
@@ -15,7 +18,8 @@ typedef CreatedDiary = ({LocalDiary diary, RecoveryKey recoveryKey});
 ///
 /// Note: Always [close] it when done.
 final class LocalDiary {
-  new _(this.database, this._masterKey, this._files, this._crypto);
+  new _(this.database, this._masterKey, this._files, this._crypto)
+    : _recordIds = RecordIds.forMasterKey(_crypto, _masterKey);
 
   /// The encrypted database.
   final AppDatabase database;
@@ -23,6 +27,13 @@ final class LocalDiary {
   final SecureKey _masterKey;
   final DiaryFiles _files;
   final LmCryptoEngine _crypto;
+  final RecordIds _recordIds;
+
+  late final EntryRepository entries = DriftEntryRepository(
+    database,
+    _recordIds,
+  );
+
   bool _closed = false;
 
   /// Creates a new diary in [files], locked with [password].
@@ -161,6 +172,7 @@ final class LocalDiary {
 
     _closed = true;
     await database.close();
+    _recordIds.dispose();
     _masterKey.dispose();
   }
 
