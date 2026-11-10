@@ -56,4 +56,15 @@ void main() {
   test('refuses a master key of the wrong size', () {
     expect(() => crypto.masterKeyFromBytes(Uint8List(16)), throwsArgumentError);
   });
+
+  test('key contexts never change', () {
+    expect(
+      {for (final purpose in KeyPurpose.values) purpose: purpose.context},
+      {
+        KeyPurpose.database: 'lmy_db__',
+        KeyPurpose.sync: 'lmy_sync',
+        KeyPurpose.recordIds: 'lmy_ids_',
+      },
+    );
+  });
 }
