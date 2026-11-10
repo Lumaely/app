@@ -227,4 +227,18 @@ class LmCryptoEngine {
       entropy.fillRange(0, entropy.length, 0);
     }
   }
+
+  // === record ids ===
+
+  /// Computes the id of a record from its [label] (for example
+  /// `entry:2026-10-29`) using HMAC ([_sodium.crypto.auth()]).
+  /// HMAC is basically hash + private key.
+  ///
+  /// The same [idKey] and [label] always give the same id, on every device.
+  /// Without [idKey], nobody can tell which label an id comes from.
+  String recordId(SecureKey idKey, String label) {
+    final tag = _sodium.crypto.auth(message: utf8.encode(label), key: idKey);
+
+    return tag.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+  }
 }
