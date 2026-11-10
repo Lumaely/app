@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lumaely/data/entries/entry_providers.dart';
 import 'package:lumaely/data/vault/vault.dart';
 import 'package:lumaely/data/vault/vault_providers.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
+import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_crypto/lumaely_crypto.dart';
 import 'package:lumaely_data/lumaely_data.dart';
 
@@ -18,6 +20,7 @@ class VaultDebugPage extends ConsumerStatefulWidget {
 class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
   final _password = TextEditingController();
   final _recoveryKey = TextEditingController();
+  final _journal = TextEditingController();
   var _busy = false;
   String? _message;
 
@@ -25,6 +28,7 @@ class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
   void dispose() {
     _password.dispose();
     _recoveryKey.dispose();
+    _journal.dispose();
     super.dispose();
   }
 
@@ -80,6 +84,34 @@ class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
   ];
 
   List<Widget> _openActions(LocalDiary diary) => [
+    _TodayEntry(_today),
+    TextField(
+      controller: _journal,
+      decoration: const InputDecoration(labelText: 'Journal'),
+      maxLines: 3,
+    ),
+    Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final score in MoodScore.values)
+          _button(
+            '${score.value} ${score.name}',
+            () => _saveToday(WholeDayMood(score)),
+          ),
+      ],
+    ),
+    _button(
+      'Save morning good + evening low',
+      () => _saveToday(
+        MomentMoods(const {
+          Moment.morning: MoodScore.good,
+          Moment.evening: MoodScore.low,
+        }),
+      ),
+    ),
+    _button('Delete today', _deleteToday),
+    const Divider(),
     _button('Read database', () => _readDatabase(diary)),
     _button('Simulate restart', _restart),
     _button('Forget key on this device', _forgetKey),
@@ -146,6 +178,21 @@ class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
     return null;
   }
 
+  /// Today, as the person lives it on this phone.
+  LocalDate get _today => LocalDate.fromDateTime(DateTime.now());
+
+  Future<String?> _saveToday(DayMoods moods) async {
+    await ref
+        .read(entryRepositoryProvider)
+        .save(_today, moods: moods, journal: _journal.text);
+    return null;
+  }
+
+  Future<String?> _deleteToday() async {
+    await ref.read(entryRepositoryProvider).delete(_today);
+    return null;
+  }
+
   Future<String?> _readDatabase(LocalDiary diary) async {
     final database = diary.database;
     final rows = await database.select(database.databaseMeta).get();
@@ -174,5 +221,39 @@ class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
     }
     await ref.read(diaryFilesProvider).delete();
     return await _restart();
+  }
+}
+
+/// Shows the entry for [date], and updates by itself after every change.
+class _TodayEntry extends ConsumerWidget {
+  const new(this.date);
+
+  final LocalDate date;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref
+        .watch(dayEntryProvider(date))
+        .when(
+          data: (entry) => Text(
+            entry == null
+                ? '$date: no entry yet'
+                : '$date: ${_describe(entry)}',
+          ),
+          error: (error, _) => Text('Error: $error'),
+          loading: () => const Text('Loading…'),
+        );
+  }
+
+  static String _describe(DayEntry entry) {
+    final moods = switch (entry.moods) {
+      WholeDayMood(:final score) => 'whole day ${score.name}',
+      MomentMoods(:final scores) =>
+        scores.entries
+            .map((moment) => '${moment.key.id} ${moment.value.name}')
+            .join(', '),
+    };
+    return '$moods\n"${entry.journal}"\n'
+        'updated at ${entry.updatedAt.toLocal()}';
   }
 }
