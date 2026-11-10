@@ -10,9 +10,6 @@ environment:
 resolution: workspace
 
 dependencies:
-  lumaely_crypto:
-    path: ../lumaely_crypto
-
   meta: ^1.19.0
 
 dev_dependencies:
