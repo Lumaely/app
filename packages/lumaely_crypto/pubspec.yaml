@@ -1,5 +1,5 @@
 name: lumaely_crypto
-description: A starting point for Dart libraries or applications.
+description: "Lumaely's cryptography: keys, password and recovery locks, record ids."
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 publish_to: none
