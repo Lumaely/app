@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lumaely/data/entries/entry_providers.dart';
 import 'package:lumaely/data/vault/vault.dart';
 import 'package:lumaely/data/vault/vault_providers.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
+import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_crypto/lumaely_crypto.dart';
 import 'package:lumaely_data/lumaely_data.dart';
 import 'package:path/path.dart' as p;
@@ -128,5 +130,24 @@ void main() {
         .unlockWithRecoveryKey(recoveryKey);
 
     expect(container.read(vaultProvider).value, isA<VaultOpen>());
+  });
+
+  test('the open diary saves and reads days through providers', () async {
+    final container = makeContainer();
+    await createDiary(container);
+    final day = LocalDate(2026, 10, 29);
+
+    await container
+        .read(entryRepositoryProvider)
+        .save(day, moods: const WholeDayMood(MoodScore.good));
+
+    final subscription = container.listen(
+      dayEntryProvider(day).future,
+      (_, _) {},
+    );
+
+    final entry = await subscription.read();
+
+    expect(entry!.moods, const WholeDayMood(MoodScore.good));
   });
 }
