@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_crypto/lumaely_crypto.dart';
 import 'package:lumaely_data/lumaely_data.dart';
 import 'package:test/test.dart';
@@ -150,5 +151,38 @@ void main() {
       ),
       throwsA(isA<DiaryNotFoundException>()),
     );
+  });
+
+  test('a reopened diary updates the same day', () async {
+    final cache = MemoryMasterKeyCache();
+    final created = await LocalDiary.create(
+      files: files,
+      password: password,
+      crypto: crypto,
+      cache: cache,
+    );
+    final day = LocalDate(2026, 10, 29);
+
+    await created.diary.entries.save(
+      day,
+      moods: const WholeDayMood(MoodScore.low),
+    );
+
+    await created.diary.close();
+
+    final diary = await LocalDiary.openWithPassword(
+      files: files,
+      password: password,
+      crypto: crypto,
+      cache: cache,
+    );
+
+    addTearDown(diary.close);
+
+    await diary.entries.save(day, moods: const WholeDayMood(MoodScore.good));
+
+    final entry = await diary.entries.watchDay(day).first;
+
+    expect(entry!.moods, const WholeDayMood(MoodScore.good));
   });
 }
