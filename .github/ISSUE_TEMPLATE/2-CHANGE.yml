@@ -1,36 +1,46 @@
-name: Change Request
-description: Suggest feature modification for the Lumaely application
-title: "‎ "
-labels: ["app"]
+name: Change request
+description: Suggest a change to something Lumaely already does
+labels: ["triage"]
 type: "Change"
 body:
   - type: textarea
-    id: current_behavior
+    id: current
     attributes:
-      label: Current behavior
-      description: How does the feature work right now, and why is it not optimal?
-      placeholder: "ex: Currently, the mood graph only displays data for the last 7 days, which prevents me from seeing long-term trends."
+      label: How it works today
+      description: What does the feature do now, and why isn't it right?
+      placeholder: "ex: Insights only show the last 7 days, so long-term trends are invisible."
     validations:
       required: true
 
   - type: textarea
-    id: user_story
+    id: story
     attributes:
-      label: User story
-      description: Describe the feature using a user story.
+      label: The need
+      description: Write it as a user story if you can.
       placeholder: |
-        As a [type of user, ex: long-term user],
-        I want to [action, ex: filter the mood graph by month and year],
-        So that [goal, ex: I can analyze my statistics over a longer period].
+        As a [type of user, ex: long-time user],
+        I want to [action, ex: choose the period of the mood chart],
+        so that [goal, ex: I can see how my year went].
     validations:
       required: true
 
   - type: textarea
-    id: proposed_solution
+    id: change
     attributes:
-      label: Proposed solution
-      description: How do you see this feature working technically and/or visually?
-      placeholder: "ex: Add a dropdown menu above the graph to select the time range (week, month, year, custom) instead of the hardcoded 7-day view."
+      label: Proposed change
+      placeholder: "ex: A period picker above the chart: week, month, year."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: stored_data
+    attributes:
+      label: Does it change stored data?
+      description: Data already saved in diaries (moods, moments, dates, keys) must keep working.
+      options:
+        - "No"
+        - "Yes: existing diaries need a migration"
+        - I don't know
     validations:
       required: true
 
@@ -38,14 +48,12 @@ body:
     id: mockups
     attributes:
       label: Mockups
-      description: Add any other context, UI/UX wireframes, Figma links, or sketches about the feature request here.
-      placeholder: "Drop your links or UI sketches here."
+      description: Figma links, sketches or screenshots.
 
   - type: checkboxes
     id: checklist
     attributes:
-      label: Pre-submission checklist
-      description: Please verify the following before submitting.
+      label: Before submitting
       options:
-        - label: I have checked that this feature hasn't been requested already.
+        - label: I searched the existing issues and this change isn't requested yet.
           required: true

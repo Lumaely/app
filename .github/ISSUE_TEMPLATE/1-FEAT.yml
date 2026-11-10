@@ -1,27 +1,46 @@
-name: Feature Request
-description: Suggest an idea or a new feature for the Lumaely application
-title: "‎ "
-labels: ["app"]
+name: Feature request
+description: Suggest something new for Lumaely
+labels: ["triage"]
 type: "Feature"
 body:
-  - type: textarea
-    id: user_story
+  - type: markdown
     attributes:
-      label: User story
-      description: Describe the feature using a user story.
+      value: |
+        Thanks for the idea! Describe the need first: the best solution often
+        comes out of the discussion.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The need
+      description: What is hard or impossible today? Write it as a user story if you can.
       placeholder: |
         As a [type of user, ex: privacy-conscious user],
-        I want to [action, ex: lock the app with FaceID],
-        So that [goal, ex: my journal remains safe from wandering eyes].
+        I want to [action, ex: lock the app with Face ID],
+        so that [goal, ex: nobody holding my phone can read my diary].
     validations:
       required: true
 
   - type: textarea
-    id: proposed_solution
+    id: solution
     attributes:
       label: Proposed solution
-      description: How do you see this feature working technically and/or visually?
-      placeholder: "ex: Add a biometric lock screen on app startup using the local_auth Flutter package."
+      description: How could it work, for the person using the app?
+      placeholder: "ex: Ask for Face ID when the app opens, with the diary password as a fallback."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other ways to meet the need, and why they fit less.
+
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy impact
+      description: Does it store, show or send anything new about the person? Write "None" if not.
     validations:
       required: true
 
@@ -29,14 +48,12 @@ body:
     id: mockups
     attributes:
       label: Mockups
-      description: Add any other context, UI/UX wireframes, Figma links, or sketches about the feature request here.
-      placeholder: "Drop your links or UI sketches here."
+      description: Figma links, sketches or screenshots.
 
   - type: checkboxes
     id: checklist
     attributes:
-      label: Pre-submission checklist
-      description: Please verify the following before submitting.
+      label: Before submitting
       options:
-        - label: I have checked that this feature hasn't been requested already.
+        - label: I searched the existing issues and this feature isn't requested yet.
           required: true
