@@ -1,0 +1,48 @@
+#!/bin/sh
+# formats staged dart files before each commit
+#
+# enable it once per clone:
+#   git config core.hooksPath .githooks
+
+if [ -x .fvm/flutter_sdk/bin/dart ]; then
+  dart=.fvm/flutter_sdk/bin/dart
+elif command -v dart >/dev/null 2>&1; then
+  dart=dart
+else
+  echo "pre-commit: Dart not found, formatting skipped (CI will check it)."
+  exit 0
+fi
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR -- '*.dart')
+[ -z "$staged" ] && exit 0
+
+to_format=""
+to_check=""
+for file in $staged; do
+  if git diff --quiet -- "$file"; then
+    to_format="$to_format $file"
+  else
+    to_check="$to_check $file"
+  fi
+done
+
+if [ -n "$to_format" ]; then
+  # shellcheck disable=SC2086 # One argument per file.
+  "$dart" format $to_format >/dev/null || exit 1
+  # shellcheck disable=SC2086
+  git add -- $to_format
+fi
+
+unformatted=""
+for file in $to_check; do
+  if ! "$dart" format --output=none --set-exit-if-changed "$file" >/dev/null; then
+    unformatted="$unformatted $file"
+  fi
+done
+
+if [ -n "$unformatted" ]; then
+  echo "pre-commit: these partly staged files are not formatted:"
+  for file in $unformatted; do echo "  $file"; done
+  echo "Run 'fvm dart format <file>', stage it, and commit again."
+  exit 1
+fi
