@@ -13,7 +13,7 @@ enum Moment {
 
   /// The moment stored as [id].
   static Moment fromId(String id) => Moment.values.firstWhere(
-        (moment) => moment.id == id,
+    (moment) => moment.id == id,
     orElse: () => throw ArgumentError.value(id, 'id', 'Unknown moment'),
   );
 }

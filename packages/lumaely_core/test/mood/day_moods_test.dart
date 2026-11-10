@@ -36,10 +36,10 @@ void main() {
     });
 
     test('cannot be changed after creation', () {
-      final moods = MomentMoods(const { Moment.morning: MoodScore.good });
+      final moods = MomentMoods(const {Moment.morning: MoodScore.good});
 
       expect(
-            () => moods.scores[Moment.noon] = MoodScore.low,
+        () => moods.scores[Moment.noon] = MoodScore.low,
         throwsUnsupportedError,
       );
     });
@@ -62,7 +62,7 @@ void main() {
   test('a whole-day mood never equals moment moods', () {
     expect(
       const WholeDayMood(MoodScore.good),
-      isNot(equals(MomentMoods(const { Moment.morning: MoodScore.good }))),
+      isNot(equals(MomentMoods(const {Moment.morning: MoodScore.good}))),
     );
   });
 }

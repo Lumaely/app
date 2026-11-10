@@ -35,12 +35,12 @@ final class DayEntry {
   @override
   bool operator ==(Object other) =>
       other is DayEntry &&
-          other.id == id &&
-          other.date == date &&
-          other.moods == moods &&
-          other.journal == journal &&
-          other.createdAt == createdAt &&
-          other.updatedAt == updatedAt;
+      other.id == id &&
+      other.date == date &&
+      other.moods == moods &&
+      other.journal == journal &&
+      other.createdAt == createdAt &&
+      other.updatedAt == updatedAt;
 
   @override
   int get hashCode =>
