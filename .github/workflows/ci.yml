@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# a newer push to the same branch cancels the run still going
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Format, analyze and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the Flutter version pinned by FVM
+        id: fvm
+        run: echo "flutter=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ steps.fvm.outputs.flutter }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # doing ts before code generation, so generated files are not checked
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      # generated files (*.g.dart) are not committed
+      - name: Generate code
+        run: |
+          (cd packages/lumaely_data && dart run build_runner build --delete-conflicting-outputs)
+          (cd app && dart run build_runner build --delete-conflicting-outputs)
+
+      - name: Analyze
+        run: dart analyze --fatal-infos
+
+      # each package runs from its own folder, so its native build hooks (libsodium, sqlite3mc)
+      # run. A random test order catches tests that only pass in one order.
+      - name: Test lumaely_core
+        working-directory: packages/lumaely_core
+        run: dart test --test-randomize-ordering-seed=random
+
+      - name: Test lumaely_crypto
+        working-directory: packages/lumaely_crypto
+        run: dart test --test-randomize-ordering-seed=random
+
+      - name: Test lumaely_data
+        working-directory: packages/lumaely_data
+        run: dart test --test-randomize-ordering-seed=random
+
+      - name: Test app
+        working-directory: app
+        run: flutter test --test-randomize-ordering-seed=random
