@@ -2,7 +2,12 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:lumaely_core/lumaely_core.dart';
+import 'package:lumaely_data/src/database/converters/local_date_converter.dart';
+import 'package:lumaely_data/src/database/tables/change_log.dart';
 import 'package:lumaely_data/src/database/tables/database_meta.dart';
+import 'package:lumaely_data/src/database/tables/entries.dart';
+import 'package:lumaely_data/src/database/tables/entry_moods.dart';
 import 'package:lumaely_data/src/exceptions/wrong_database_key_exception.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -13,7 +18,7 @@ part 'app_database.g.dart';
 ///
 /// In the app it is always opened encrypted with [AppDatabase.open].
 /// Call [close] before deleting or replacing its file.
-@DriftDatabase(tables: [DatabaseMeta])
+@DriftDatabase(tables: [DatabaseMeta, Entries, EntryMoods, ChangeLog])
 class AppDatabase extends _$AppDatabase {
   new _(super.e);
 
@@ -45,6 +50,14 @@ class AppDatabase extends _$AppDatabase {
   /// Version of the database schema. Used for versioning, migration purposes.
   @override
   int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    beforeOpen: (details) async {
+      // ignores foreign keys unless asked
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
 
   /// SQLite's internal code for "file is not a database", returned for a wrong
   /// key.
