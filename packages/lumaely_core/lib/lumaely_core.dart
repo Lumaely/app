@@ -1,4 +1,5 @@
 export 'src/entry/day_entry.dart';
+export 'src/entry/entry_repository.dart';
 export 'src/mood/day_moods.dart';
 export 'src/mood/moment.dart';
 export 'src/mood/mood_score.dart';
