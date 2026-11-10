@@ -1,39 +1,32 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+<img src="../../assets/logo-rounded-256.png" width="48" height="48" alt="Lumaely logo">
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+# lumaely_crypto
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/tools/pub/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+Lumaely's cryptography, built on libsodium through the `sodium` package.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Contents
 
-## Features
+- `LmCryptoEngine`:
+  - creates the master key, and derives one key per `KeyPurpose` from it;
+  - locks the master key with a password (Argon2id, then
+    XChaCha20-Poly1305), on a background isolate so the UI stays smooth;
+  - locks it with a recovery key, and computes record ids (HMAC).
+- `RecoveryKey`: 24 words with a checksum, in the BIP-39 format.
+- `KeyFile`: the `diary.lmkey` format, which holds both locks and never the
+  master key itself.
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+## Rules
 
-## Getting started
+- No Flutter and no other package of the workspace.
+- Never change an existing `KeyPurpose` context: the key it derives, and
+  everything that key protects, would change with it. A golden test freezes
+  them.
+- No cryptographic primitive is written here: libsodium provides them all.
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+## Tests
 
-## Usage
+Run them from this folder, so the native build hook compiles libsodium:
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
+```bash
+cd packages/lumaely_crypto && fvm dart test
 ```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
