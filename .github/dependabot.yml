@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # actions used by the CI (checkout, flutter-action…): one grouped PR a week.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels: [dependencies, "area: ci"]
+    commit-message:
+      prefix: chore(deps)
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # Dart and Flutter packages: the workspace has one lock file, at the root.
+  # Minor and patch updates come grouped; each major update gets its own PR, since it may break code
+  # and deserves its own review.
+  - package-ecosystem: pub
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels: [dependencies]
+    commit-message:
+      prefix: dep
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
