@@ -225,4 +225,28 @@ abstract final class LmTypography {
     fontWeight: FontWeight.w400,
     fontVariations: [FontVariation('wght', 400), FontVariation('opsz', 18)],
   );
+
+  /// Every token by name, in the order of tokens.json.
+  static const all = {
+    'displayHero': displayHero,
+    'displayLarge': displayLarge,
+    'displayMedium': displayMedium,
+    'displaySmall': displaySmall,
+    'headlineLarge': headlineLarge,
+    'headlineMedium': headlineMedium,
+    'headlineSmall': headlineSmall,
+    'titleLarge': titleLarge,
+    'titleMedium': titleMedium,
+    'titleSmall': titleSmall,
+    'bodyLarge': bodyLarge,
+    'bodyMedium': bodyMedium,
+    'bodySmall': bodySmall,
+    'labelLarge': labelLarge,
+    'labelMedium': labelMedium,
+    'labelSmall': labelSmall,
+    'statLarge': statLarge,
+    'statMedium': statMedium,
+    'statSmall': statSmall,
+    'journal': journal,
+  };
 }

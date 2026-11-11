@@ -131,6 +131,38 @@ final class LmColors {
   final Color staticWhite;
   final Color staticBlack;
 
+  /// Every token by name, in the order of tokens.json.
+  Map<String, Color> get all => {
+    'background': background,
+    'link': link,
+    'focus': focus,
+    'surface': surface,
+    'surfaceRaised': surfaceRaised,
+    'textPrimary': textPrimary,
+    'textSecondary': textSecondary,
+    'textDisabled': textDisabled,
+    'border': border,
+    'borderStrong': borderStrong,
+    'actionPrimary': actionPrimary,
+    'actionOnPrimary': actionOnPrimary,
+    'successText': successText,
+    'successBackground': successBackground,
+    'warningText': warningText,
+    'warningBackground': warningBackground,
+    'errorText': errorText,
+    'errorBackground': errorBackground,
+    'infoText': infoText,
+    'infoBackground': infoBackground,
+    'mood1': mood1,
+    'mood2': mood2,
+    'mood3': mood3,
+    'mood4': mood4,
+    'mood5': mood5,
+    'mood1Outline': mood1Outline,
+    'staticWhite': staticWhite,
+    'staticBlack': staticBlack,
+  };
+
   /// The colors between [a] and [b], to animate a theme change.
   static LmColors lerp(LmColors a, LmColors b, double t) {
     return LmColors(
