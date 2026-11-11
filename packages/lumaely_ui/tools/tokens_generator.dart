@@ -235,7 +235,9 @@ String _layoutFile(List<Token> tokens) {
 /// Variable fonts with an optical size axis (`opsz`), and its range. Like
 /// Figma, the generator sets it to the font size, so titles get the display
 /// cut of the font and small text the text cut.
-const _opticalSize = {'Newsreader': (min: 6, max: 72)};
+const Map<String, ({int max, int min})> _opticalSize = {
+  'Newsreader': (min: 6, max: 72),
+};
 
 String _typographyFile(List<Token> tokens, Map<String, Token> byPath) {
   final out = StringBuffer(_header)
