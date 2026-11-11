@@ -15,3 +15,16 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter:
+  fonts:
+    - family: Newsreader
+      fonts:
+        - asset: "fonts/Newsreader/Newsreader-VariableFont_opsz,wght.ttf"
+        - asset: "fonts/Newsreader/Newsreader-Italic-VariableFont_opsz,wght.ttf"
+          style: italic
+    - family: Plus Jakarta Sans
+      fonts:
+        - asset: "fonts/Plus_Jakarta_Sans/PlusJakartaSans-VariableFont_wght.ttf"
+        - asset: "fonts/Plus_Jakarta_Sans/PlusJakartaSans-Italic-VariableFont_wght.ttf"
+          style: italic
