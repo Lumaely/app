@@ -145,6 +145,18 @@ num _pixels(Object? value) {
   return dimension['value']! as num;
 }
 
+/// Writes a map of every token of a class, by name: `'s4': s4`.
+void _writeAll(StringBuffer out, String declaration, Iterable<String> names) {
+  out
+    ..writeln()
+    ..writeln('  /// Every token by name, in the order of tokens.json.')
+    ..writeln('  $declaration {');
+  for (final name in names) {
+    out.writeln("    '$name': $name,");
+  }
+  out.writeln('  };');
+}
+
 String _colorsFile(List<Token> tokens, Map<String, Token> byPath) {
   // theme -> Dart name -> token, e.g. dawn -> textPrimary -> its token
   final themes = <String, Map<String, Token>>{};
@@ -186,6 +198,7 @@ String _colorsFile(List<Token> tokens, Map<String, Token> byPath) {
     }
     out.writeln('  final Color $name;');
   }
+  _writeAll(out, 'Map<String, Color> get all =>', fields.keys);
 
   out
     ..writeln()
@@ -214,6 +227,7 @@ String _layoutFile(List<Token> tokens) {
   final out = StringBuffer(_header);
   for (final MapEntry(key: group, value: dimensions) in groups.entries) {
     out.writeln('abstract final class Lm${_capitalize(group)} {');
+    final names = <String>[];
     for (final token in dimensions) {
       var name = _camelCase(token.path.skip(1).toList());
       // A Dart name cannot start with a digit: space.4 becomes s4.
@@ -224,7 +238,9 @@ String _layoutFile(List<Token> tokens) {
         out.writeln('  /// ${token.description}');
       }
       out.writeln('  static const double $name = ${_pixels(token.value)};');
+      names.add(name);
     }
+    _writeAll(out, 'static const all =', names);
     out
       ..writeln('}')
       ..writeln();
@@ -245,6 +261,7 @@ String _typographyFile(List<Token> tokens, Map<String, Token> byPath) {
     ..writeln()
     ..writeln('abstract final class LmTypography {');
 
+  final names = <String>[];
   for (final token in tokens.where((token) => token.type == 'typography')) {
     final style = token.value! as Map<String, Object?>;
     final name = _camelCase(token.path.skip(1).toList());
@@ -252,6 +269,7 @@ String _typographyFile(List<Token> tokens, Map<String, Token> byPath) {
     final weight = _resolve(style['fontWeight'], byPath)! as int;
     final size = _pixels(style['fontSize']);
     final opticalSize = _opticalSize[family];
+    names.add(name);
 
     out
       ..writeln('  static const $name = TextStyle(')
@@ -273,6 +291,7 @@ String _typographyFile(List<Token> tokens, Map<String, Token> byPath) {
       ..writeln('  );')
       ..writeln();
   }
+  _writeAll(out, 'static const all =', names);
   out.writeln('}');
   return out.toString();
 }
