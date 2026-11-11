@@ -26,6 +26,8 @@ dependencies:
     path: ../packages/lumaely_crypto
   lumaely_data:
     path: ../packages/lumaely_data
+  lumaely_ui:
+    path: ../packages/lumaely_ui
   path: ^1.9.1
   path_provider: ^2.1.6
   riverpod_annotation: ^4.0.8
