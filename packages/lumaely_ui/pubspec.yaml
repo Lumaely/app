@@ -1,0 +1,17 @@
+name: lumaely_ui
+description: "Lumaely's design system: tokens, theme and widgets."
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.13.5
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
