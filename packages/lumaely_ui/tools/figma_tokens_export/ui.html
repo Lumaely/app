@@ -1,0 +1,46 @@
+<style>
+  body { font: 12px system-ui, sans-serif; margin: 12px; }
+  textarea { width: 100%; height: 300px; font: 11px ui-monospace, monospace; }
+  .error { color: #a8323a; }
+</style>
+
+<p id="status">exporting...</p>
+<textarea id="json" readonly></textarea>
+<p>
+  <button id="download" disabled>Download tokens.json</button>
+  <button id="copy" disabled>Copy</button>
+</p>
+
+<script>
+  const status = document.getElementById('status');
+  const textarea = document.getElementById('json');
+  const download = document.getElementById('download');
+  const copy = document.getElementById('copy');
+
+  onmessage = (event) => {
+    const { json, error } = event.data.pluginMessage;
+    if (error) {
+      status.textContent = error;
+      status.className = 'error';
+      return;
+    }
+    textarea.value = json;
+    status.textContent = 'done, put it in packages/lumaely_ui/tokens/tokens.json';
+    download.disabled = false;
+    copy.disabled = false;
+  };
+
+  download.onclick = () => {
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([textarea.value], { type: 'application/json' }));
+    link.download = 'tokens.json';
+    link.click();
+  };
+
+  // navigator.clipboard is blocked in plugins
+  copy.onclick = () => {
+    textarea.select();
+    document.execCommand('copy');
+    status.textContent = 'copied';
+  };
+</script>
