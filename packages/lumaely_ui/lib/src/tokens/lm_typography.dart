@@ -6,15 +6,15 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class LmTypography {
-  static const displayHero = TextStyle(
+  static const journal = TextStyle(
     fontFamily: 'Newsreader',
     package: 'lumaely_ui',
-    fontSize: 72,
-    height: 1.0556,
+    fontSize: 18,
+    height: 1.6111,
     leadingDistribution: TextLeadingDistribution.even,
-    letterSpacing: -1,
-    fontWeight: FontWeight.w500,
-    fontVariations: [FontVariation('wght', 500), FontVariation('opsz', 72)],
+    letterSpacing: 0,
+    fontWeight: FontWeight.w400,
+    fontVariations: [FontVariation('wght', 400), FontVariation('opsz', 18)],
   );
 
   static const displayLarge = TextStyle(
@@ -48,6 +48,17 @@ abstract final class LmTypography {
     letterSpacing: -0.3,
     fontWeight: FontWeight.w500,
     fontVariations: [FontVariation('wght', 500), FontVariation('opsz', 34)],
+  );
+
+  static const displayHero = TextStyle(
+    fontFamily: 'Newsreader',
+    package: 'lumaely_ui',
+    fontSize: 72,
+    height: 1.0556,
+    leadingDistribution: TextLeadingDistribution.even,
+    letterSpacing: -1,
+    fontWeight: FontWeight.w500,
+    fontVariations: [FontVariation('wght', 500), FontVariation('opsz', 72)],
   );
 
   static const headlineLarge = TextStyle(
@@ -215,23 +226,13 @@ abstract final class LmTypography {
     fontVariations: [FontVariation('wght', 600)],
   );
 
-  static const journal = TextStyle(
-    fontFamily: 'Newsreader',
-    package: 'lumaely_ui',
-    fontSize: 18,
-    height: 1.6111,
-    leadingDistribution: TextLeadingDistribution.even,
-    letterSpacing: 0,
-    fontWeight: FontWeight.w400,
-    fontVariations: [FontVariation('wght', 400), FontVariation('opsz', 18)],
-  );
-
   /// Every token by name, in the order of tokens.json.
   static const all = {
-    'displayHero': displayHero,
+    'journal': journal,
     'displayLarge': displayLarge,
     'displayMedium': displayMedium,
     'displaySmall': displaySmall,
+    'displayHero': displayHero,
     'headlineLarge': headlineLarge,
     'headlineMedium': headlineMedium,
     'headlineSmall': headlineSmall,
@@ -247,6 +248,5 @@ abstract final class LmTypography {
     'statLarge': statLarge,
     'statMedium': statMedium,
     'statSmall': statSmall,
-    'journal': journal,
   };
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lumaely_ui/src/components/button/lm_button_style.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_colors.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
@@ -60,6 +61,23 @@ abstract final class LmThemeData {
       textTheme: textTheme.apply(
         bodyColor: colors.textPrimary,
         displayColor: colors.textPrimary,
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: lmButtonStyle(
+          colors,
+          background: colors.actionPrimary,
+          foreground: colors.actionOnPrimary,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: lmButtonStyle(
+          colors,
+          outline: colors.actionPrimary,
+          foreground: colors.textPrimary,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: lmButtonStyle(colors, foreground: colors.textPrimary),
       ),
       extensions: [LmTheme(colors: colors)],
     );
