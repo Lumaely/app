@@ -1,5 +1,7 @@
 export 'src/components/button/lm_button.dart';
 export 'src/components/button/lm_button_style.dart';
+export 'src/components/text_field/lm_input_decoration_theme.dart';
+export 'src/components/text_field/lm_text_field.dart';
 export 'src/theme/lm_theme.dart';
 export 'src/theme/lm_theme_data.dart';
 export 'src/tokens/lm_colors.dart';
