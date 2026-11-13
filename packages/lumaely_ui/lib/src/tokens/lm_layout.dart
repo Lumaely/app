@@ -29,7 +29,7 @@ abstract final class LmSpace {
 }
 
 abstract final class LmRadius {
-  /// Text fields, media thumbnails
+  /// Media thumbnails
   static const double small = 12;
 
   /// Tiles and cards
@@ -44,6 +44,9 @@ abstract final class LmRadius {
   /// Pills and circles: buttons, chips, segmented controls, round icon buttons
   static const double full = 999;
 
+  /// Text fields and the journal editor
+  static const double field = 18;
+
   /// Every token by name, in the order of tokens.json.
   static const all = {
     'small': small,
@@ -51,5 +54,6 @@ abstract final class LmRadius {
     'dialog': dialog,
     'sheet': sheet,
     'full': full,
+    'field': field,
   };
 }
