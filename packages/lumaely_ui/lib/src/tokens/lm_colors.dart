@@ -72,7 +72,7 @@ final class LmColors {
   static const firefly = LmColors(
     background: Color(0xFF1B1F3B),
     link: Color(0xFFFFC46B),
-    focus: Color(0xFFFFC46B),
+    focus: Color(0xFFFFF6E6),
     surface: Color(0xFF252A4D),
     surfaceRaised: Color(0xFF2F355C),
     textPrimary: Color(0xFFFFF6E6),
@@ -102,6 +102,8 @@ final class LmColors {
 
   final Color background;
   final Color link;
+
+  /// Focus ring around the focused control (keyboard, switch access). Firefly uses the text color, because action/primary is the same gold as the old focus color.
   final Color focus;
   final Color surface;
   final Color surfaceRaised;

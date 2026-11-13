@@ -36,6 +36,7 @@ void main() {
         ('strong border on background', c.borderStrong, c.background),
         ('strong border on surface', c.borderStrong, c.surface),
         ('focus ring on background', c.focus, c.background),
+        ('focus ring on surface', c.focus, c.surface),
         ('primary action on background', c.actionPrimary, c.background),
         ('mood 1 outline on background', c.mood1Outline, c.background),
       ];
