@@ -11,6 +11,10 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
 - `fonts/`: Newsreader and Plus Jakarta Sans, as variable fonts, under the SIL Open Font License
   (see each `OFL.txt`).
 
+- `LmIcons` + `LmIcon`: the icons of the app, Phosphor (regular, MIT) svg
+  paths drawn with a `CustomPaint`, the same svg as in the Figma kit. Works
+  offline, no font.
+
 ## Rules
 
 - Never edit `tokens.json` by hand: change Figma, export again, then run the generator.
