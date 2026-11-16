@@ -15,6 +15,10 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   paths drawn with a `CustomPaint`, the same svg as in the Figma kit. Works
   offline, no font.
 
+- Mood: `LmMoodCurve` (moment by moment, 2 to 5 columns, empty moments as a
+  dashed circle) and `LmMoodSlider` (one mood for the whole day). Both are
+  sliders for screen readers and work with the arrow keys.
+
 ## Rules
 
 - Never edit `tokens.json` by hand: change Figma, export again, then run the generator.
