@@ -35,16 +35,14 @@ void main() {
   testWidgets('screen readers get a slider with the score', (tester) async {
     final semantics = tester.ensureSemantics();
     await tester.pumpWidget(
-      _app(LmMoodSlider(score: MoodScore.low, onChanged: (_) {})),
+      _app(
+        LmMoodSlider(label: 'Tuesday', score: MoodScore.low, onChanged: (_) {}),
+      ),
     );
 
     expect(
       tester.getSemantics(find.byType(MoodTarget)),
-      isSemantics(
-        label: 'Mood of the day',
-        value: 'Low, 2 of 5',
-        isSlider: true,
-      ),
+      isSemantics(label: 'Tuesday', value: 'Low, 2 of 5', isSlider: true),
     );
     semantics.dispose();
   });
