@@ -20,7 +20,7 @@ Widget buttonPlayground(BuildContext context) {
         ),
         large: knobs.boolean(label: 'Large'),
         loading: knobs.boolean(label: 'Loading'),
-        leading: icon ? const Icon(Icons.delete_outline) : null,
+        leading: icon ? const LmIcon(LmIcons.trash) : null,
         onPressed: enabled ? () {} : null,
       ),
     ),
