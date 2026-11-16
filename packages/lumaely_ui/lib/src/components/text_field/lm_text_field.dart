@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lumaely_ui/src/icons/lm_icon.dart';
+import 'package:lumaely_ui/src/icons/lm_icons.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
@@ -103,11 +105,7 @@ class _LmTextFieldState extends State<LmTextField> {
                       tooltip: _hidden ? 'Show password' : 'Hide password',
                       onPressed: () => setState(() => _hidden = !_hidden),
                       color: colors.textSecondary,
-                      icon: Icon(
-                        _hidden
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                      ),
+                      icon: LmIcon(_hidden ? LmIcons.eye : LmIcons.eyeSlash),
                     )
                   : null,
             ),
