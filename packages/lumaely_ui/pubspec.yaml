@@ -11,6 +11,8 @@ resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
+  lumaely_core:
+    path: ../lumaely_core
   path_parsing: ^1.0.1
 
 dev_dependencies:

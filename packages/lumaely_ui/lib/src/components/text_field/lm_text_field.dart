@@ -80,7 +80,7 @@ class _LmTextFieldState extends State<LmTextField> {
             autocorrect: !widget.password,
             enableSuggestions: !widget.password,
             // disable keyboard learning
-            // fixme: decide whether to put this or not
+            // FIXME: decide whether to put this or not
             enableIMEPersonalizedLearning: false,
             maxLines: widget.password ? 1 : widget.maxLines,
             maxLength: widget.maxLength,

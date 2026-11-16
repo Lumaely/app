@@ -59,6 +59,7 @@ abstract final class LmThemeData {
       colorScheme: scheme,
       scaffoldBackgroundColor: colors.background,
       dividerColor: colors.border,
+      splashFactory: InkRipple.splashFactory,
       textTheme: textTheme.apply(
         bodyColor: colors.textPrimary,
         displayColor: colors.textPrimary,
