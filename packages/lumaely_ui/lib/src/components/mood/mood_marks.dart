@@ -36,7 +36,7 @@ void paintKnob(Canvas canvas, Offset center, MoodScore? score, LmColors c) {
 
   if (score == null) {
     canvas.drawCircle(center, radius, Paint()..color = c.surface);
-    _dashedCircle(
+    paintDashedCircle(
       canvas,
       center,
       radius - 1,
@@ -60,8 +60,14 @@ void paintKnob(Canvas canvas, Offset center, MoodScore? score, LmColors c) {
     );
 }
 
-// dashes of 4, gaps of 3
-void _dashedCircle(Canvas canvas, Offset center, double radius, Paint paint) {
+/// dashed outline of an empty mood (knob, dot)
+/// - dashes of 4, gaps of 3
+void paintDashedCircle(
+  Canvas canvas,
+  Offset center,
+  double radius,
+  Paint paint,
+) {
   const dash = 4.0;
   const gap = 3.0;
   final count = (2 * math.pi * radius / (dash + gap)).floor();

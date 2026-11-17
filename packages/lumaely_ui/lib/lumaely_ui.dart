@@ -1,6 +1,8 @@
 export 'src/components/button/lm_button.dart';
 export 'src/components/button/lm_button_style.dart';
+export 'src/components/day/lm_day_row.dart';
 export 'src/components/mood/lm_mood_curve.dart';
+export 'src/components/mood/lm_mood_dot.dart';
 export 'src/components/mood/lm_mood_labels.dart';
 export 'src/components/mood/lm_mood_slider.dart';
 export 'src/components/text_field/lm_input_decoration_theme.dart';
