@@ -41,6 +41,7 @@ class LmTileRow extends StatefulWidget {
 
   // focus ring drawn inside the row (the tile clips what's outside)
   static const double focusInset = LmSpace.s1;
+  static const double focusRadius = LmRadius.small;
 
   @override
   State<LmTileRow> createState() => _LmTileRowState();
@@ -52,7 +53,7 @@ class _LmTileRowState extends State<LmTileRow> {
   @override
   void didUpdateWidget(LmTileRow old) {
     super.didUpdateWidget(old);
-    // no more InkWell -> no focus change callback either
+
     if (widget.onTap == null) {
       _focused = false;
     }
@@ -89,6 +90,7 @@ class _LmTileRowState extends State<LmTileRow> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 2,
                     children: [
                       Text(
                         widget.title,
@@ -125,7 +127,7 @@ class _LmTileRowState extends State<LmTileRow> {
                   LmIcon(
                     LmIcons.chevronRight,
                     size: 16,
-                    color: colors.textSecondary,
+                    color: colors.borderStrong,
                   ),
               ],
             );
@@ -162,15 +164,11 @@ class _LmTileRowState extends State<LmTileRow> {
                   child: IgnorePointer(
                     child: Padding(
                       padding: const EdgeInsets.all(LmTileRow.focusInset),
-                      // same curve as the tile corners -> fits in the
-                      // first and last rows too
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           border: Border.all(color: colors.focus, width: 2),
                           borderRadius: const BorderRadius.all(
-                            Radius.circular(
-                              LmRadius.tile - LmTileRow.focusInset,
-                            ),
+                            Radius.circular(LmTileRow.focusRadius),
                           ),
                         ),
                       ),
