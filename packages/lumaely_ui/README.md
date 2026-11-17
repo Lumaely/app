@@ -19,6 +19,12 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   dashed circle) and `LmMoodSlider` (one mood for the whole day). Both are
   sliders for screen readers and work with the arrow keys.
 
+- Tiles: `LmTile` (rounded `surface` card, any child), `LmTileGroup`
+  (optional title, rows in one tile with dividers) and `LmTileRow` (leading,
+  title, subtitle, value, chevron when tappable; one button for screen
+  readers, value under the title at large text sizes). `LmTileIcon` is the
+  small icon box of the settings rows.
+
 ## Rules
 
 - Never edit `tokens.json` by hand: change Figma, export again, then run the generator.
