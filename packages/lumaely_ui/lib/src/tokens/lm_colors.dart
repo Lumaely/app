@@ -11,11 +11,11 @@ final class LmColors {
     required this.background,
     required this.link,
     required this.focus,
-    required this.surface,
-    required this.surfaceRaised,
     required this.textPrimary,
     required this.textSecondary,
     required this.textDisabled,
+    required this.surface,
+    required this.surfaceRaised,
     required this.border,
     required this.borderStrong,
     required this.actionPrimary,
@@ -36,17 +36,18 @@ final class LmColors {
     required this.mood1Outline,
     required this.staticWhite,
     required this.staticBlack,
+    required this.scrim,
   });
 
   static const dawn = LmColors(
     background: Color(0xFFFFFBF6),
     link: Color(0xFFB4532A),
     focus: Color(0xFF2E3460),
-    surface: Color(0xFFFFFFFF),
-    surfaceRaised: Color(0xFFFFFFFF),
     textPrimary: Color(0xFF2B211C),
     textSecondary: Color(0xFF6E5D52),
     textDisabled: Color(0xFFA8998D),
+    surface: Color(0xFFFFFFFF),
+    surfaceRaised: Color(0xFFFFFFFF),
     border: Color(0xFFEADCC8),
     borderStrong: Color(0xFF9C8676),
     actionPrimary: Color(0xFFB4532A),
@@ -67,17 +68,18 @@ final class LmColors {
     mood1Outline: Color(0xFF2E3460),
     staticWhite: Color(0xFFFFFFFF),
     staticBlack: Color(0xFF000000),
+    scrim: Color(0x662B211C),
   );
 
   static const firefly = LmColors(
     background: Color(0xFF1B1F3B),
     link: Color(0xFFFFC46B),
     focus: Color(0xFFFFF6E6),
-    surface: Color(0xFF252A4D),
-    surfaceRaised: Color(0xFF2F355C),
     textPrimary: Color(0xFFFFF6E6),
     textSecondary: Color(0xFFB9B4C9),
     textDisabled: Color(0xFF6E6A85),
+    surface: Color(0xFF252A4D),
+    surfaceRaised: Color(0xFF2F355C),
     border: Color(0xFF3A406B),
     borderStrong: Color(0xFF8287B8),
     actionPrimary: Color(0xFFFFC46B),
@@ -98,6 +100,7 @@ final class LmColors {
     mood1Outline: Color(0xFF8287B8),
     staticWhite: Color(0xFFFFFFFF),
     staticBlack: Color(0xFF000000),
+    scrim: Color(0x99000000),
   );
 
   final Color background;
@@ -105,11 +108,11 @@ final class LmColors {
 
   /// Focus ring around the focused control (keyboard, switch access). Firefly uses the text color, because action/primary is the same gold as the old focus color.
   final Color focus;
-  final Color surface;
-  final Color surfaceRaised;
   final Color textPrimary;
   final Color textSecondary;
   final Color textDisabled;
+  final Color surface;
+  final Color surfaceRaised;
   final Color border;
   final Color borderStrong;
   final Color actionPrimary;
@@ -133,16 +136,19 @@ final class LmColors {
   final Color staticWhite;
   final Color staticBlack;
 
+  /// Dims the screen behind sheets and dialogs. Dawn: text/primary at 40% (warm, not pure black). Firefly: black at 60%, so it still shows on the dark background.
+  final Color scrim;
+
   /// Every token by name, in the order of tokens.json.
   Map<String, Color> get all => {
     'background': background,
     'link': link,
     'focus': focus,
-    'surface': surface,
-    'surfaceRaised': surfaceRaised,
     'textPrimary': textPrimary,
     'textSecondary': textSecondary,
     'textDisabled': textDisabled,
+    'surface': surface,
+    'surfaceRaised': surfaceRaised,
     'border': border,
     'borderStrong': borderStrong,
     'actionPrimary': actionPrimary,
@@ -163,6 +169,7 @@ final class LmColors {
     'mood1Outline': mood1Outline,
     'staticWhite': staticWhite,
     'staticBlack': staticBlack,
+    'scrim': scrim,
   };
 
   /// The colors between [a] and [b], to animate a theme change.
@@ -171,11 +178,11 @@ final class LmColors {
       background: Color.lerp(a.background, b.background, t)!,
       link: Color.lerp(a.link, b.link, t)!,
       focus: Color.lerp(a.focus, b.focus, t)!,
-      surface: Color.lerp(a.surface, b.surface, t)!,
-      surfaceRaised: Color.lerp(a.surfaceRaised, b.surfaceRaised, t)!,
       textPrimary: Color.lerp(a.textPrimary, b.textPrimary, t)!,
       textSecondary: Color.lerp(a.textSecondary, b.textSecondary, t)!,
       textDisabled: Color.lerp(a.textDisabled, b.textDisabled, t)!,
+      surface: Color.lerp(a.surface, b.surface, t)!,
+      surfaceRaised: Color.lerp(a.surfaceRaised, b.surfaceRaised, t)!,
       border: Color.lerp(a.border, b.border, t)!,
       borderStrong: Color.lerp(a.borderStrong, b.borderStrong, t)!,
       actionPrimary: Color.lerp(a.actionPrimary, b.actionPrimary, t)!,
@@ -204,6 +211,7 @@ final class LmColors {
       mood1Outline: Color.lerp(a.mood1Outline, b.mood1Outline, t)!,
       staticWhite: Color.lerp(a.staticWhite, b.staticWhite, t)!,
       staticBlack: Color.lerp(a.staticBlack, b.staticBlack, t)!,
+      scrim: Color.lerp(a.scrim, b.scrim, t)!,
     );
   }
 }
