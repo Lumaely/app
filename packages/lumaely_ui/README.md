@@ -25,6 +25,11 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   readers, value under the title at large text sizes). `LmTileIcon` is the
   small icon box of the settings rows.
 
+- Days: `LmMoodDot` (round mood mark: a score, an average in a blended
+  color, or a dashed circle when empty) and `LmDayRow` (one day in a list:
+  dot, date, mood line like `3.5/5 · Good · 4 moments`, first line of the
+  journal; read in full words by screen readers).
+
 ## Rules
 
 - Never edit `tokens.json` by hand: change Figma, export again, then run the generator.
