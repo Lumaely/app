@@ -49,6 +49,26 @@ void main() {
     semantics.dispose();
   });
 
+  testWidgets('wraps a long label instead of overflowing', (tester) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+    await tester.pumpWidget(
+      _app(
+        SizedBox(
+          width: 200,
+          child: LmButton(
+            label: 'Choose another option',
+            leading: const LmIcon(LmIcons.trash),
+            onPressed: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+  });
+
   // flutter's built in a11y checks (tap target size, labels, text contrast)
   // for every variant, in both themes
   final themes = {'Dawn': LmThemeData.dawn, 'Firefly': LmThemeData.firefly};

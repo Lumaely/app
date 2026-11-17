@@ -2,6 +2,7 @@ import 'package:lumaely_ui/src/components/button/lm_button_style.dart';
 import 'package:lumaely_ui/src/components/text_field/lm_input_decoration_theme.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_colors.dart';
+import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -82,6 +83,36 @@ abstract final class LmThemeData {
         style: lmButtonStyle(colors, foreground: colors.textPrimary),
       ),
       inputDecorationTheme: lmInputDecorationTheme(colors),
+      // sheets and dialogs sit above the screen: surface raised, flat (no
+      // shadow, no material tint)
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: colors.surfaceRaised,
+        modalBackgroundColor: colors.surfaceRaised,
+        modalBarrierColor: colors.scrim,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        modalElevation: 0,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(LmRadius.sheet),
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        // drag handle: 48 px target, read "Dismiss" by screen readers
+        showDragHandle: true,
+        dragHandleColor: colors.borderStrong,
+        dragHandleSize: const Size(40, 5),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: colors.surfaceRaised,
+        barrierColor: colors.scrim,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(LmRadius.dialog)),
+        ),
+        clipBehavior: Clip.antiAlias,
+      ),
       textSelectionTheme: TextSelectionThemeData(
         cursorColor: colors.actionPrimary,
         selectionColor: colors.actionPrimary.withValues(alpha: 0.3),

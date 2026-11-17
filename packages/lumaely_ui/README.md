@@ -30,6 +30,12 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   dot, date, mood line like `3.5/5 · Good · 4 moments`, first line of the
   journal; read in full words by screen readers).
 
+- Sheets and dialogs: `showLmSheet` + `LmSheet` (title, message, content,
+  full width actions; scrolls, stays above the keyboard) for most things,
+  `showLmDialog` + `LmDialog` only to confirm something that can't be
+  undone. Their look (surface raised, radii `sheet` / `dialog`, drag
+  handle) comes from the theme.
+
 ## Rules
 
 - Never edit `tokens.json` by hand: change Figma, export again, then run the generator.

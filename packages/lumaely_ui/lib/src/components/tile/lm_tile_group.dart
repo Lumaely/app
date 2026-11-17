@@ -21,6 +21,7 @@ class LmTileGroup extends StatelessWidget {
     required this.children,
     this.title,
     this.titleVariant = LmTileGroupTitleVariant.label,
+    this.color,
     super.key,
   });
 
@@ -31,6 +32,9 @@ class LmTileGroup extends StatelessWidget {
 
   /// usually `LmTileRow`s
   final List<Widget> children;
+
+  /// fill of the tile, see [LmTile.color]
+  final Color? color;
 
   // from figma, not a token
   static const titleGap = 6.0;
@@ -66,6 +70,7 @@ class LmTileGroup extends StatelessWidget {
             ),
           ),
         LmTile(
+          color: color,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
