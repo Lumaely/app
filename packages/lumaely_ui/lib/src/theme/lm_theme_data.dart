@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:lumaely_ui/src/components/button/lm_button_style.dart';
 import 'package:lumaely_ui/src/components/text_field/lm_input_decoration_theme.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_colors.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
+import 'package:material_ui/material_ui.dart';
 
 abstract final class LmThemeData {
   /// light theme

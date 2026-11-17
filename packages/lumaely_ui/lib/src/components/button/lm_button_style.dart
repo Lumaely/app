@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:lumaely_ui/src/tokens/lm_colors.dart';
 import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// style shared by all the buttons (also used by the theme)
 /// pill, 48 high (56 if [large])

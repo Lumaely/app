@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lumaely/data/entries/entry_providers.dart';
@@ -8,6 +7,7 @@ import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_crypto/lumaely_crypto.dart';
 import 'package:lumaely_data/lumaely_data.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Temporary screen to try the vault on a real device. Not part of the app.
 class VaultDebugPage extends ConsumerStatefulWidget {

@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:lumaely_ui/src/icons/lm_icon.dart';
 import 'package:lumaely_ui/src/icons/lm_icons.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// small icon box at the start of a settings row (LmTileRow.leading)
 /// - decorative: the row title says what it is
