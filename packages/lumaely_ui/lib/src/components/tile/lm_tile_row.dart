@@ -5,7 +5,8 @@ import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// one line of a tile: [leading], [title], [subtitle], [value], chevron
+/// one line of a tile: [leading], [title], [subtitle], [excerpt], [value],
+/// chevron
 /// - [onTap] null -> plain row, no chevron, no ripple
 /// - read as one item by screen readers (one button when tappable)
 /// - at least 48 high, texts wrap instead of being cut
@@ -15,8 +16,10 @@ class LmTileRow extends StatefulWidget {
   const new({
     required this.title,
     this.subtitle,
+    this.excerpt,
     this.value,
     this.leading,
+    this.semanticLabel,
     this.onTap,
     super.key,
   });
@@ -26,11 +29,18 @@ class LmTileRow extends StatefulWidget {
   /// smaller line under the title
   final String? subtitle;
 
+  /// one more line under the subtitle, cut with … (e.g. start of a journal)
+  final String? excerpt;
+
   /// current setting on the right, e.g. "Automatic"
   final String? value;
 
   /// icon or mood dot before the texts, e.g. LmTileIcon
   final Widget? leading;
+
+  /// read instead of the texts by screen readers, when what's shown is not
+  /// clear when spoken (e.g. "Oct 29" -> "October 29", "3.5/5" -> "3.5 of 5")
+  final String? semanticLabel;
 
   final VoidCallback? onTap;
 
@@ -63,7 +73,9 @@ class _LmTileRowState extends State<LmTileRow> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final subtitle = widget.subtitle;
+    final excerpt = widget.excerpt;
     final value = widget.value;
+    final semanticLabel = widget.semanticLabel;
     final onTap = widget.onTap;
 
     // measured on the title size: android scales big fonts less than small
@@ -73,8 +85,11 @@ class _LmTileRowState extends State<LmTileRow> {
     final valueStyle = LmTypography.bodyMedium.copyWith(
       color: colors.textSecondary,
     );
+    final smallStyle = LmTypography.bodySmall.copyWith(
+      color: colors.textSecondary,
+    );
 
-    final content = ConstrainedBox(
+    final texts = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: LmTileRow.minHeight),
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -98,12 +113,13 @@ class _LmTileRowState extends State<LmTileRow> {
                           color: colors.textPrimary,
                         ),
                       ),
-                      if (subtitle != null)
+                      if (subtitle != null) Text(subtitle, style: smallStyle),
+                      if (excerpt != null)
                         Text(
-                          subtitle,
-                          style: LmTypography.bodySmall.copyWith(
-                            color: colors.textSecondary,
-                          ),
+                          excerpt,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: smallStyle,
                         ),
                       if (value != null && stacked)
                         Text(value, style: valueStyle),
@@ -135,6 +151,13 @@ class _LmTileRowState extends State<LmTileRow> {
         ),
       ),
     );
+
+    final content = semanticLabel == null
+        ? texts
+        : Semantics(
+            label: semanticLabel,
+            child: ExcludeSemantics(child: texts),
+          );
 
     if (onTap == null) {
       return MergeSemantics(child: content);
