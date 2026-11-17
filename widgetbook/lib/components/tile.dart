@@ -48,10 +48,16 @@ Widget tileGroupPlayground(BuildContext context) {
     max: _rows.length,
   );
   final title = knobs.boolean(label: 'Title', initialValue: true);
+  final titleVariant = knobs.object.dropdown(
+    label: 'Title variant',
+    options: LmTileGroupTitleVariant.values,
+    labelBuilder: (variant) => variant.name,
+  );
 
   return _screen(
     LmTileGroup(
       title: title ? 'Settings' : null,
+      titleVariant: titleVariant,
       children: [
         for (final (icon, label, value) in _rows.take(count))
           LmTileRow(

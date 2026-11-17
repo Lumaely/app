@@ -14,9 +14,14 @@ Widget _app(Widget child, {ThemeData? theme}) {
   );
 }
 
-LmTileGroup _group({int rows = 3, String? title = 'Settings'}) {
+LmTileGroup _group({
+  int rows = 3,
+  String? title = 'Settings',
+  LmTileGroupTitleVariant titleVariant = LmTileGroupTitleVariant.label,
+}) {
   return LmTileGroup(
     title: title,
+    titleVariant: titleVariant,
     children: [
       for (var i = 0; i < rows; i++)
         LmTileRow(
@@ -53,6 +58,29 @@ void main() {
         isSemantics(label: 'Settings', isHeader: true),
       );
       semantics.dispose();
+    });
+
+    testWidgets('styles the title by variant', (tester) async {
+      final colors = LmThemeData.dawn.extension<LmTheme>()!.colors;
+      final expected = {
+        LmTileGroupTitleVariant.label: (
+          LmTypography.labelMedium,
+          colors.textSecondary,
+        ),
+        LmTileGroupTitleVariant.heading: (
+          LmTypography.titleMedium,
+          colors.textPrimary,
+        ),
+      };
+
+      for (final MapEntry(key: variant, value: (style, color))
+          in expected.entries) {
+        await tester.pumpWidget(_app(_group(titleVariant: variant)));
+
+        final text = tester.widget<Text>(find.text('Settings'));
+        expect(text.style?.fontSize, style.fontSize, reason: variant.name);
+        expect(text.style?.color, color, reason: variant.name);
+      }
     });
 
     testWidgets('has no title when none is given', (tester) async {
@@ -200,17 +228,23 @@ void main() {
   // flutter's built in a11y checks, in both themes
   final themes = {'Dawn': LmThemeData.dawn, 'Firefly': LmThemeData.firefly};
   for (final MapEntry(key: name, value: theme) in themes.entries) {
-    testWidgets('$name tile group meets the accessibility guidelines', (
-      tester,
-    ) async {
-      final semantics = tester.ensureSemantics();
-      await tester.pumpWidget(_app(_group(), theme: theme));
+    for (final variant in LmTileGroupTitleVariant.values) {
+      testWidgets(
+        '$name tile group (${variant.name} title) meets the accessibility '
+        'guidelines',
+        (tester) async {
+          final semantics = tester.ensureSemantics();
+          await tester.pumpWidget(
+            _app(_group(titleVariant: variant), theme: theme),
+          );
 
-      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
-      await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
-      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
-      await expectLater(tester, meetsGuideline(textContrastGuideline));
-      semantics.dispose();
-    });
+          await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+          await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+          await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+          await expectLater(tester, meetsGuideline(textContrastGuideline));
+          semantics.dispose();
+        },
+      );
+    }
   }
 }
