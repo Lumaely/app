@@ -148,6 +148,29 @@ void main() {
       semantics.dispose();
     });
 
+    testWidgets('reads its semantic label instead of the texts', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      await tester.pumpWidget(
+        _app(
+          const LmTile(
+            child: LmTileRow(
+              title: 'Oct 29',
+              excerpt: 'Long walk',
+              semanticLabel: 'October 29',
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(LmTileRow)),
+        matchesSemantics(label: 'October 29'),
+      );
+      semantics.dispose();
+    });
+
     testWidgets('is at least ${LmTileRow.minHeight} high', (tester) async {
       await tester.pumpWidget(
         _app(const LmTile(child: LmTileRow(title: 'Version'))),
