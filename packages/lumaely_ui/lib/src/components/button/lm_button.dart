@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:lumaely_ui/src/components/button/lm_button_style.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_layout.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// button styles, from most to least visible
 enum LmButtonVariant {

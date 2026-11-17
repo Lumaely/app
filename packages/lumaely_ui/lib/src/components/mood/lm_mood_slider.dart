@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/src/components/mood/lm_mood_labels.dart';
 import 'package:lumaely_ui/src/components/mood/mood_marks.dart';
@@ -7,6 +6,7 @@ import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_colors.dart';
 import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// one mood for the whole day: a rail with its 5 steps numbered, Rough to
 /// Great (1-5)

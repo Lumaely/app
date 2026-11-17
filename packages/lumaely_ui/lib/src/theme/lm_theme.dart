@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:lumaely_ui/src/tokens/lm_colors.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Material theme with custom colors
 final class LmTheme extends ThemeExtension<LmTheme> {

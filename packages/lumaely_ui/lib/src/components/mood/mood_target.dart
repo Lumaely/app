@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/src/components/mood/lm_mood_labels.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_layout.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// the touch / keyboard / screen reader part of one mood (a column of the
 /// curve, or the whole-day slider). draws nothing except the focus ring

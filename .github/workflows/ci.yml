@@ -32,8 +32,10 @@ jobs:
           flutter-version: ${{ steps.fvm.outputs.flutter }}
           cache: true
 
+      # fails if pubspec.lock doesn't match the pinned flutter (e.g. a
+      # dependabot bump resolved with a newer flutter)
       - name: Install dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       # doing ts before code generation, so generated files are not checked
       - name: Check formatting

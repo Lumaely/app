@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:lumaely_ui/src/components/tile/lm_tile.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// look of the group title (size and color change together)
 enum LmTileGroupTitleVariant {

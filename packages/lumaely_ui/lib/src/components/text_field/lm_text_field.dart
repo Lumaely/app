@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:lumaely_ui/src/icons/lm_icon.dart';
 import 'package:lumaely_ui/src/icons/lm_icons.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// text field with its label above (not inside like material does)
 /// - [error] -> red border + message under the field

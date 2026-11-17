@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 @widgetbook.UseCase(
