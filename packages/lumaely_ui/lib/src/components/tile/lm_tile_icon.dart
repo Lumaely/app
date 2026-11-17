@@ -5,6 +5,7 @@ import 'package:lumaely_ui/src/theme/lm_theme.dart';
 
 /// small icon box at the start of a settings row (LmTileRow.leading)
 /// - decorative: the row title says what it is
+/// - icon in action primary, on the screen background
 class LmTileIcon extends StatelessWidget {
   const new(this.icon, {super.key});
 
@@ -27,7 +28,7 @@ class LmTileIcon extends StatelessWidget {
           borderRadius: const BorderRadius.all(Radius.circular(radius)),
         ),
         child: Center(
-          child: LmIcon(icon, size: iconSize, color: colors.textPrimary),
+          child: LmIcon(icon, size: iconSize, color: colors.actionPrimary),
         ),
       ),
     );
