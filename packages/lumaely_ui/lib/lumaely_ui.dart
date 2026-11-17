@@ -5,6 +5,7 @@ export 'src/components/mood/lm_mood_curve.dart';
 export 'src/components/mood/lm_mood_dot.dart';
 export 'src/components/mood/lm_mood_labels.dart';
 export 'src/components/mood/lm_mood_slider.dart';
+export 'src/components/sheet/lm_sheet.dart';
 export 'src/components/text_field/lm_input_decoration_theme.dart';
 export 'src/components/text_field/lm_text_field.dart';
 export 'src/components/tile/lm_tile.dart';
