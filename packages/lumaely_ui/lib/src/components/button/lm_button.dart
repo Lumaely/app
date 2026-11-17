@@ -87,7 +87,13 @@ class LmButton extends StatelessWidget {
     final content = Row(
       mainAxisSize: MainAxisSize.min,
       spacing: LmSpace.s2,
-      children: [?leading, Text(label), ?trailing],
+      children: [
+        ?leading,
+        // flexible: a long label wraps (narrow box, 200 % text) instead of
+        // overflowing
+        Flexible(child: Text(label, textAlign: TextAlign.center)),
+        ?trailing,
+      ],
     );
 
     final child = loading
