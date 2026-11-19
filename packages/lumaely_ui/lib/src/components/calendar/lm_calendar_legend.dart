@@ -32,9 +32,6 @@ Future<void> showLmCalendarLegend(BuildContext context) {
     context,
     builder: (context) => LmSheet(
       title: 'Calendar legend',
-      // message:
-      //     'Each dot is one day. Tap a day to open it; past days without '
-      //     'entry can still be written.',
       content: const LmCalendarLegend(),
       actions: [
         LmButton(label: 'Got it', onPressed: () => Navigator.pop(context)),
@@ -100,7 +97,7 @@ class LmCalendarLegend extends StatelessWidget {
 
   Widget _row(BuildContext context, Widget key, String label) {
     return Row(
-      spacing: LmSpace.s3,
+      spacing: LmSpace.s4,
       children: [
         // the key is a picture of the mark, the text says it
         ExcludeSemantics(

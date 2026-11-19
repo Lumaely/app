@@ -3,6 +3,8 @@ export 'src/components/button/lm_button_style.dart';
 export 'src/components/calendar/lm_calendar_day.dart';
 export 'src/components/calendar/lm_calendar_legend.dart';
 export 'src/components/calendar/lm_month_calendar.dart';
+export 'src/components/calendar/lm_week_strip.dart';
+export 'src/components/calendar/lm_weekday_letters.dart';
 export 'src/components/day/lm_day_row.dart';
 export 'src/components/dialog/lm_dialog.dart';
 export 'src/components/mood/lm_mood_curve.dart';

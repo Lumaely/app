@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/src/components/calendar/lm_calendar_day.dart';
+import 'package:lumaely_ui/src/components/calendar/lm_weekday_letters.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
@@ -36,6 +37,8 @@ class LmMonthCalendar extends StatelessWidget {
 
   final ValueChanged<LocalDate>? onDayTap;
 
+  static const double titleGap = LmSpace.s4;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -66,32 +69,20 @@ class LmMonthCalendar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: LmSpace.s2,
       children: [
-        Semantics(
-          header: true,
-          child: Text(
-            // FIXME: english for now, the locale comes with translations
-            DateFormat('MMMM y').format(first),
-            style: LmTypography.titleLarge.copyWith(color: colors.textPrimary),
+        Padding(
+          padding: const EdgeInsets.only(bottom: titleGap - LmSpace.s2),
+          child: Semantics(
+            header: true,
+            child: Text(
+              // FIXME: english for now, the locale comes with translations
+              DateFormat('MMMM y').format(first),
+              style: LmTypography.titleLarge.copyWith(
+                color: colors.textPrimary,
+              ),
+            ),
           ),
         ),
-        // each day says its weekday in full: letters are for the eyes only
-        ExcludeSemantics(
-          child: Row(
-            children: [
-              // 2024-01-01 was a monday
-              for (var i = 0; i < 7; i++)
-                Expanded(
-                  child: Text(
-                    DateFormat('EEEEE').format(DateTime(2024, 1, 1 + i)),
-                    textAlign: TextAlign.center,
-                    style: LmTypography.labelSmall.copyWith(
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
+        const LmWeekdayLetters(),
         for (var week = 0; week < weeks; week++)
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
