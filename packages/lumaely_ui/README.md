@@ -36,6 +36,12 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   undone. Their look (surface raised, radii `sheet` / `dialog`, drag
   handle) comes from the theme.
 
+- Calendar: `LmMonthCalendar` (one month, weeks from monday, entries in,
+  `onDayTap` out; future days can't be tapped) built from `LmCalendarDay`
+  (mood dot, date under it, journal mark, ring on today) and
+  `LmCalendarLegend` (in a sheet, opened by `LmCalendarLegendButton`, the
+  "?" that the journal screen puts once in its top bar).
+
 ## Rules
 
 - Never edit `tokens.json` by hand: change Figma, export again, then run the generator.
