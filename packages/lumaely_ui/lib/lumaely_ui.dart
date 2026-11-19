@@ -5,6 +5,7 @@ export 'src/components/calendar/lm_calendar_legend.dart';
 export 'src/components/calendar/lm_month_calendar.dart';
 export 'src/components/calendar/lm_week_strip.dart';
 export 'src/components/calendar/lm_weekday_letters.dart';
+export 'src/components/chart/lm_mood_chart.dart' hide MoodChartPainter;
 export 'src/components/chart/mood_chart_series.dart' show LmMoodChartSmoothing;
 export 'src/components/day/lm_day_row.dart';
 export 'src/components/dialog/lm_dialog.dart';
