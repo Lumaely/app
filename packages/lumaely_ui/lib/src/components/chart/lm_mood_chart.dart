@@ -8,16 +8,15 @@ import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// INSIGHTS
-///
-/// mood over a period, on a fixed 1 to 5 axis
+/// mood over a period, on a fixed 1 to 5 axis (Insights)
 /// - 5 grid lines (1 to 5), labels 5, 3, 1
 /// - the line is cut where nothing was written
-/// - a dot per point up to [maxDots] points; above, dots only where each line
-///   starts and ends
-/// - [smoothing]: per day, 7 day rolling average, per week, per month; one that
-///   doesn't fit the period (monthly over a week) falls back to
-///   [LmMoodChartSmoothing.autoFor]
+/// - a dot per point when the dots don't touch (they need
+///   MoodChartPainter.minDotGap); otherwise dots only where each line starts
+///   and ends
+/// - [smoothing]: per day, 7 day rolling average, per week, per month; one
+///   that doesn't fit the period (monthly over a week) falls back to
+///   LmMoodChartSmoothing.autoFor
 /// - screen readers get a summary (average, lowest and highest mood, days
 ///   written); the title and the tile around are the screen's job
 class LmMoodChart extends StatelessWidget {
@@ -41,7 +40,6 @@ class LmMoodChart extends StatelessWidget {
   /// [smoothing], or the automatic one if it doesn't fit the period
   LmMoodChartSmoothing get usedSmoothing {
     final days = to.daysSince(from) + 1;
-
     return LmMoodChartSmoothing.availableFor(days).contains(smoothing)
         ? smoothing
         : LmMoodChartSmoothing.autoFor(days);
@@ -49,9 +47,6 @@ class LmMoodChart extends StatelessWidget {
 
   /// height of the grid, from 5 to 1 (figma)
   static const plotHeight = 84.0;
-
-  /// more points than this: the line alone, dots would touch
-  static const maxDots = 62;
 
   /// text scale from which the middle date is dropped (no room for 3)
   static const twoDatesTextScale = 1.5;
@@ -76,10 +71,8 @@ class LmMoodChart extends StatelessWidget {
       },
       smoothing: smoothing,
     );
-    final pointCount = lines.fold(0, (count, line) => count + line.length);
     final span = to.daysSince(from);
     final dateFormat = DateFormat(span > 180 ? 'MMM y' : 'MMM d');
-
     String date(LocalDate day) =>
         dateFormat.format(DateTime(day.year, day.month, day.day));
 
@@ -111,7 +104,6 @@ class LmMoodChart extends StatelessWidget {
                     span: span,
                     pad: pad,
                     colors: colors,
-                    showDots: pointCount <= maxDots,
                   ),
                 ),
               ),
@@ -222,7 +214,6 @@ class MoodChartPainter extends CustomPainter {
     required this.span,
     required this.pad,
     required this.colors,
-    required this.showDots,
   });
 
   final List<List<MoodChartPoint>> lines;
@@ -234,27 +225,41 @@ class MoodChartPainter extends CustomPainter {
   final double pad;
 
   final LmColors colors;
-  final bool showDots;
 
   static const dotRadius = 4.0;
   static const ringWidth = 1.5;
   static const lineWidth = 1.5;
 
+  /// dots stay inside the box at both ends
+  static const double inset = dotRadius + ringWidth;
+
+  /// closest two dots can be: a dot and 1 px, so they never touch
+  static const double minDotGap = 2 * dotRadius + 1;
+
+  /// true when every dot fits on [width] without touching its neighbour
+  /// - depends on the real width: a phone may hide dots a tablet shows
+  bool dotsFit(double width) {
+    if (span == 0) return true;
+    final perDay = (width - 2 * inset) / span;
+    for (final line in lines) {
+      for (var i = 1; i < line.length; i++) {
+        if ((line[i].day - line[i - 1].day) * perDay < minDotGap) return false;
+      }
+    }
+    return true;
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
-    // dots stay inside the box at both ends
-    const inset = dotRadius + ringWidth;
-
+    final showDots = dotsFit(size.width);
     double x(double day) => span == 0
         ? size.width / 2
         : inset + day / span * (size.width - 2 * inset);
-
     double y(double mood) => pad + (5 - mood) / 4 * (size.height - 2 * pad);
 
     final grid = Paint()
       ..color = colors.border
       ..strokeWidth = 1;
-
     for (var mood = 1; mood <= 5; mood++) {
       canvas.drawLine(
         Offset(0, y(mood.toDouble())),
@@ -269,18 +274,12 @@ class MoodChartPainter extends CustomPainter {
       ..strokeWidth = lineWidth
       ..strokeJoin = StrokeJoin.round
       ..strokeCap = StrokeCap.round;
-
     for (final line in lines) {
-      if (line.length < 2) {
-        continue;
-      }
-
+      if (line.length < 2) continue;
       final path = Path()..moveTo(x(line.first.day), y(line.first.mood));
-
       for (final point in line.skip(1)) {
         path.lineTo(x(point.day), y(point.mood));
       }
-
       canvas.drawPath(path, stroke);
     }
 
@@ -289,13 +288,8 @@ class MoodChartPainter extends CustomPainter {
         // without dots, each line still shows where it starts and ends
         // (a lonely point is both)
         final isEnd = point == line.first || point == line.last;
-
-        if (!showDots && !isEnd) {
-          continue;
-        }
-
+        if (!showDots && !isEnd) continue;
         final center = Offset(x(point.day), y(point.mood));
-
         canvas
           ..drawCircle(
             center,
@@ -307,9 +301,7 @@ class MoodChartPainter extends CustomPainter {
             dotRadius,
             Paint()..color = colors.moodAverage(point.mood),
           );
-
         final outline = colors.moodOutline(moodOfAverage(point.mood));
-
         if (outline != null) {
           canvas.drawCircle(
             center,
@@ -329,7 +321,6 @@ class MoodChartPainter extends CustomPainter {
     return old.lines != lines ||
         old.span != span ||
         old.pad != pad ||
-        old.colors != colors ||
-        old.showDots != showDots;
+        old.colors != colors;
   }
 }

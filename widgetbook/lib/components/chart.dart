@@ -108,7 +108,7 @@ Widget moodChartPlayground(BuildContext context) {
   final (from, to) = switch (period) {
     '7 days' => (end.addDays(-6), end),
     '14 days' => (end.addDays(-13), end),
-    // 62 points: the most that still get dots
+    // too many points for dots on a phone: only where lines start and end
     '62 days' => (end.addDays(-61), end),
     '29 days' => (end.addDays(-28), end),
     '90 days' => (end.addDays(-89), end),

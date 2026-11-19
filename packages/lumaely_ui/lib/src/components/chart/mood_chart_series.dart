@@ -2,9 +2,8 @@ import 'package:flutter/foundation.dart' show immutable;
 import 'package:lumaely_core/lumaely_core.dart';
 
 /// how the mood chart smooths the days
-/// - [minDays]: shortest period where it makes sense (no monthly over a week)
-/// - [availableFor] lists them
-/// - [autoFor] picks one
+/// - [minDays]: shortest period where it makes sense (no monthly over a
+///   week); [availableFor] lists them, [autoFor] picks one
 enum LmMoodChartSmoothing {
   /// one point per day written
   none(1),
@@ -28,7 +27,7 @@ enum LmMoodChartSmoothing {
       if (days >= smoothing.minDays) smoothing,
   ];
 
-  /// auto (the longer the period, the smoother)
+  /// the automatic choice: the longer the period, the smoother
   static LmMoodChartSmoothing autoFor(int days) {
     if (days <= 31) return none;
     if (days <= 92) return rollingWeek;
@@ -40,7 +39,7 @@ enum LmMoodChartSmoothing {
 /// one point of the chart
 /// - [day]: days since the start of the period (x), can be half a day for
 ///   the middle of a week or a month
-/// - [mood]: 1-5 (y)
+/// - [mood]: 1 to 5 (y)
 @immutable
 final class MoodChartPoint {
   const new(this.day, this.mood);
@@ -95,25 +94,16 @@ List<List<MoodChartPoint>> _byDay(
 ) {
   final lines = <List<MoodChartPoint>>[];
   var line = <MoodChartPoint>[];
-
   for (var day = from; !day.isAfter(to); day = day.addDays(1)) {
     final value = valueOf(day);
-
     if (value == null) {
-      if (line.isNotEmpty) {
-        lines.add(line);
-      }
-
+      if (line.isNotEmpty) lines.add(line);
       line = [];
     } else {
       line.add(MoodChartPoint(day.daysSince(from).toDouble(), value));
     }
   }
-
-  if (line.isNotEmpty) {
-    lines.add(line);
-  }
-
+  if (line.isNotEmpty) lines.add(line);
   return lines;
 }
 
@@ -129,7 +119,6 @@ List<List<MoodChartPoint>> _byBucket(
   final lines = <List<MoodChartPoint>>[];
   var line = <MoodChartPoint>[];
   var start = startOf(from);
-
   while (!start.isAfter(to)) {
     final next = length != null
         ? start.addDays(length)
@@ -138,46 +127,31 @@ List<List<MoodChartPoint>> _byBucket(
             start.month == 12 ? 1 : start.month + 1,
             1,
           );
-
     final first = start.isBefore(from) ? from : start;
     final last = next.addDays(-1).isAfter(to) ? to : next.addDays(-1);
     final value = _average([
       for (var day = first; !day.isAfter(last); day = day.addDays(1))
         ?moods[day],
     ]);
-
     if (value == null) {
-      if (line.isNotEmpty) {
-        lines.add(line);
-      }
-
+      if (line.isNotEmpty) lines.add(line);
       line = [];
     } else {
       final middle = (first.daysSince(from) + last.daysSince(from)) / 2;
-
       line.add(MoodChartPoint(middle, value));
     }
-
     start = next;
   }
-
-  if (line.isNotEmpty) {
-    lines.add(line);
-  }
-
+  if (line.isNotEmpty) lines.add(line);
   return lines;
 }
 
 double? _average(List<double> values) {
-  if (values.isEmpty) {
-    return null;
-  }
-
+  if (values.isEmpty) return null;
   return values.reduce((a, b) => a + b) / values.length;
 }
 
 LocalDate _mondayOf(LocalDate day) {
   final weekday = DateTime(day.year, day.month, day.day).weekday;
-
   return day.addDays(DateTime.monday - weekday);
 }

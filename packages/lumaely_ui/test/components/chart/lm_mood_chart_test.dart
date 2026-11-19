@@ -147,31 +147,76 @@ void main() {
         as MoodChartPainter;
   }
 
-  testWidgets('shows dots up to ${LmMoodChart.maxDots} points', (tester) async {
-    final from = LocalDate(2026, 8, 1);
-    for (final (days, dots) in [
-      (LmMoodChart.maxDots, true),
-      (LmMoodChart.maxDots + 1, false),
+  // a phone: dots depend on the real width
+  void phone(WidgetTester tester) {
+    tester.view.physicalSize = const Size(393, 700);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+  }
+
+  Finder chartPaint(MoodChartPainter painter) => find.byWidgetPredicate(
+    (widget) => widget is CustomPaint && widget.painter == painter,
+  );
+
+  bool dotsFit(WidgetTester tester) {
+    final painter = painterOf(tester);
+    return painter.dotsFit(tester.getSize(chartPaint(painter)).width);
+  }
+
+  testWidgets('on a phone, dots only when they do not touch', (tester) async {
+    phone(tester);
+    final end = LocalDate(2026, 12, 31);
+    for (final (days, smoothing, fits) in [
+      // figma: a month per day, ~10 px between dots
+      (29, LmMoodChartSmoothing.none, true),
+      (62, LmMoodChartSmoothing.none, false),
+      // auto over a year = per week, 52 points
+      (365, LmMoodChartSmoothing.weekly, false),
+      (365, LmMoodChartSmoothing.monthly, true),
     ]) {
+      final from = end.addDays(1 - days);
       await tester.pumpWidget(
         _app(
           LmMoodChart(
             from: from,
-            to: from.addDays(days - 1),
+            to: end,
             entries: _days(from, days, MoodScore.good),
+            smoothing: smoothing,
           ),
         ),
       );
 
-      expect(painterOf(tester).showDots, dots, reason: '$days days');
+      expect(dotsFit(tester), fits, reason: '$days days ${smoothing.name}');
     }
+  });
+
+  testWidgets('a year in auto on a phone draws only the two end dots', (
+    tester,
+  ) async {
+    phone(tester);
+    final from = LocalDate(2026, 1, 1);
+    final chart = LmMoodChart(
+      from: from,
+      to: LocalDate(2026, 12, 31),
+      entries: _days(from, 365, MoodScore.good),
+      smoothing: LmMoodChartSmoothing.autoFor(365),
+    );
+    await tester.pumpWidget(_app(chart));
+
+    expect(chart.usedSmoothing, LmMoodChartSmoothing.weekly);
+    // one line: start and end, each a ring then a fill
+    expect(
+      tester.renderObject(chartPaint(painterOf(tester))),
+      paintsExactlyCountTimes(#drawCircle, 4),
+    );
   });
 
   testWidgets('without dots, each line keeps its first and last dot', (
     tester,
   ) async {
+    phone(tester);
     final from = LocalDate(2026, 8, 1);
-    // 40 days, a gap, 40 days: 80 points, more than maxDots
+    // 40 days, a gap, 40 days: too close for every dot on a phone
     final entries = {
       ..._days(from, 40, MoodScore.good),
       ..._days(from.addDays(45), 40, MoodScore.good),
@@ -181,34 +226,13 @@ void main() {
     );
 
     final painter = painterOf(tester);
-    expect(painter.showDots, isFalse);
+    expect(dotsFit(tester), isFalse);
     expect(painter.lines, hasLength(2));
     // 2 lines x (start + end) = 4 dots, each a ring then a fill
     expect(
-      tester.renderObject(
-        find.byWidgetPredicate(
-          (widget) => widget is CustomPaint && widget.painter == painter,
-        ),
-      ),
+      tester.renderObject(chartPaint(painter)),
       paintsExactlyCountTimes(#drawCircle, 8),
     );
-  });
-
-  testWidgets('a smoothed year has few points, so dots again', (tester) async {
-    final from = LocalDate(2026, 1, 1);
-    await tester.pumpWidget(
-      _app(
-        LmMoodChart(
-          from: from,
-          to: LocalDate(2026, 12, 31),
-          entries: _days(from, 365, MoodScore.good),
-          smoothing: LmMoodChartSmoothing.monthly,
-        ),
-      ),
-    );
-
-    expect(painterOf(tester).showDots, isTrue);
-    expect(painterOf(tester).lines.single, hasLength(12));
   });
 
   testWidgets('falls back to auto when the smoothing does not fit', (
