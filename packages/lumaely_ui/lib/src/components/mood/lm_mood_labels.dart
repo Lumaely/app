@@ -33,7 +33,7 @@ MoodScore moodOfAverage(double average) {
 String moodLine(DayMoods moods) {
   final average = moods.average;
   final line =
-      '${_averageText(average)}/5 · ${moodLabel(moodOfAverage(average))}';
+      '${averageText(average)}/5 · ${moodLabel(moodOfAverage(average))}';
 
   return switch (moods) {
     WholeDayMood() => line,
@@ -46,7 +46,7 @@ String moodSemantics(DayMoods moods) {
   final average = moods.average;
   final text =
       '${moodLabel(moodOfAverage(average))}, '
-      '${_averageText(average)} of 5';
+      '${averageText(average)} of 5';
 
   return switch (moods) {
     WholeDayMood() => text,
@@ -54,8 +54,8 @@ String moodSemantics(DayMoods moods) {
   };
 }
 
-// 4.0 -> "4", 3.5 -> "3.5"
-String _averageText(double average) {
+/// 4.0 -> "4", 3.5 -> "3.5"
+String averageText(double average) {
   final shown = shownAverage(average);
   if (shown == shown.roundToDouble()) {
     return shown.toInt().toString();
