@@ -37,6 +37,8 @@ class LmMonthCalendar extends StatelessWidget {
 
   final ValueChanged<LocalDate>? onDayTap;
 
+  static const double titleGap = LmSpace.s4;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -67,12 +69,17 @@ class LmMonthCalendar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: LmSpace.s2,
       children: [
-        Semantics(
-          header: true,
-          child: Text(
-            // FIXME: english for now, the locale comes with translations
-            DateFormat('MMMM y').format(first),
-            style: LmTypography.titleLarge.copyWith(color: colors.textPrimary),
+        Padding(
+          padding: const EdgeInsets.only(bottom: titleGap - LmSpace.s2),
+          child: Semantics(
+            header: true,
+            child: Text(
+              // FIXME: english for now, the locale comes with translations
+              DateFormat('MMMM y').format(first),
+              style: LmTypography.titleLarge.copyWith(
+                color: colors.textPrimary,
+              ),
+            ),
           ),
         ),
         const LmWeekdayLetters(),
