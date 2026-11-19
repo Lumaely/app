@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/src/components/calendar/lm_calendar_day.dart';
+import 'package:lumaely_ui/src/components/calendar/lm_weekday_letters.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
@@ -74,24 +75,7 @@ class LmMonthCalendar extends StatelessWidget {
             style: LmTypography.titleLarge.copyWith(color: colors.textPrimary),
           ),
         ),
-        // each day says its weekday in full: letters are for the eyes only
-        ExcludeSemantics(
-          child: Row(
-            children: [
-              // 2024-01-01 was a monday
-              for (var i = 0; i < 7; i++)
-                Expanded(
-                  child: Text(
-                    DateFormat('EEEEE').format(DateTime(2024, 1, 1 + i)),
-                    textAlign: TextAlign.center,
-                    style: LmTypography.labelSmall.copyWith(
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
+        const LmWeekdayLetters(),
         for (var week = 0; week < weeks; week++)
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
