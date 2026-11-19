@@ -44,6 +44,10 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   one week of it for Today (letters above, no journal mark);
   `LmWeekdayLetters` is the "M T W T F S S" row they share.
 
+- Chart: `LmMoodChart` (mood over a period on a fixed 1 to 5 axis, 5 grid
+  lines; the line is cut where nothing was written; per day, 7 day rolling
+  average, per week or per month; read as a summary by screen readers).
+
 ## Rules
 
 - Never edit `tokens.json` by hand: change Figma, export again, then run the generator.
