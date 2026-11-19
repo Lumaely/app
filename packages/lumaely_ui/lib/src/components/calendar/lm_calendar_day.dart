@@ -7,17 +7,20 @@ import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// one day of a calendar (month, scrolling calendar)
+/// one day of a calendar (month, scrolling calendar, week strip)
 /// - mood dot, the date under it, then the journal mark
 /// - [entry] null -> dashed circle ("no entry"), past or future alike
 /// - [isToday] -> ring around the dot, darker number
 /// - [onTap] null -> not tappable (future days)
+/// - [showMark] false -> no journal mark row (week strip: no legend there);
+///   screen readers still hear "Journal"
 /// - the centre of the dot is kept for the mascot face, later
 class LmCalendarDay extends StatefulWidget {
   const new({
     required this.date,
     required this.entry,
     this.isToday = false,
+    this.showMark = true,
     this.onTap,
     super.key,
   });
@@ -25,6 +28,7 @@ class LmCalendarDay extends StatefulWidget {
   final LocalDate date;
   final DayEntry? entry;
   final bool isToday;
+  final bool showMark;
   final VoidCallback? onTap;
 
   static const dotSize = 34.0;
@@ -87,25 +91,26 @@ class _LmCalendarDayState extends State<LmCalendarDay> {
             color: widget.isToday ? colors.textPrimary : colors.textSecondary,
           ),
         ),
-        SizedBox(
-          width: LmCalendarDay.slotSize,
-          height: LmCalendarDay.markHeight,
-          child: hasJournal
-              ? Center(
-                  child: Container(
-                    key: const ValueKey('journal mark'),
-                    width: 8,
-                    height: 2.5,
-                    decoration: BoxDecoration(
-                      color: colors.actionPrimary,
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(1.25),
+        if (widget.showMark)
+          SizedBox(
+            width: LmCalendarDay.slotSize,
+            height: LmCalendarDay.markHeight,
+            child: hasJournal
+                ? Center(
+                    child: Container(
+                      key: const ValueKey('journal mark'),
+                      width: 8,
+                      height: 2.5,
+                      decoration: BoxDecoration(
+                        color: colors.actionPrimary,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(1.25),
+                        ),
                       ),
                     ),
-                  ),
-                )
-              : null,
-        ),
+                  )
+                : null,
+          ),
       ],
     );
 
