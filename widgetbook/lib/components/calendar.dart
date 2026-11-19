@@ -134,3 +134,44 @@ Widget calendarDayStates(BuildContext context) {
 Widget calendarLegend(BuildContext context) {
   return _screen(const LmCalendarLegend());
 }
+
+@widgetbook.UseCase(name: 'Playground', type: LmWeekStrip, path: '[Components]')
+Widget weekStripPlayground(BuildContext context) {
+  // the week of figma: mon oct 26 to sun nov 1, 2026
+  final day = context.knobs.int.slider(
+    label: 'Today (0 = monday)',
+    initialValue: 3,
+    max: 6,
+  );
+  final today = LocalDate(2026, 10, 26).addDays(day);
+  final entries = {..._entries(2026, 10, 31), ..._entries(2026, 11, 1)}
+    ..removeWhere((date, _) => date.isAfter(today));
+
+  return _screen(
+    LmTile(
+      child: Padding(
+        padding: const EdgeInsets.all(LmSpace.s4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: LmSpace.s3,
+          children: [
+            Text(
+              'This week',
+              style: LmTypography.labelMedium.copyWith(
+                color: context.colors.textSecondary,
+              ),
+            ),
+            LmWeekStrip(
+              week: today,
+              entries: entries,
+              today: today,
+              onDayTap: (date) =>
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text('Tapped $date'))),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
