@@ -1,7 +1,6 @@
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/src/components/button/lm_button.dart';
 import 'package:lumaely_ui/src/components/mood/lm_mood_dot.dart';
-import 'package:lumaely_ui/src/components/mood/lm_mood_labels.dart';
 import 'package:lumaely_ui/src/components/sheet/lm_sheet.dart';
 import 'package:lumaely_ui/src/icons/lm_icon.dart';
 import 'package:lumaely_ui/src/icons/lm_icons.dart';
@@ -33,9 +32,9 @@ Future<void> showLmCalendarLegend(BuildContext context) {
     context,
     builder: (context) => LmSheet(
       title: 'Calendar legend',
-      message:
-          'Each dot is one day. Tap a day to open it; past days without '
-          'entry can still be written.',
+      // message:
+      //     'Each dot is one day. Tap a day to open it; past days without '
+      //     'entry can still be written.',
       content: const LmCalendarLegend(),
       actions: [
         LmButton(label: 'Got it', onPressed: () => Navigator.pop(context)),
@@ -68,8 +67,7 @@ class LmCalendarLegend extends StatelessWidget {
                 LmMoodDot(average: score.value.toDouble(), size: 16),
             ],
           ),
-          'Mood of the day, from ${moodLabel(MoodScore.rough)} to '
-          '${moodLabel(MoodScore.great)} (the number is the date)',
+          'Mood of the day',
         ),
         _row(
           context,
