@@ -40,7 +40,9 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   `onDayTap` out; future days can't be tapped) built from `LmCalendarDay`
   (mood dot, date under it, journal mark, ring on today) and
   `LmCalendarLegend` (in a sheet, opened by `LmCalendarLegendButton`, the
-  "?" that the journal screen puts once in its top bar).
+  "?" that the journal screen puts once in its top bar). `LmWeekStrip` is
+  one week of it for Today (letters above, no journal mark);
+  `LmWeekdayLetters` is the "M T W T F S S" row they share.
 
 ## Rules
 
