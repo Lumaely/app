@@ -3,12 +3,31 @@ import 'package:lumaely_ui/src/components/button/lm_button.dart';
 import 'package:lumaely_ui/src/components/mood/lm_mood_dot.dart';
 import 'package:lumaely_ui/src/components/mood/lm_mood_labels.dart';
 import 'package:lumaely_ui/src/components/sheet/lm_sheet.dart';
+import 'package:lumaely_ui/src/icons/lm_icon.dart';
+import 'package:lumaely_ui/src/icons/lm_icons.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// opens the calendar legend in a sheet (the "?" next to the month)
+/// "?" for the top bar of the journal: opens the calendar legend
+/// - one per screen (month and scrolling calendar), 48 px, named for screen
+///   readers by its tooltip
+class LmCalendarLegendButton extends StatelessWidget {
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: 'Calendar legend',
+      color: context.colors.textPrimary,
+      onPressed: () => showLmCalendarLegend(context),
+      icon: const LmIcon(LmIcons.help, size: 22),
+    );
+  }
+}
+
+/// opens the calendar legend in a sheet
 Future<void> showLmCalendarLegend(BuildContext context) {
   return showLmSheet<void>(
     context,

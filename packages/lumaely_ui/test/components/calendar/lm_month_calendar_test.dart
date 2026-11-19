@@ -174,14 +174,53 @@ void main() {
     );
   });
 
-  testWidgets('opens the legend from the "?" button', (tester) async {
+  testWidgets('a day alone is ${LmCalendarDay.minWidth} wide, journal or not', (
+    tester,
+  ) async {
+    final date = LocalDate(2026, 10, 12);
+    for (final journal in ['', 'Long walk.']) {
+      await tester.pumpWidget(
+        _app(
+          Center(
+            child: LmCalendarDay(
+              date: date,
+              entry: _entry(date, journal: journal),
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        tester.getSize(find.byType(LmCalendarDay)).width,
+        LmCalendarDay.minWidth,
+        reason: journal.isEmpty ? 'no journal' : 'journal',
+      );
+    }
+  });
+
+  testWidgets('has no legend button of its own', (tester) async {
     await tester.pumpWidget(_app(_october()));
 
-    await tester.tap(find.byTooltip('Calendar legend'));
+    expect(find.byType(LmCalendarLegendButton), findsNothing);
+    expect(find.byTooltip('Calendar legend'), findsNothing);
+  });
+
+  testWidgets('the legend button opens the legend sheet', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await tester.pumpWidget(_app(const LmCalendarLegendButton()));
+
+    expect(
+      tester.getSemantics(find.byType(LmCalendarLegendButton)),
+      isSemantics(tooltip: 'Calendar legend', isButton: true),
+    );
+
+    await tester.tap(find.byType(LmCalendarLegendButton));
     await tester.pumpAndSettle();
 
     expect(find.byType(LmCalendarLegend), findsOneWidget);
     expect(find.text('Journal written'), findsOneWidget);
+    semantics.dispose();
   });
 
   testWidgets('fits a 320 px screen at text scale 200 %', (tester) async {

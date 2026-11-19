@@ -61,15 +61,28 @@ Widget monthCalendarPlayground(BuildContext context) {
   ).clamp(1, daysInMonth);
   final today = LocalDate(month.$1, month.$2, todayDay);
 
-  return _screen(
-    LmMonthCalendar(
-      year: month.$1,
-      month: month.$2,
-      entries: _entries(month.$1, month.$2, todayDay),
-      today: today,
-      onDayTap: (date) =>
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Tapped $date'))),
+  // the "?" lives in the screen's top bar, once (like the journal screen)
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Journal'),
+      actions: const [LmCalendarLegendButton()],
+    ),
+    body: Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(LmSpace.s4),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: LmMonthCalendar(
+            year: month.$1,
+            month: month.$2,
+            entries: _entries(month.$1, month.$2, todayDay),
+            today: today,
+            onDayTap: (date) =>
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('Tapped $date'))),
+          ),
+        ),
+      ),
     ),
   );
 }

@@ -1,19 +1,18 @@
 import 'package:intl/intl.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/src/components/calendar/lm_calendar_day.dart';
-import 'package:lumaely_ui/src/components/calendar/lm_calendar_legend.dart';
-import 'package:lumaely_ui/src/icons/lm_icon.dart';
-import 'package:lumaely_ui/src/icons/lm_icons.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
 import 'package:lumaely_ui/src/tokens/lm_layout.dart';
 import 'package:lumaely_ui/src/tokens/lm_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// one month of the journal: title, "?" legend button, weeks from monday
+/// one month of the journal: title, then weeks from monday
 /// - pure presentation: entries in, taps out (no database, no state)
 /// - [onDayTap] gets past days and today, with or without entry; future
 ///   days can't be tapped
 /// - changing month is the screen's job
+/// - the legend button (LmCalendarLegendButton) goes in the screen's top
+///   bar, once, not in every month of the scrolling calendar
 class LmMonthCalendar extends StatelessWidget {
   const new({
     required this.year,
@@ -67,27 +66,13 @@ class LmMonthCalendar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: LmSpace.s2,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Semantics(
-                header: true,
-                child: Text(
-                  // FIXME: english for now, the locale comes with translations
-                  DateFormat('MMMM y').format(first),
-                  style: LmTypography.titleLarge.copyWith(
-                    color: colors.textPrimary,
-                  ),
-                ),
-              ),
-            ),
-            IconButton(
-              tooltip: 'Calendar legend',
-              color: colors.textSecondary,
-              onPressed: () => showLmCalendarLegend(context),
-              icon: const LmIcon(LmIcons.help, size: 22),
-            ),
-          ],
+        Semantics(
+          header: true,
+          child: Text(
+            // FIXME: english for now, the locale comes with translations
+            DateFormat('MMMM y').format(first),
+            style: LmTypography.titleLarge.copyWith(color: colors.textPrimary),
+          ),
         ),
         // each day says its weekday in full: letters are for the eyes only
         ExcludeSemantics(
