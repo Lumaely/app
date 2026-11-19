@@ -88,6 +88,7 @@ class _LmCalendarDayState extends State<LmCalendarDay> {
           ),
         ),
         SizedBox(
+          width: LmCalendarDay.slotSize,
           height: LmCalendarDay.markHeight,
           child: hasJournal
               ? Center(
