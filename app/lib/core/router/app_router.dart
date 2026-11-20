@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lumaely/core/router/app_shell.dart';
 import 'package:lumaely/core/router/placeholder_page.dart';
 import 'package:lumaely/core/router/router_paths.dart';
 import 'package:lumaely/core/router/vault_redirect.dart';
@@ -44,10 +45,48 @@ GoRouter appRouter(Ref ref) {
         path: RouterPaths.unlock,
         builder: (_, _) => const PlaceholderPage(title: 'Unlock'),
       ),
-      GoRoute(
-        path: RouterPaths.today,
-        builder: (_, _) => const PlaceholderPage(title: 'Today'),
+
+      // the open diary: four tabs, each with its own history
+      // (same order as AppShell.tabs)
+      StatefulShellRoute.indexedStack(
+        builder: (_, _, navigationShell) =>
+            AppShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterPaths.today,
+                builder: (_, _) => const PlaceholderPage(title: 'Today'),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterPaths.journal,
+                builder: (_, _) => const PlaceholderPage(title: 'Journal'),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterPaths.insights,
+                builder: (_, _) => const PlaceholderPage(title: 'Insights'),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterPaths.settings,
+                builder: (_, _) => const PlaceholderPage(title: 'Settings'),
+              ),
+            ],
+          ),
+        ],
       ),
+
       if (kDebugMode)
         GoRoute(
           path: RouterPaths.debug,
