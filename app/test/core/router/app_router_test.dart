@@ -9,6 +9,7 @@ import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely/features/launch/ui/splash_page.dart';
 import 'package:lumaely/features/launch/ui/vault_error_page.dart';
 import 'package:lumaely_data/lumaely_data.dart';
+import 'package:lumaely_ui/lumaely_ui.dart';
 
 import '../../helpers/test_diary.dart';
 
@@ -105,5 +106,31 @@ void main() {
     expect(loads, 2);
     expect(find.byType(VaultErrorPage), findsNothing);
     expect(placeholder('Welcome'), findsOneWidget);
+  });
+
+  testWidgets('the tab bar shows only once the diary is open', (tester) async {
+    final vault = await launch(tester, () async => const VaultEmpty());
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LmTabBar), findsNothing);
+
+    vault.set(VaultOpen(diary));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LmTabBar), findsOneWidget);
+  });
+
+  testWidgets('tapping a tab shows its page', (tester) async {
+    await launch(tester, () async => VaultOpen(diary));
+    await tester.pumpAndSettle();
+    Finder tab(String label) =>
+        find.descendant(of: find.byType(LmTabBar), matching: find.text(label));
+
+    for (final label in ['Journal', 'Insights', 'Settings', 'Today']) {
+      await tester.tap(tab(label));
+      await tester.pumpAndSettle();
+
+      expect(placeholder(label), findsOneWidget, reason: label);
+    }
   });
 }
