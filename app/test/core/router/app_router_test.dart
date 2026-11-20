@@ -6,8 +6,8 @@ import 'package:lumaely/app.dart';
 import 'package:lumaely/core/router/placeholder_page.dart';
 import 'package:lumaely/data/vault/vault.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
-import 'package:lumaely/features/launch/presentation/splash_page.dart';
-import 'package:lumaely/features/launch/presentation/vault_error_page.dart';
+import 'package:lumaely/features/launch/ui/splash_page.dart';
+import 'package:lumaely/features/launch/ui/vault_error_page.dart';
 import 'package:lumaely_data/lumaely_data.dart';
 
 import '../../helpers/test_diary.dart';

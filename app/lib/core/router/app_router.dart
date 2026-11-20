@@ -5,8 +5,8 @@ import 'package:lumaely/core/router/router_paths.dart';
 import 'package:lumaely/core/router/vault_redirect.dart';
 import 'package:lumaely/data/vault/vault.dart';
 import 'package:lumaely/debug/vault_debug_page.dart';
-import 'package:lumaely/features/launch/presentation/splash_page.dart';
-import 'package:lumaely/features/launch/presentation/vault_error_page.dart';
+import 'package:lumaely/features/launch/ui/splash_page.dart';
+import 'package:lumaely/features/launch/ui/vault_error_page.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';

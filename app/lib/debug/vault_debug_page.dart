@@ -42,7 +42,6 @@ class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
       appBar: AppBar(
         title: const Text('Vault debug'),
         actions: [
-          // back to the app: the router picks the screen for this state
           TextButton(
             onPressed: () => context.go(RouterPaths.splash),
             child: const Text('Leave'),
@@ -72,7 +71,6 @@ class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
             },
             if (_message case final message?) SelectableText(message),
             const Divider(),
-            // shows the vault error page; "Try again" there reloads the vault
             OutlinedButton(
               onPressed: () async {
                 await ref.read(vaultProvider.notifier).debugSimulateError();
