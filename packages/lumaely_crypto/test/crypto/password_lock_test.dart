@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:lumaely_crypto/lumaely_crypto.dart';
@@ -42,7 +41,7 @@ void main() {
     final b = await crypto.lockWithPassword(master, 'evil hi lol');
 
     expect(a.salt, isNot(equals(b.salt)));
-    expect(a.cipherText, isNot(equals(b.cipherText)));
+    expect(a.wrappedKey, isNot(equals(b.wrappedKey)));
   });
 
   test('a lock changed by one byte is refused', () async {
@@ -54,8 +53,7 @@ void main() {
       salt: lock.salt,
       opsLimit: lock.opsLimit,
       memLimit: lock.memLimit,
-      nonce: lock.nonce,
-      cipherText: Uint8List.fromList(lock.cipherText)..[0] ^= 1,
+      wrappedKey: Uint8List.fromList(lock.wrappedKey)..[30] ^= 1,
     );
 
     await expectLater(
@@ -85,11 +83,11 @@ void main() {
     final sealingKey = sodium.secureCopy(keys.extractBytes().sublist(32));
     addTearDown(sealingKey.dispose);
 
+    // wrapped key: 24-byte nonce, then ciphertext and tag, no associated data
     final unsealed = sodium.crypto.aeadXChaCha20Poly1305IETF.decrypt(
-      cipherText: lock.cipherText,
-      nonce: lock.nonce,
+      nonce: lock.wrappedKey.sublist(0, 24),
+      cipherText: lock.wrappedKey.sublist(24),
       key: sealingKey,
-      additionalData: utf8.encode('lumaely.master_key.password.v1'),
     );
 
     expect(unsealed, master.extractBytes());

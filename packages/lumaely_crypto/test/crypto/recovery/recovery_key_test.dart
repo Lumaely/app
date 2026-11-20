@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:lumaely_crypto/lumaely_crypto.dart';
@@ -106,11 +105,12 @@ void main() {
       );
       addTearDown(sealingKey.dispose);
 
+      // wrapped key: 24-byte nonce, then ciphertext and tag, no associated
+      // data
       final unsealed = sodium.crypto.aeadXChaCha20Poly1305IETF.decrypt(
-        cipherText: lock.cipherText,
-        nonce: lock.nonce,
+        nonce: lock.wrappedKey.sublist(0, 24),
+        cipherText: lock.wrappedKey.sublist(24),
         key: sealingKey,
-        additionalData: utf8.encode('lumaely.master_key.recovery.v1'),
       );
 
       expect(unsealed, master.extractBytes());

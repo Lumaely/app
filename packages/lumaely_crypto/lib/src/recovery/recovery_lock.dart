@@ -6,11 +6,9 @@ import 'package:meta/meta.dart';
 @immutable
 final class RecoveryLock {
   /// Creates a lock from its stored parts.
-  const new({required this.nonce, required this.cipherText});
+  const new({required this.wrappedKey});
 
-  /// Random bytes used once by XChaCha20-Poly1305.
-  final Uint8List nonce;
-
-  /// The encrypted master key.
-  final Uint8List cipherText;
+  /// The sealed master key: the 24-byte nonce, then the ciphertext and its
+  /// tag (XChaCha20-Poly1305), as the cloud stores it.
+  final Uint8List wrappedKey;
 }

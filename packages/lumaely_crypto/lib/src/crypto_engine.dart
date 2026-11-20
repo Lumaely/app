@@ -30,14 +30,6 @@ class LmCryptoEngine {
   /// then the key that seals the master key (last 32 bytes)
   static const int _passwordKeysLength = 2 * keyLength;
 
-  static final Uint8List _passwordLockLabel = utf8.encode(
-    'lumaely.master_key.password.v1',
-  );
-
-  static final Uint8List _recoveryLockLabel = utf8.encode(
-    'lumaely.master_key.recovery.v1',
-  );
-
   /// HKDF-SHA256 labels (info) of the two keys made from the recovery key.
   /// Stored formats: NEVER change them, a golden test freezes them.
   /// - auth key: checked by the server once sync comes
@@ -101,24 +93,13 @@ class LmCryptoEngine {
     );
 
     try {
-      final nonce = _sodium.randombytes.buf(_aead.nonceBytes);
-      final cipherText = masterKey.runUnlockedSync(
-        (bytes) => _aead.encrypt(
-          message: bytes,
-          nonce: nonce,
-          key: lockKey,
-          additionalData: _passwordLockLabel,
-        ),
-      );
-
       // we're recreating lists (Uint8List.fromList()) because otherwise
       // a segfault happens (use-after-free, after isolate ends).
       return PasswordLock(
         salt: Uint8List.fromList(salt),
         opsLimit: _opsLimit,
         memLimit: _memLimit,
-        nonce: Uint8List.fromList(nonce),
-        cipherText: Uint8List.fromList(cipherText),
+        wrappedKey: _seal(masterKey, lockKey),
       );
     } finally {
       lockKey.dispose();
@@ -137,20 +118,7 @@ class LmCryptoEngine {
     );
 
     try {
-      final bytes = _aead.decrypt(
-        cipherText: lock.cipherText,
-        nonce: lock.nonce,
-        key: lockKey,
-        additionalData: _passwordLockLabel,
-      );
-
-      try {
-        return _sodium.secureCopy(bytes);
-      } finally {
-        bytes.fillRange(0, bytes.length, 0);
-      }
-    } on SodiumException {
-      throw const WrongSecretException();
+      return _unseal(lock.wrappedKey, lockKey);
     } finally {
       lockKey.dispose();
     }
@@ -208,17 +176,7 @@ class LmCryptoEngine {
     final lockKey = _sealingKeyFromRecovery(recoveryKey);
 
     try {
-      final nonce = _sodium.randombytes.buf(_aead.nonceBytes);
-      final cipherText = masterKey.runUnlockedSync(
-        (bytes) => _aead.encrypt(
-          message: bytes,
-          nonce: nonce,
-          key: lockKey,
-          additionalData: _recoveryLockLabel,
-        ),
-      );
-
-      return RecoveryLock(nonce: nonce, cipherText: cipherText);
+      return RecoveryLock(wrappedKey: _seal(masterKey, lockKey));
     } finally {
       lockKey.dispose();
     }
@@ -231,20 +189,7 @@ class LmCryptoEngine {
     final lockKey = _sealingKeyFromRecovery(recoveryKey);
 
     try {
-      final bytes = _aead.decrypt(
-        cipherText: lock.cipherText,
-        nonce: lock.nonce,
-        key: lockKey,
-        additionalData: _recoveryLockLabel,
-      );
-
-      try {
-        return _sodium.secureCopy(bytes);
-      } finally {
-        bytes.fillRange(0, bytes.length, 0);
-      }
-    } on SodiumException {
-      throw const WrongSecretException();
+      return _unseal(lock.wrappedKey, lockKey);
     } finally {
       lockKey.dispose();
     }
@@ -275,6 +220,46 @@ class LmCryptoEngine {
       );
     } finally {
       pseudoRandomKey.dispose();
+    }
+  }
+
+  // === sealing ===
+
+  /// [masterKey] sealed by [sealingKey], as the cloud stores it (a "wrapped
+  /// key"): the 24-byte nonce, then the ciphertext and its tag
+  /// - XChaCha20-Poly1305, no associated data (the cloud contract has none)
+  Uint8List _seal(SecureKey masterKey, SecureKey sealingKey) {
+    final nonce = _sodium.randombytes.buf(_aead.nonceBytes);
+    final cipherText = masterKey.runUnlockedSync(
+      (bytes) => _aead.encrypt(message: bytes, nonce: nonce, key: sealingKey),
+    );
+
+    return Uint8List.fromList([...nonce, ...cipherText]);
+  }
+
+  /// Opens a wrapped key made by [_seal].
+  ///
+  /// Throws [WrongSecretException] if [sealingKey] does not open it.
+  SecureKey _unseal(Uint8List wrappedKey, SecureKey sealingKey) {
+    // too short to hold a nonce and a tag: nothing can open it
+    if (wrappedKey.length < _aead.nonceBytes + _aead.aBytes) {
+      throw const WrongSecretException();
+    }
+
+    try {
+      final bytes = _aead.decrypt(
+        nonce: Uint8List.sublistView(wrappedKey, 0, _aead.nonceBytes),
+        cipherText: Uint8List.sublistView(wrappedKey, _aead.nonceBytes),
+        key: sealingKey,
+      );
+
+      try {
+        return _sodium.secureCopy(bytes);
+      } finally {
+        bytes.fillRange(0, bytes.length, 0);
+      }
+    } on SodiumException {
+      throw const WrongSecretException();
     }
   }
 
