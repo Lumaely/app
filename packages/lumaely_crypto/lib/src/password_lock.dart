@@ -11,8 +11,7 @@ final class PasswordLock {
     required this.salt,
     required this.opsLimit,
     required this.memLimit,
-    required this.nonce,
-    required this.cipherText,
+    required this.wrappedKey,
   });
 
   /// Random bytes mixed with the password by Argon2id.
@@ -24,11 +23,9 @@ final class PasswordLock {
   /// Argon2id memory, in bytes.
   final int memLimit;
 
-  /// Random bytes used once by XChaCha20-Poly1305.
-  final Uint8List nonce;
-
-  /// The encrypted master key.
-  final Uint8List cipherText;
+  /// The sealed master key: the 24-byte nonce, then the ciphertext and its
+  /// tag (XChaCha20-Poly1305), as the cloud stores it.
+  final Uint8List wrappedKey;
 }
 
 /// Thrown when a password (or recovery key) does not open a lock.
