@@ -18,7 +18,10 @@ Lumaely's cryptography, built on libsodium through the `sodium` package.
   - computes record ids (HMAC).
 - `RecoveryKey`: 24 words with a checksum, in the BIP-39 format.
 - `KeyFile`: the `diary.lmkey` format, which holds both locks and never the
-  master key itself.
+  master key itself. Version 2 has the same fields as the cloud's key bundle
+  (`kdf_salt`, `kdf_params`, `wrapped_key_password`, `wrapped_key_recovery`);
+  a wrapped key is the 24-byte nonce, then the XChaCha20-Poly1305 ciphertext
+  and tag, with no associated data.
 
 ## Rules
 
