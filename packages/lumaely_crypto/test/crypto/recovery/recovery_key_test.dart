@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:lumaely_crypto/lumaely_crypto.dart';
+import 'package:sodium/sodium_sumo.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -82,6 +84,36 @@ void main() {
         () => crypto.unlockWithRecoveryKey(lock, crypto.generateRecoveryKey()),
         throwsA(isA<WrongSecretException>()),
       );
+    });
+
+    // the cloud key scheme: HKDF-SHA256 of the recovery key's 32 bytes, no
+    // salt, expanded with the sealing label. Rebuilt here with libsodium
+    // alone, as another app would.
+    test('the lock is sealed with HKDF-SHA256 of the recovery key', () async {
+      final sodium = await SodiumSumoInit.init();
+      final master = crypto.generateMasterKey();
+      addTearDown(master.dispose);
+      final recovery = crypto.generateRecoveryKey();
+      final lock = crypto.lockWithRecoveryKey(master, recovery);
+
+      final hkdf = sodium.crypto.kdfHkdfSha256;
+      final pseudoRandomKey = hkdf.extract(ikm: recovery.extractEntropy());
+      addTearDown(pseudoRandomKey.dispose);
+      final sealingKey = hkdf.expand(
+        masterKey: pseudoRandomKey,
+        context: 'lumaely:recovery:sealing_key',
+        outLen: 32,
+      );
+      addTearDown(sealingKey.dispose);
+
+      final unsealed = sodium.crypto.aeadXChaCha20Poly1305IETF.decrypt(
+        cipherText: lock.cipherText,
+        nonce: lock.nonce,
+        key: sealingKey,
+        additionalData: utf8.encode('lumaely.master_key.recovery.v1'),
+      );
+
+      expect(unsealed, master.extractBytes());
     });
   });
 }
