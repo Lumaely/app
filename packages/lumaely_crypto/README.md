@@ -12,7 +12,10 @@ Lumaely's cryptography, built on libsodium through the `sodium` package.
     XChaCha20-Poly1305), on a background isolate so the UI stays smooth.
     As the cloud expects, Argon2id gives 64 bytes: the first 32 are the auth
     key the server will check, the last 32 seal the master key;
-  - locks it with a recovery key, and computes record ids (HMAC).
+  - locks it with a recovery key: HKDF-SHA256 turns the recovery key's 32
+    bytes into an auth key for the server and the key that seals the master
+    key (labels `lumaely:recovery:auth_key`, `lumaely:recovery:sealing_key`);
+  - computes record ids (HMAC).
 - `RecoveryKey`: 24 words with a checksum, in the BIP-39 format.
 - `KeyFile`: the `diary.lmkey` format, which holds both locks and never the
   master key itself.
@@ -20,9 +23,9 @@ Lumaely's cryptography, built on libsodium through the `sodium` package.
 ## Rules
 
 - No Flutter and no other package of the workspace.
-- Never change an existing `KeyPurpose` context: the key it derives, and
-  everything that key protects, would change with it. A golden test freezes
-  them.
+- Never change an existing `KeyPurpose` context or a recovery HKDF label:
+  the key it derives, and everything that key protects, would change with
+  it. A golden test freezes them.
 - No cryptographic primitive is written here: libsodium provides them all.
 
 ## Tests
