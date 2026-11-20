@@ -67,4 +67,12 @@ void main() {
       },
     );
   });
+
+  test('recovery key labels never change', () {
+    expect(LmCryptoEngine.recoveryAuthKeyLabel, 'lumaely:recovery:auth_key');
+    expect(
+      LmCryptoEngine.recoverySealingKeyLabel,
+      'lumaely:recovery:sealing_key',
+    );
+  });
 }
