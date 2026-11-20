@@ -80,26 +80,81 @@ void main() {
     expect(unlocked.extractBytes(), equals(master.extractBytes()));
   });
 
-  test('refuses files that are not .lmkey files', () {
+  // the cloud's key bundle (cloud/src/docs/API.md), plus format and version
+  test('holds the fields of the cloud key bundle', () async {
+    final master = crypto.generateMasterKey();
+    addTearDown(master.dispose);
+    final text = KeyFile(
+      passwordLock: await crypto.lockWithPassword(master, 'hilol'),
+      recoveryLock: crypto.lockWithRecoveryKey(
+        master,
+        crypto.generateRecoveryKey(),
+      ),
+    ).encode();
+
+    final json = jsonDecode(text) as Map<String, Object?>;
+
+    expect(json.keys, {
+      'format',
+      'version',
+      'kdf_salt',
+      'kdf_params',
+      'wrapped_key_password',
+      'wrapped_key_recovery',
+    });
+    expect(json['format'], 'lumaely-key');
+    expect(json['version'], KeyFile.currentVersion);
+    expect(json['kdf_params'], {'alg': 'argon2id', 'm': 65536, 't': 3, 'p': 1});
+    expect(base64Decode(json['kdf_salt']! as String), hasLength(16));
+    for (final field in ['wrapped_key_password', 'wrapped_key_recovery']) {
+      // 24-byte nonce, 32-byte key, 16-byte tag
+      expect(base64Decode(json[field]! as String), hasLength(72));
+    }
+  });
+
+  Future<Map<String, Object?>> validJson() async {
+    final master = crypto.generateMasterKey();
+    addTearDown(master.dispose);
+    final text = KeyFile(
+      passwordLock: await crypto.lockWithPassword(master, 'hilol'),
+      recoveryLock: crypto.lockWithRecoveryKey(
+        master,
+        crypto.generateRecoveryKey(),
+      ),
+    ).encode();
+    return jsonDecode(text) as Map<String, Object?>;
+  }
+
+  test('refuses files that are not .lmkey files', () async {
     expect(() => KeyFile.decode('hello'), throwsFormatException);
     expect(() => KeyFile.decode('{"format": "other"}'), throwsFormatException);
 
-    final validFile = jsonEncode({
-      'format': 'lumaely-key',
-      'version': KeyFile.currentVersion,
-      'slots': <Object>[],
-    });
-
-    expect(() => KeyFile.decode(validFile), throwsFormatException);
+    final missing = await validJson()
+      ..remove('wrapped_key_recovery');
+    expect(() => KeyFile.decode(jsonEncode(missing)), throwsFormatException);
   });
 
-  test('refuses files from a newer version', () {
-    final file = jsonEncode({
-      'format': 'lumaely-key',
-      'version': KeyFile.currentVersion + 1,
-      'slots': <Object>[],
-    });
+  test('refuses other key derivations and wrong sizes', () async {
+    final scrypt = await validJson()
+      ..['kdf_params'] = {'alg': 'scrypt', 'm': 65536, 't': 3, 'p': 1};
+    expect(() => KeyFile.decode(jsonEncode(scrypt)), throwsFormatException);
 
-    expect(() => KeyFile.decode(file), throwsFormatException);
+    final shortKey = await validJson()
+      ..['wrapped_key_password'] = base64Encode(List.filled(40, 0));
+    expect(() => KeyFile.decode(jsonEncode(shortKey)), throwsFormatException);
+  });
+
+  test('refuses version 1, from before the cloud key scheme', () async {
+    final old = await validJson()
+      ..['version'] = 1;
+
+    expect(() => KeyFile.decode(jsonEncode(old)), throwsFormatException);
+  });
+
+  test('refuses files from a newer version', () async {
+    final newer = await validJson()
+      ..['version'] = KeyFile.currentVersion + 1;
+
+    expect(() => KeyFile.decode(jsonEncode(newer)), throwsFormatException);
   });
 }
