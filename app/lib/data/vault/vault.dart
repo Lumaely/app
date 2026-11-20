@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:lumaely/data/vault/vault_providers.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely_crypto/lumaely_crypto.dart';
@@ -65,6 +66,17 @@ class Vault extends _$Vault {
       cache: _cache,
     );
     state = AsyncData(_opened(diary));
+  }
+
+  /// debug builds only: puts the vault in error, to see the error page
+  /// - closes an open diary first: the retry opens it again, and two open
+  ///   at once would break the one-diary rule
+  Future<void> debugSimulateError() async {
+    assert(kDebugMode, 'debug builds only');
+    if (state.value case VaultOpen(:final diary)) {
+      await diary.close();
+    }
+    state = AsyncError(StateError('Simulated vault error'), StackTrace.current);
   }
 
   VaultOpen _opened(LocalDiary diary) {
