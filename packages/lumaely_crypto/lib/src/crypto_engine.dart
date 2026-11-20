@@ -38,6 +38,14 @@ class LmCryptoEngine {
     'lumaely.master_key.recovery.v1',
   );
 
+  /// HKDF-SHA256 labels (info) of the two keys made from the recovery key.
+  /// Stored formats: NEVER change them, a golden test freezes them.
+  /// - auth key: checked by the server once sync comes
+  static const recoveryAuthKeyLabel = 'lumaely:recovery:auth_key';
+
+  /// - the key that seals the master key
+  static const recoverySealingKeyLabel = 'lumaely:recovery:sealing_key';
+
   Aead get _aead => _sodium.crypto.aeadXChaCha20Poly1305IETF;
 
   // === key ===
@@ -197,7 +205,7 @@ class LmCryptoEngine {
     SecureKey masterKey,
     RecoveryKey recoveryKey,
   ) {
-    final lockKey = _keyFromRecovery(recoveryKey);
+    final lockKey = _sealingKeyFromRecovery(recoveryKey);
 
     try {
       final nonce = _sodium.randombytes.buf(_aead.nonceBytes);
@@ -220,7 +228,7 @@ class LmCryptoEngine {
   ///
   /// Throws [WrongSecretException] if the recovery key is wrong.
   SecureKey unlockWithRecoveryKey(RecoveryLock lock, RecoveryKey recoveryKey) {
-    final lockKey = _keyFromRecovery(recoveryKey);
+    final lockKey = _sealingKeyFromRecovery(recoveryKey);
 
     try {
       final bytes = _aead.decrypt(
@@ -242,13 +250,31 @@ class LmCryptoEngine {
     }
   }
 
-  SecureKey _keyFromRecovery(RecoveryKey recoveryKey) {
+  /// The key that seals the master key, from the recovery key's 32 bytes,
+  /// through HKDF-SHA256 (as the cloud expects).
+  ///
+  /// - extract (no salt), then expand with [recoverySealingKeyLabel]
+  /// - the same extract with [recoveryAuthKeyLabel] gives the auth key; it
+  ///   comes with sync, nothing uses it locally
+  SecureKey _sealingKeyFromRecovery(RecoveryKey recoveryKey) {
+    final hkdf = _sodium.crypto.kdfHkdfSha256;
     final entropy = recoveryKey.extractEntropy();
 
+    final SecureKey pseudoRandomKey;
     try {
-      return _sodium.secureCopy(entropy);
+      pseudoRandomKey = hkdf.extract(ikm: entropy);
     } finally {
       entropy.fillRange(0, entropy.length, 0);
+    }
+
+    try {
+      return hkdf.expand(
+        masterKey: pseudoRandomKey,
+        context: recoverySealingKeyLabel,
+        outLen: keyLength,
+      );
+    } finally {
+      pseudoRandomKey.dispose();
     }
   }
 
