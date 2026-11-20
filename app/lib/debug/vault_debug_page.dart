@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lumaely/core/router/router_paths.dart';
 import 'package:lumaely/data/entries/entry_providers.dart';
 import 'package:lumaely/data/vault/vault.dart';
 import 'package:lumaely/data/vault/vault_providers.dart';
@@ -37,7 +39,16 @@ class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
     final vault = ref.watch(vaultProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Vault debug')),
+      appBar: AppBar(
+        title: const Text('Vault debug'),
+        actions: [
+          // back to the app: the router picks the screen for this state
+          TextButton(
+            onPressed: () => context.go(RouterPaths.splash),
+            child: const Text('Leave'),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -60,6 +71,15 @@ class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
               null => const <Widget>[],
             },
             if (_message case final message?) SelectableText(message),
+            const Divider(),
+            // shows the vault error page; "Try again" there reloads the vault
+            OutlinedButton(
+              onPressed: () async {
+                await ref.read(vaultProvider.notifier).debugSimulateError();
+                if (context.mounted) context.go(RouterPaths.splash);
+              },
+              child: const Text('Simulate a vault error'),
+            ),
           ],
         ),
       ),
