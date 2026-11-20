@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lumaely/core/constants.dart';
-import 'package:lumaely/core/router.dart';
+import 'package:lumaely/core/router/app_router.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -9,7 +9,7 @@ class App extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(routerProvider);
+    final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
       routerConfig: router,
