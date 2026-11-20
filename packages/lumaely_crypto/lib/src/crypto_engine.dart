@@ -26,6 +26,10 @@ class LmCryptoEngine {
   /// over 64 MB of memory
   static const int _memLimit = 64 * 1024 * 1024;
 
+  /// Argon2id output, as the cloud expects: the auth key (first 32 bytes)
+  /// then the key that seals the master key (last 32 bytes)
+  static const int _passwordKeysLength = 2 * keyLength;
+
   static final Uint8List _passwordLockLabel = utf8.encode(
     'lumaely.master_key.password.v1',
   );
@@ -81,7 +85,12 @@ class LmCryptoEngine {
   /// Locks [masterKey] with [password].
   PasswordLock _lockWithPassword(SecureKey masterKey, String password) {
     final salt = _sodium.randombytes.buf(_sodium.crypto.pwhash.saltBytes);
-    final lockKey = _keyFromPassword(password, salt, _opsLimit, _memLimit);
+    final lockKey = _sealingKeyFromPassword(
+      password,
+      salt,
+      _opsLimit,
+      _memLimit,
+    );
 
     try {
       final nonce = _sodium.randombytes.buf(_aead.nonceBytes);
@@ -112,7 +121,7 @@ class LmCryptoEngine {
   ///
   /// Throws [WrongSecretException] if the password is wrong.
   SecureKey _unlockWithPassword(PasswordLock lock, String password) {
-    final lockKey = _keyFromPassword(
+    final lockKey = _sealingKeyFromPassword(
       password,
       lock.salt,
       lock.opsLimit,
@@ -139,20 +148,35 @@ class LmCryptoEngine {
     }
   }
 
-  SecureKey _keyFromPassword(
+  /// The key that seals the master key: the last 32 bytes of Argon2id.
+  ///
+  /// - the first 32 are the auth key, checked by the server once sync comes;
+  ///   unused locally, so wiped right away
+  /// - both halves come from one 64-byte output: a 32-byte output would not
+  ///   give the same bytes
+  SecureKey _sealingKeyFromPassword(
     String password,
     Uint8List salt,
     int opsLimit,
     int memLimit,
   ) {
-    return _sodium.crypto.pwhash.callStr(
-      outLen: _aead.keyBytes,
+    final keys = _sodium.crypto.pwhash.callStr(
+      outLen: _passwordKeysLength,
       password: password,
       salt: salt,
       opsLimit: opsLimit,
       memLimit: memLimit,
       alg: CryptoPwhashAlgorithm.argon2id13,
     );
+
+    try {
+      // a view, not a copy: the bytes never leave libsodium's memory
+      return keys.runUnlockedSync(
+        (bytes) => _sodium.secureCopy(Uint8List.sublistView(bytes, keyLength)),
+      );
+    } finally {
+      keys.dispose();
+    }
   }
 
   // === recovery key ===
