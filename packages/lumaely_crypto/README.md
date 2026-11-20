@@ -9,7 +9,9 @@ Lumaely's cryptography, built on libsodium through the `sodium` package.
 - `LmCryptoEngine`:
   - creates the master key, and derives one key per `KeyPurpose` from it;
   - locks the master key with a password (Argon2id, then
-    XChaCha20-Poly1305), on a background isolate so the UI stays smooth;
+    XChaCha20-Poly1305), on a background isolate so the UI stays smooth.
+    As the cloud expects, Argon2id gives 64 bytes: the first 32 are the auth
+    key the server will check, the last 32 seal the master key;
   - locks it with a recovery key, and computes record ids (HMAC).
 - `RecoveryKey`: 24 words with a checksum, in the BIP-39 format.
 - `KeyFile`: the `diary.lmkey` format, which holds both locks and never the
