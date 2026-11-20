@@ -150,4 +150,18 @@ void main() {
 
     expect(entry!.moods, const WholeDayMood(MoodScore.good));
   });
+
+  test('a simulated error shows until the vault is reloaded', () async {
+    final container = makeContainer();
+    await createDiary(container);
+
+    await container.read(vaultProvider.notifier).debugSimulateError();
+
+    expect(container.read(vaultProvider).hasError, isTrue);
+
+    // what the error page's retry does
+    container.invalidate(vaultProvider);
+
+    expect(await container.read(vaultProvider.future), isA<VaultOpen>());
+  });
 }

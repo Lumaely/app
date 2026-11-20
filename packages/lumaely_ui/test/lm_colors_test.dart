@@ -38,6 +38,8 @@ void main() {
         ('focus ring on background', c.focus, c.background),
         ('focus ring on surface', c.focus, c.surface),
         ('primary action on background', c.actionPrimary, c.background),
+        // focused text field border
+        ('primary action on surface', c.actionPrimary, c.surface),
         ('mood 1 outline on background', c.mood1Outline, c.background),
       ];
 
