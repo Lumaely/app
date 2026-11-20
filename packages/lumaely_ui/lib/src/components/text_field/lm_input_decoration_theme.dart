@@ -5,7 +5,7 @@ import 'package:material_ui/material_ui.dart';
 
 /// look of all text fields (also used by the theme)
 /// - white box, thin border
-/// - focused -> 2px in the focus color
+/// - focused -> 2px in the primary color
 /// - error -> 2px in the error color
 InputDecorationThemeData lmInputDecorationTheme(LmColors colors) {
   OutlineInputBorder border(Color color, [double width = 1]) {
@@ -27,7 +27,7 @@ InputDecorationThemeData lmInputDecorationTheme(LmColors colors) {
     border: border(colors.borderStrong),
     enabledBorder: border(colors.borderStrong),
     disabledBorder: border(colors.border),
-    focusedBorder: border(colors.focus, 2),
+    focusedBorder: border(colors.actionPrimary, 2),
     errorBorder: border(colors.errorText, 2),
     focusedErrorBorder: border(colors.errorText, 2),
   );

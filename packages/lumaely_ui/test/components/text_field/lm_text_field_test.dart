@@ -66,6 +66,14 @@ void main() {
   // and a password field, in both themes
   final themes = {'Dawn': LmThemeData.dawn, 'Firefly': LmThemeData.firefly};
   for (final MapEntry(key: name, value: theme) in themes.entries) {
+    test('$name: a focused field has a border in the primary color', () {
+      final colors = theme.extension<LmTheme>()!.colors;
+      final border =
+          lmInputDecorationTheme(colors).focusedBorder! as OutlineInputBorder;
+
+      expect(border.borderSide.color, colors.actionPrimary);
+    });
+
     testWidgets('$name meets the accessibility guidelines', (tester) async {
       final semantics = tester.ensureSemantics();
       await tester.pumpWidget(
