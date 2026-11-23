@@ -1,3 +1,5 @@
+export 'src/components/brand/lm_cover_rise.dart';
+export 'src/components/brand/lm_logo.dart';
 export 'src/components/button/lm_button.dart';
 export 'src/components/button/lm_button_style.dart';
 export 'src/components/calendar/lm_calendar_day.dart';
@@ -7,8 +9,10 @@ export 'src/components/calendar/lm_week_strip.dart';
 export 'src/components/calendar/lm_weekday_letters.dart';
 export 'src/components/chart/lm_mood_chart.dart' hide MoodChartPainter;
 export 'src/components/chart/mood_chart_series.dart' show LmMoodChartSmoothing;
+export 'src/components/choice/lm_choice_tile.dart';
 export 'src/components/day/lm_day_row.dart';
 export 'src/components/dialog/lm_dialog.dart';
+export 'src/components/icon_button/lm_icon_button.dart';
 export 'src/components/mood/lm_mood_curve.dart';
 export 'src/components/mood/lm_mood_dot.dart';
 export 'src/components/mood/lm_mood_labels.dart';
