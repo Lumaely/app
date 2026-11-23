@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lumaely/core/router/placeholder_page.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
+import 'package:lumaely/features/onboarding/ui/diary_password_page.dart';
 import 'package:lumaely/features/onboarding/ui/start_page.dart';
 import 'package:lumaely/features/onboarding/ui/welcome_page.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
@@ -49,13 +49,7 @@ void main() {
     await tester.tap(find.text('I’m new'));
     await tester.pumpAndSettle();
 
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is PlaceholderPage && widget.title == 'Diary password',
-      ),
-      findsOneWidget,
-    );
+    expect(find.byType(DiaryPasswordPage), findsOneWidget);
   });
 
   testWidgets('"I have a diary" says it comes later, and stays', (
