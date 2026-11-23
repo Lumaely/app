@@ -1,4 +1,4 @@
-import 'package:lumaely_ui/src/components/text/lm_line_mark.dart';
+import 'package:lumaely_ui/src/components/text/lm_field_error.dart';
 import 'package:lumaely_ui/src/icons/lm_icon.dart';
 import 'package:lumaely_ui/src/icons/lm_icons.dart';
 import 'package:lumaely_ui/src/theme/lm_theme.dart';
@@ -111,41 +111,9 @@ class _LmTextFieldState extends State<LmTextField> {
                   : null,
             ),
           ),
-          if (error != null) _ErrorMessage(error),
+          if (error != null) LmFieldError(error),
         ],
       ),
-    );
-  }
-}
-
-/// red dot + message
-class _ErrorMessage extends StatelessWidget {
-  const new(this.message);
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    final style = LmTypography.bodySmall.copyWith(color: colors.errorText);
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: LmSpace.s2,
-      children: [
-        LmLineMark(
-          style: style,
-          size: 6,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: colors.errorText,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
-        Expanded(child: Text(message, style: style)),
-      ],
     );
   }
 }
