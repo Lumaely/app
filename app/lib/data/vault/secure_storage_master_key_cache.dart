@@ -41,8 +41,14 @@ class SecureStorageMasterKeyCache implements MasterKeyCache {
   }
 
   @override
-  Future<void> write(Uint8List masterKey) =>
-      _storage.write(key: entryName, value: base64Encode(masterKey));
+  Future<void> write(Uint8List masterKey) async {
+    try {
+      await _storage.write(key: entryName, value: base64Encode(masterKey));
+    } on PlatformException {
+      // keychain locked, keystore failing...
+      throw const MasterKeyCacheException();
+    }
+  }
 
   @override
   Future<void> clear() => _storage.delete(key: entryName);
