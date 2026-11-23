@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:lumaely_crypto/lumaely_crypto.dart';
 import 'package:lumaely_data/lumaely_data.dart';
@@ -97,4 +98,52 @@ void main() {
     );
     expect(await files.keyFile.readAsString(), before);
   });
+
+  test('a refused key cache fails the creation and leaves nothing', () async {
+    final failing = _FailingCache(const MasterKeyCacheException());
+
+    await expectLater(
+      LocalDiary.create(
+        files: files,
+        password: 'hilol',
+        crypto: crypto,
+        cache: failing,
+      ),
+      throwsA(isA<MasterKeyCacheException>()),
+    );
+    expect(files.exists(), isFalse);
+  });
+
+  test('a full disk says so', () async {
+    final full = _FailingCache(
+      const FileSystemException('write', '', OSError('No space left', 28)),
+    );
+
+    await expectLater(
+      LocalDiary.create(
+        files: files,
+        password: 'hilol',
+        crypto: crypto,
+        cache: full,
+      ),
+      throwsA(isA<NotEnoughSpaceException>()),
+    );
+    expect(files.exists(), isFalse);
+  });
+}
+
+/// a key cache whose writes fail with [error]
+class _FailingCache implements MasterKeyCache {
+  new(this.error);
+
+  final Exception error;
+
+  @override
+  Future<Uint8List?> read() async => null;
+
+  @override
+  Future<void> write(Uint8List masterKey) async => throw error;
+
+  @override
+  Future<void> clear() async {}
 }
