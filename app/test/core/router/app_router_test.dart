@@ -1,48 +1,26 @@
 import 'dart:async';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lumaely/app.dart';
 import 'package:lumaely/core/router/placeholder_page.dart';
-import 'package:lumaely/data/vault/vault.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely/features/launch/ui/splash_page.dart';
 import 'package:lumaely/features/launch/ui/vault_error_page.dart';
+import 'package:lumaely/features/onboarding/ui/welcome_page.dart';
 import 'package:lumaely_data/lumaely_data.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
 
+import '../../helpers/fake_vault.dart';
 import '../../helpers/test_diary.dart';
-
-/// a vault that loads whatever the test says, without files or keys
-class _FakeVault extends Vault {
-  new(this.load);
-
-  final Future<VaultState> Function() load;
-
-  @override
-  Future<VaultState> build() => load();
-
-  void set(VaultState next) => state = AsyncData(next);
-}
 
 void main() {
   late LocalDiary diary;
 
   setUpAll(() async => diary = await createTestDiary());
 
-  Future<_FakeVault> launch(
+  Future<FakeVault> launch(
     WidgetTester tester,
     Future<VaultState> Function() load,
-  ) async {
-    final vault = _FakeVault(load);
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [vaultProvider.overrideWith(() => vault)],
-        child: const App(),
-      ),
-    );
-    return vault;
-  }
+  ) => launchApp(tester, load);
 
   Finder placeholder(String title) => find.byWidgetPredicate(
     (widget) => widget is PlaceholderPage && widget.title == title,
@@ -59,7 +37,7 @@ void main() {
     await launch(tester, () async => const VaultEmpty());
     await tester.pumpAndSettle();
 
-    expect(placeholder('Welcome'), findsOneWidget);
+    expect(find.byType(WelcomePage), findsOneWidget);
   });
 
   testWidgets('locked diary: lands on unlock', (tester) async {
@@ -105,7 +83,7 @@ void main() {
 
     expect(loads, 2);
     expect(find.byType(VaultErrorPage), findsNothing);
-    expect(placeholder('Welcome'), findsOneWidget);
+    expect(find.byType(WelcomePage), findsOneWidget);
   });
 
   testWidgets('the tab bar shows only once the diary is open', (tester) async {
