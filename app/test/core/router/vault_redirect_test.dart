@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumaely/core/router/router_paths.dart';
 import 'package:lumaely/core/router/vault_redirect.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
+import 'package:lumaely_crypto/lumaely_crypto.dart';
 import 'package:lumaely_data/lumaely_data.dart';
 
 import '../../helpers/test_diary.dart';
@@ -17,6 +20,9 @@ void main() {
   const empty = AsyncData<VaultState>(VaultEmpty());
   const locked = AsyncData<VaultState>(VaultLocked());
   AsyncValue<VaultState> open() => AsyncData(VaultOpen(diary));
+  AsyncValue<VaultState> justCreated() => AsyncData(
+    VaultOpen(diary, newRecoveryKey: RecoveryKey.fromEntropy(Uint8List(32))),
+  );
 
   // location -> where the redirect sends it (null: stays)
   void expectRedirects(
@@ -78,6 +84,19 @@ void main() {
       RouterPaths.onboarding: RouterPaths.today,
       '${RouterPaths.onboarding}/password': RouterPaths.today,
       RouterPaths.unlock: RouterPaths.today,
+    });
+  });
+
+  test('just created: the recovery key screen only, until confirmed', () {
+    expectRedirects(justCreated(), {
+      RouterPaths.onboardingRecoveryKey: null,
+      RouterPaths.onboardingPassword: RouterPaths.onboardingRecoveryKey,
+      RouterPaths.today: RouterPaths.onboardingRecoveryKey,
+      RouterPaths.splash: RouterPaths.onboardingRecoveryKey,
+    });
+    // once confirmed, the key screen is behind
+    expectRedirects(open(), {
+      RouterPaths.onboardingRecoveryKey: RouterPaths.today,
     });
   });
 

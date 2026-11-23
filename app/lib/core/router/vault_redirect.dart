@@ -1,12 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lumaely/core/router/router_paths.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
+import 'package:lumaely_crypto/lumaely_crypto.dart';
 
 /// where the app must go for this vault state, or null to stay on [location]
 /// - pure: tested as a table (vault state x path)
 /// - error: the error page, also while it retries
 /// - loading: the splash
 /// - empty: onboarding only, locked: unlock only
+/// - just created: its recovery key screen only, until it's confirmed
 /// - open: anything but the splash, onboarding and unlock
 /// - [debugBuild]: the debug page is reachable in every state
 String? vaultRedirect(
@@ -34,6 +36,10 @@ String? vaultRedirect(
       _isIn(location, RouterPaths.onboarding) ? null : RouterPaths.onboarding,
     VaultLocked() =>
       _isIn(location, RouterPaths.unlock) ? null : RouterPaths.unlock,
+    VaultOpen(newRecoveryKey: RecoveryKey()) =>
+      _isIn(location, RouterPaths.onboardingRecoveryKey)
+          ? null
+          : RouterPaths.onboardingRecoveryKey,
     VaultOpen() =>
       location == RouterPaths.splash ||
               location == RouterPaths.vaultError ||

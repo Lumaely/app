@@ -151,6 +151,35 @@ void main() {
     expect(entry!.moods, const WholeDayMood(MoodScore.good));
   });
 
+  test('a new diary keeps its recovery key until it is confirmed', () async {
+    final container = makeContainer();
+    final recoveryKey = await createDiary(container);
+
+    expect(
+      container.read(vaultProvider).value,
+      isA<VaultOpen>().having(
+        (open) => open.newRecoveryKey,
+        'newRecoveryKey',
+        recoveryKey,
+      ),
+    );
+
+    container.read(vaultProvider.notifier).confirmRecoveryKey();
+
+    expect(
+      container.read(vaultProvider).value,
+      isA<VaultOpen>().having(
+        (open) => open.newRecoveryKey,
+        'newRecoveryKey',
+        isNull,
+      ),
+    );
+    expect(
+      () => container.read(vaultProvider.notifier).confirmRecoveryKey(),
+      throwsStateError,
+    );
+  });
+
   test('a simulated error shows until the vault is reloaded', () async {
     final container = makeContainer();
     await createDiary(container);

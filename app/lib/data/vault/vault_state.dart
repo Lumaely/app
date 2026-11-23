@@ -1,3 +1,4 @@
+import 'package:lumaely_crypto/lumaely_crypto.dart';
 import 'package:lumaely_data/lumaely_data.dart';
 
 /// Where the diary stands on this device.
@@ -18,7 +19,11 @@ final class VaultLocked extends VaultState {
 
 /// The diary is open and ready to use.
 final class VaultOpen extends VaultState {
-  const new(this.diary);
+  const new(this.diary, {this.newRecoveryKey});
 
   final LocalDiary diary;
+
+  /// set when the diary was just created, until the person confirms they
+  /// wrote it down
+  final RecoveryKey? newRecoveryKey;
 }

@@ -6,6 +6,7 @@ abstract final class RouterPaths {
   static const onboarding = '/onboarding';
   static const onboardingStart = '/onboarding/start';
   static const onboardingPassword = '/onboarding/password';
+  static const onboardingRecoveryKey = '/onboarding/recovery-key';
 
   // app
   static const unlock = '/unlock';
