@@ -27,7 +27,7 @@ dependencies:
     path: ../packages/lumaely_data
   lumaely_ui:
     path: ../packages/lumaely_ui
-  material_ui: ^1.10.0
+  material_ui: ^1.11.1
   path: ^1.9.1
   path_provider: ^2.1.6
   riverpod_annotation: ^4.0.8

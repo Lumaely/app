@@ -14,7 +14,7 @@ dependencies:
   intl: ^0.20.3
   lumaely_core:
     path: ../lumaely_core
-  material_ui: ^1.10.0
+  material_ui: ^1.11.1
   path_parsing: ^1.0.1
 
 dev_dependencies:
