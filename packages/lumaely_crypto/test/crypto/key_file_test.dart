@@ -54,6 +54,28 @@ void main() {
     expect(text, isNot(contains(base64Encode(master.extractBytes()))));
   });
 
+  test('a new recovery key keeps the password lock', () async {
+    final master = crypto.generateMasterKey();
+    addTearDown(master.dispose);
+    final file = KeyFile(
+      passwordLock: await crypto.lockWithPassword(master, 'hilol'),
+      recoveryLock: crypto.lockWithRecoveryKey(
+        master,
+        crypto.generateRecoveryKey(),
+      ),
+    );
+    final newKey = crypto.generateRecoveryKey();
+
+    final changed = file.withRecoveryLock(
+      crypto.lockWithRecoveryKey(master, newKey),
+    );
+
+    expect(changed.passwordLock, same(file.passwordLock));
+    final unlocked = crypto.unlockWithRecoveryKey(changed.recoveryLock, newKey);
+    addTearDown(unlocked.dispose);
+    expect(unlocked.extractBytes(), equals(master.extractBytes()));
+  });
+
   test('a new password keeps the recovery lock', () async {
     final master = crypto.generateMasterKey();
     addTearDown(master.dispose);
