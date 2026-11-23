@@ -137,7 +137,7 @@ Widget calendarLegend(BuildContext context) {
 
 @widgetbook.UseCase(name: 'Playground', type: LmWeekStrip, path: '[Components]')
 Widget weekStripPlayground(BuildContext context) {
-  // the week of figma: mon oct 26 to sun nov 1, 2026
+  // a week across two months: mon oct 26 to sun nov 1, 2026
   final day = context.knobs.int.slider(
     label: 'Today (0 = monday)',
     initialValue: 3,

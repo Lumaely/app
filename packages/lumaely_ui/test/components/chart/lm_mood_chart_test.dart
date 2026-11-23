@@ -167,7 +167,7 @@ void main() {
     phone(tester);
     final end = LocalDate(2026, 12, 31);
     for (final (days, smoothing, fits) in [
-      // figma: a month per day, ~10 px between dots
+      // a month per day, ~10 px between dots
       (29, LmMoodChartSmoothing.none, true),
       (62, LmMoodChartSmoothing.none, false),
       // auto over a year = per week, 52 points

@@ -30,7 +30,7 @@ class LmDialog extends StatelessWidget {
   final String message;
   final List<Widget> actions;
 
-  /// figma: 310 wide on a phone
+  /// 310 wide on a phone
   static const maxWidth = 310.0;
 
   @override
@@ -51,7 +51,7 @@ class LmDialog extends StatelessWidget {
               LmSpace.s5,
               LmSpace.s6,
               LmSpace.s5,
-              LmSpace.s3,
+              LmSpace.s5,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,

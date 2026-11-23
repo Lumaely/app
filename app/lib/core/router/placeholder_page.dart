@@ -9,8 +9,6 @@ class PlaceholderPage extends StatelessWidget {
 
   final String title;
 
-  static const debugLabel = 'Vault debug page';
-
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -36,7 +34,7 @@ class PlaceholderPage extends StatelessWidget {
               ),
               if (kDebugMode)
                 LmButton(
-                  label: debugLabel,
+                  label: 'Vault debug page',
                   variant: LmButtonVariant.secondary,
                   onPressed: () => context.go(RouterPaths.debug),
                 ),

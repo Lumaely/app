@@ -13,7 +13,7 @@ class LmMoodDot extends StatelessWidget {
   final double? average;
   final double size;
 
-  /// size in the journal list (figma)
+  /// size in the journal list
   static const defaultSize = 28.0;
 
   @override

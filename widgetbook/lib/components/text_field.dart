@@ -31,7 +31,7 @@ Widget textFieldPlayground(BuildContext context) {
   );
 }
 
-// same as the "Error · sign in" screen in figma
+// as on the sign in screen, with an error
 @widgetbook.UseCase(
   name: 'Sign in form',
   type: LmTextField,

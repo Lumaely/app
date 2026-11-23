@@ -2,7 +2,7 @@ import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-// examples from the figma wireframes (v1-alpha.15)
+// examples from the app's screens
 
 Widget _opener(String label, void Function(BuildContext context) open) {
   return Scaffold(

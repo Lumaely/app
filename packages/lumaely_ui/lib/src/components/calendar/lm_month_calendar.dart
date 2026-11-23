@@ -45,7 +45,7 @@ class LmMonthCalendar extends StatelessWidget {
     final first = DateTime(year, month);
     // day 0 of next month = last day of this one
     final daysInMonth = DateTime(year, month + 1, 0).day;
-    // monday first (figma); blank cells before the 1st
+    // monday first; blank cells before the 1st
     final blanks = first.weekday - DateTime.monday;
     final weeks = ((blanks + daysInMonth) / 7).ceil();
     final onDayTap = this.onDayTap;

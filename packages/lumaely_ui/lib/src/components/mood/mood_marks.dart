@@ -6,7 +6,7 @@ import 'package:lumaely_ui/src/components/mood/lm_mood_labels.dart';
 import 'package:lumaely_ui/src/tokens/lm_colors.dart';
 
 // drawing shared by the mood curve and the mood slider (not exported)
-// sizes come from figma (Entry · Mood)
+// sizes of the mood marks in the entry flow
 
 const double knobSize = 26;
 const double railWidth = 6;

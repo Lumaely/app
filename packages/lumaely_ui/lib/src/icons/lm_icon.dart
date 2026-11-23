@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:lumaely_ui/src/icons/lm_icons.dart';
-import 'package:path_parsing/path_parsing.dart';
+import 'package:lumaely_ui/src/icons/svg_path.dart';
 
 /// draws an icon of [LmIcons]
 /// - like Icon: size and color come from the IconTheme when not given (so it
@@ -8,8 +8,8 @@ import 'package:path_parsing/path_parsing.dart';
 /// - [semanticLabel] null -> decorative, screen readers skip it
 ///
 /// why not the phosphor font: on apple (CoreText) some glyphs came out with
-/// thinner lines in places. drawing the svg path gives the same result as
-/// figma, everywhere
+/// thinner lines in places. drawing the svg path gives the same result
+/// everywhere
 class LmIcon extends StatelessWidget {
   const new(this.icon, {this.size, this.color, this.semanticLabel, super.key});
 
@@ -39,38 +39,7 @@ class LmIcon extends StatelessWidget {
 // parsed once per icon
 final _paths = <LmIcons, Path>{};
 
-Path _pathOf(LmIcons icon) {
-  return _paths[icon] ??= () {
-    final path = Path();
-    writeSvgPathDataToPath(icon.path, _PathProxy(path));
-    return path;
-  }();
-}
-
-class _PathProxy implements PathProxy {
-  new(this.path);
-
-  final Path path;
-
-  @override
-  void moveTo(double x, double y) => path.moveTo(x, y);
-
-  @override
-  void lineTo(double x, double y) => path.lineTo(x, y);
-
-  @override
-  void cubicTo(
-    double x1,
-    double y1,
-    double x2,
-    double y2,
-    double x3,
-    double y3,
-  ) => path.cubicTo(x1, y1, x2, y2, x3, y3);
-
-  @override
-  void close() => path.close();
-}
+Path _pathOf(LmIcons icon) => _paths[icon] ??= svgPath(icon.path);
 
 class _IconPainter extends CustomPainter {
   new(this.path, this.color);

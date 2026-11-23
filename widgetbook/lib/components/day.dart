@@ -4,7 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-// days of the figma "Journal · List" screen
+// days as in the journal list
 final List<DayEntry> _october = [
   _entry(
     LocalDate(2026, 10, 29),

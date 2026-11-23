@@ -24,7 +24,7 @@ DayEntry _entry(LocalDate date, {String journal = ''}) {
   );
 }
 
-// the week of figma: mon oct 26 to sun nov 1; today is thursday 29
+// a week across two months: mon oct 26 to sun nov 1; today is thursday 29
 final _today = LocalDate(2026, 10, 29);
 final _monday = LocalDate(2026, 10, 26);
 

@@ -15,7 +15,7 @@ Widget moodCurvePlayground(BuildContext context) {
     min: 2,
     max: 5,
   );
-  // same sets as the figma section "Moments · 2 to 5"
+  // the moment sets, from 2 to 5 moments
   final moments = switch (count) {
     2 => const [Moment.afternoon, Moment.evening],
     3 => const [Moment.morning, Moment.afternoon, Moment.evening],
