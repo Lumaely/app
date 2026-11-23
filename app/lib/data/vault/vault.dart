@@ -27,7 +27,8 @@ class Vault extends _$Vault {
 
   /// Creates the diary and opens it.
   ///
-  /// Returns the recovery key. It must be shown once, so the user can write it
+  /// Returns the recovery key, also kept in [VaultOpen.newRecoveryKey] until
+  /// [confirmRecoveryKey]: it must be shown once, so the user can write it
   /// down.
   Future<RecoveryKey> create(String password) async {
     _expect<VaultEmpty>();
@@ -39,19 +40,37 @@ class Vault extends _$Vault {
       cache: _cache,
     );
 
-    state = AsyncData(_opened(createdDiary.diary));
+    state = AsyncData(
+      _opened(createdDiary.diary, newRecoveryKey: createdDiary.recoveryKey),
+    );
     return createdDiary.recoveryKey;
+  }
+
+  /// clears recovery key from memory and lets the app going on
+  ///
+  /// must be only called when we are sure user has written down the recovery
+  /// key.
+  void confirmRecoveryKey() {
+    final current = state.value;
+
+    if (current is! VaultOpen || current.newRecoveryKey == null) {
+      throw StateError('No new recovery key to confirm, got $current');
+    }
+
+    state = AsyncData(VaultOpen(current.diary));
   }
 
   /// Throws [WrongSecretException] if the password is wrong
   Future<void> unlockWithPassword(String password) async {
     _expect<VaultLocked>();
+
     final diary = await LocalDiary.openWithPassword(
       files: _files,
       password: password,
       crypto: _crypto,
       cache: _cache,
     );
+
     state = AsyncData(_opened(diary));
   }
 
@@ -79,9 +98,9 @@ class Vault extends _$Vault {
     state = AsyncError(StateError('Simulated vault error'), StackTrace.current);
   }
 
-  VaultOpen _opened(LocalDiary diary) {
+  VaultOpen _opened(LocalDiary diary, {RecoveryKey? newRecoveryKey}) {
     ref.onDispose(diary.close);
-    return VaultOpen(diary);
+    return VaultOpen(diary, newRecoveryKey: newRecoveryKey);
   }
 
   void _expect<T extends VaultState>() {
