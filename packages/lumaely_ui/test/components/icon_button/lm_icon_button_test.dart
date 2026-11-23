@@ -39,7 +39,7 @@ void main() {
     semantics.dispose();
   });
 
-  testWidgets('a 36 px circle in a 48 px touch area', (tester) async {
+  testWidgets('a circle of its size in a 48 px touch area', (tester) async {
     await tester.pumpWidget(_app());
 
     expect(tester.getSize(find.byType(LmIconButton)), const Size.square(48));
