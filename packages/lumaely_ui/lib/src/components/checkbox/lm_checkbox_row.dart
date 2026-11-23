@@ -47,6 +47,7 @@ class LmCheckboxRow extends StatelessWidget {
                   LmLineMark(
                     style: style,
                     size: boxSize,
+                    align: LmLineMarkAlign.capitals,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: value ? colors.actionPrimary : colors.surface,
