@@ -78,7 +78,7 @@ void main() {
 
     expect(find.byType(VaultErrorPage), findsOneWidget);
 
-    await tester.tap(find.text(VaultErrorPage.retryLabel));
+    await tester.tap(find.text('Try again'));
     await tester.pumpAndSettle();
 
     expect(loads, 2);

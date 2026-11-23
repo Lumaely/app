@@ -9,13 +9,6 @@ import 'package:material_ui/material_ui.dart';
 class VaultErrorPage extends ConsumerWidget {
   const new({super.key});
 
-  // FIXME: english for now, the locale comes with translations
-  static const title = 'Your diary could not be opened';
-  static const message =
-      'Nothing was lost. Try again, and restart your phone if it keeps '
-      'happening.';
-  static const retryLabel = 'Try again';
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
@@ -33,7 +26,7 @@ class VaultErrorPage extends ConsumerWidget {
               Semantics(
                 header: true,
                 child: Text(
-                  title,
+                  'Your diary could not be opened',
                   textAlign: TextAlign.center,
                   style: LmTypography.headlineSmall.copyWith(
                     color: colors.textPrimary,
@@ -41,7 +34,8 @@ class VaultErrorPage extends ConsumerWidget {
                 ),
               ),
               Text(
-                message,
+                'Nothing was lost. Try again, and restart your phone if it '
+                'keeps happening.',
                 textAlign: TextAlign.center,
                 style: LmTypography.bodyMedium.copyWith(
                   color: colors.textSecondary,
@@ -49,7 +43,7 @@ class VaultErrorPage extends ConsumerWidget {
               ),
               const SizedBox(height: LmSpace.s2),
               LmButton(
-                label: retryLabel,
+                label: 'Try again',
                 loading: retrying,
                 onPressed: retrying
                     ? null
