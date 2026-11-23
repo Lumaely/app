@@ -117,7 +117,7 @@ class _LmTextFieldState extends State<LmTextField> {
   }
 }
 
-/// red dot + message, like in figma
+/// red dot + message
 class _ErrorMessage extends StatelessWidget {
   const new(this.message);
 

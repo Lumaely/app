@@ -90,7 +90,7 @@ extension LmMoodColors on LmColors {
 
   /// outline for moods too close to the tile color, null for the others
   /// - rough: almost invisible on firefly (mood1Outline, = mood1 on dawn)
-  /// - great: light yellow on dawn's white (as in figma)
+  /// - great: light yellow on dawn's white
   Color? moodOutline(MoodScore score) => switch (score) {
     MoodScore.rough => mood1Outline,
     MoodScore.great => border,

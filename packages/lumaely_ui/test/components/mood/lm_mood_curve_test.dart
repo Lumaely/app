@@ -29,7 +29,7 @@ void main() {
       ),
     );
 
-    // rails go from 20 (great) to 230 (rough) in the column, like figma
+    // rails go from 20 (great) to 230 (rough) in the column
     final column = tester.getRect(find.bySemanticsLabel('Noon'));
     await tester.tapAt(column.topCenter + const Offset(0, 20));
     await tester.tapAt(column.topCenter + const Offset(0, 230));

@@ -14,7 +14,7 @@ class LmTileIcon extends StatelessWidget {
   static const size = 28.0;
   static const iconSize = 18.0;
 
-  // from figma, too small for a radius token (smallest is 12)
+  // too small for a radius token (smallest is 12)
   static const radius = 7.0;
 
   @override

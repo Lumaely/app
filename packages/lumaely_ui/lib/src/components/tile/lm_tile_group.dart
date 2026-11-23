@@ -36,7 +36,7 @@ class LmTileGroup extends StatelessWidget {
   /// fill of the tile, see [LmTile.color]
   final Color? color;
 
-  // from figma, not a token
+  // not a token
   static const titleGap = 6.0;
 
   @override

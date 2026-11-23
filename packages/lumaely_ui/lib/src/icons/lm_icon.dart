@@ -8,8 +8,8 @@ import 'package:lumaely_ui/src/icons/svg_path.dart';
 /// - [semanticLabel] null -> decorative, screen readers skip it
 ///
 /// why not the phosphor font: on apple (CoreText) some glyphs came out with
-/// thinner lines in places. drawing the svg path gives the same result as
-/// figma, everywhere
+/// thinner lines in places. drawing the svg path gives the same result
+/// everywhere
 class LmIcon extends StatelessWidget {
   const new(this.icon, {this.size, this.color, this.semanticLabel, super.key});
 

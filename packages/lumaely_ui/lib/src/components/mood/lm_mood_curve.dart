@@ -132,7 +132,7 @@ class LmMoodCurve extends StatelessWidget {
   }
 }
 
-/// where things are in the chart (sizes from figma)
+/// where things are in the chart
 class _CurveLayout {
   new(this.width, this.count);
 

@@ -2,8 +2,8 @@
 // ignore_for_file: lines_longer_than_80_chars
 
 /// icons of the app
-/// - phosphor regular (MIT, @phosphor-icons/core 2.1.1), the same svg as in
-///   the figma kit
+/// - phosphor regular (MIT, @phosphor-icons/core 2.1.1), the same svg paths
+///   as the design kit
 /// - draw them with LmIcon
 /// - moments (sunrise, sunset...) are not in phosphor -> custom ones later
 ///

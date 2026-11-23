@@ -45,7 +45,7 @@ class LmMoodChart extends StatelessWidget {
         : LmMoodChartSmoothing.autoFor(days);
   }
 
-  /// height of the grid, from 5 to 1 (figma)
+  /// height of the grid, from 5 to 1
   static const plotHeight = 84.0;
 
   /// text scale from which the middle date is dropped (no room for 3)

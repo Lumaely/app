@@ -55,7 +55,7 @@ class LmSheet extends StatelessWidget {
       padding: EdgeInsets.only(bottom: keyboard),
       child: SafeArea(
         top: false,
-        // figma: 34 on iphone (home indicator), at least 24 elsewhere
+        // 34 on iphone (home indicator), at least 24 elsewhere
         minimum: const EdgeInsets.only(bottom: LmSpace.s6),
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: LmSpace.s6),
