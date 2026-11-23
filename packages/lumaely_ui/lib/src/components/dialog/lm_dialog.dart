@@ -51,7 +51,7 @@ class LmDialog extends StatelessWidget {
               LmSpace.s5,
               LmSpace.s6,
               LmSpace.s5,
-              LmSpace.s3,
+              LmSpace.s5,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
