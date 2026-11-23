@@ -1,7 +1,11 @@
+import 'dart:async';
+
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lumaely/data/vault/vault.dart';
 import 'package:lumaely_core/lumaely_core.dart';
+import 'package:lumaely_data/lumaely_data.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -39,20 +43,47 @@ class _DiaryPasswordPageState extends ConsumerState<DiaryPasswordPage> {
 
     setState(() => _creating = true);
 
+    unawaited(
+      SemanticsService.sendAnnouncement(
+        View.of(context),
+        'Creating your diary',
+        Directionality.of(context),
+      ),
+    );
+
     try {
       await ref.read(vaultProvider.notifier).create(_password.text);
-    } on Exception {
+    } on DiaryAlreadyExistsException {
+      // files left from before: reload the vault, the router takes it from
+      // there (unlock)
+      ref.invalidate(vaultProvider);
+    } on Exception catch (error) {
       if (!mounted) {
         return;
       }
 
       setState(() => _creating = false);
 
+      final (title, message) = switch (error) {
+        NotEnoughSpaceException() => (
+          'Your phone is full',
+          'Free some space, then try again. Nothing was saved.',
+        ),
+        MasterKeyCacheException() => (
+          'Secure storage isn’t available',
+          'Try restarting your phone and try again. Nothing was saved.',
+        ),
+        _ => (
+          'Your diary could not be created',
+          'Nothing was saved. Try again in a moment.',
+        ),
+      };
+
       await showLmDialog<void>(
         context,
         builder: (context) => LmDialog(
-          title: 'Your diary could not be created',
-          message: 'Nothing was saved. Try again in a moment.',
+          title: title,
+          message: message,
           actions: [
             LmButton(label: 'OK', onPressed: () => Navigator.pop(context)),
           ],
@@ -76,118 +107,122 @@ class _DiaryPasswordPageState extends ConsumerState<DiaryPasswordPage> {
         ? 'The passwords don’t match.'
         : null;
 
-    return Scaffold(
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) => SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              LmSpace.s5,
-              LmSpace.s2,
-              LmSpace.s5,
-              LmSpace.s5,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight - LmSpace.s2 - LmSpace.s5,
+    // no going back while the diary is being created
+    return PopScope(
+      canPop: !_creating,
+      child: Scaffold(
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(
+                LmSpace.s5,
+                LmSpace.s2,
+                LmSpace.s5,
+                LmSpace.s5,
               ),
-              child: IntrinsicHeight(
-                child: AutofillGroup(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: LmIconButton(
-                            icon: LmIcons.chevronLeft,
-                            label: 'Back',
-                            onPressed: _creating ? null : () => context.pop(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - LmSpace.s2 - LmSpace.s5,
+                ),
+                child: IntrinsicHeight(
+                  child: AutofillGroup(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            child: LmIconButton(
+                              icon: LmIcons.chevronLeft,
+                              label: 'Back',
+                              onPressed: _creating ? null : () => context.pop(),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: LmSpace.s4),
-                      Semantics(
-                        header: true,
-                        child: Text(
-                          'Choose a diary password',
-                          style: LmTypography.headlineLarge.copyWith(
-                            color: colors.textPrimary,
+                        const SizedBox(height: LmSpace.s4),
+                        Semantics(
+                          header: true,
+                          child: Text(
+                            'Choose a diary password',
+                            style: LmTypography.headlineLarge.copyWith(
+                              color: colors.textPrimary,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'It locks your diary on this phone.',
-                        style: LmTypography.bodyMedium.copyWith(
-                          color: colors.textSecondary,
+                        const SizedBox(height: 6),
+                        Text(
+                          'It locks your diary on this phone.',
+                          style: LmTypography.bodyMedium.copyWith(
+                            color: colors.textSecondary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: LmSpace.s4),
-                      LmTextField(
-                        label: 'Password',
-                        controller: _password,
-                        password: true,
-                        error: passwordError,
-                        enabled: !_creating,
-                        textInputAction: TextInputAction.next,
-                        autofillHints: const [AutofillHints.newPassword],
-                        onChanged: (_) => setState(() {}),
-                      ),
-                      const SizedBox(height: LmSpace.s2),
-                      LmPasswordStrength(_strength),
-                      const SizedBox(height: LmSpace.s4),
-                      LmTextField(
-                        label: 'Confirm password',
-                        controller: _confirmation,
-                        password: true,
-                        error: confirmationError,
-                        enabled: !_creating,
-                        textInputAction: TextInputAction.done,
-                        autofillHints: const [AutofillHints.newPassword],
-                        onChanged: (_) => setState(() {}),
-                        onSubmitted: (_) => _continue(),
-                      ),
-                      const SizedBox(height: LmSpace.s4),
-                      LmTile(
-                        child: Padding(
-                          padding: const EdgeInsets.all(LmSpace.s4),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: LmSpace.s3,
-                            children: [
-                              LmLineMark(
-                                style: LmTypography.bodySmall,
-                                size: 20,
-                                child: LmIcon(
-                                  LmIcons.lock,
+                        const SizedBox(height: LmSpace.s4),
+                        LmTextField(
+                          label: 'Password',
+                          controller: _password,
+                          password: true,
+                          error: passwordError,
+                          enabled: !_creating,
+                          textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.newPassword],
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        const SizedBox(height: LmSpace.s2),
+                        LmPasswordStrength(_strength),
+                        const SizedBox(height: LmSpace.s4),
+                        LmTextField(
+                          label: 'Confirm password',
+                          controller: _confirmation,
+                          password: true,
+                          error: confirmationError,
+                          enabled: !_creating,
+                          textInputAction: TextInputAction.done,
+                          autofillHints: const [AutofillHints.newPassword],
+                          onChanged: (_) => setState(() {}),
+                          onSubmitted: (_) => _continue(),
+                        ),
+                        const SizedBox(height: LmSpace.s4),
+                        LmTile(
+                          child: Padding(
+                            padding: const EdgeInsets.all(LmSpace.s4),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: LmSpace.s3,
+                              children: [
+                                LmLineMark(
+                                  style: LmTypography.bodySmall,
                                   size: 20,
-                                  color: colors.textSecondary,
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  'Lumaely never sees this password and can’t '
-                                  'reset it. Your recovery key, on the next '
-                                  'step, can.',
-                                  style: LmTypography.bodySmall.copyWith(
+                                  child: LmIcon(
+                                    LmIcons.lock,
+                                    size: 20,
                                     color: colors.textSecondary,
                                   ),
                                 ),
-                              ),
-                            ],
+                                Expanded(
+                                  child: Text(
+                                    'Lumaely never sees this password and '
+                                    'can’t reset it. Your recovery key, on '
+                                    'the next step, can.',
+                                    style: LmTypography.bodySmall.copyWith(
+                                      color: colors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      const Spacer(),
-                      const SizedBox(height: LmSpace.s4),
-                      LmButton(
-                        label: 'Continue',
-                        large: true,
-                        loading: _creating,
-                        onPressed: _creating ? null : _continue,
-                      ),
-                    ],
+                        const Spacer(),
+                        const SizedBox(height: LmSpace.s4),
+                        LmButton(
+                          label: 'Continue',
+                          large: true,
+                          loading: _creating,
+                          onPressed: _creating ? null : _continue,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

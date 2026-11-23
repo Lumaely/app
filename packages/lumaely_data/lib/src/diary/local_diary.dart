@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:drift/isolate.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_crypto/lumaely_crypto.dart';
 import 'package:lumaely_data/src/database/app_database.dart';
@@ -7,7 +10,10 @@ import 'package:lumaely_data/src/diary/master_key_cache.dart';
 import 'package:lumaely_data/src/entries/drift_entry_repository.dart';
 import 'package:lumaely_data/src/exceptions/diary_already_exists_exception.dart';
 import 'package:lumaely_data/src/exceptions/diary_not_found_exception.dart';
+import 'package:lumaely_data/src/exceptions/master_key_cache_exception.dart';
+import 'package:lumaely_data/src/exceptions/not_enough_space_exception.dart';
 import 'package:lumaely_data/src/exceptions/wrong_database_key_exception.dart';
+import 'package:sqlite3/sqlite3.dart';
 
 /// A newly created diary and the recovery key to show to the user, once.
 typedef CreatedDiary = ({LocalDiary diary, RecoveryKey recoveryKey});
@@ -38,7 +44,10 @@ final class LocalDiary {
 
   /// Creates a new diary in [files], locked with [password].
   ///
-  /// Throws [DiaryAlreadyExistsException] if [files] already holds a diary.
+  /// Throws [DiaryAlreadyExistsException] if [files] already holds a diary,
+  /// [NotEnoughSpaceException] if the phone is full, and
+  /// [MasterKeyCacheException] if the key can't be kept on this device.
+  /// Nothing is left behind when it fails.
   static Future<CreatedDiary> create({
     required DiaryFiles files,
     required String password,
@@ -67,15 +76,30 @@ final class LocalDiary {
       await _cacheMasterKey(masterKey, cache);
 
       return (diary: diary, recoveryKey: recoveryKey);
-    } catch (_) {
+    } catch (error) {
       if (diary != null) {
         await diary.close();
       } else {
         masterKey.dispose();
       }
       await files.delete();
+      if (_isDiskFull(error)) throw const NotEnoughSpaceException();
       rethrow;
     }
+  }
+
+  /// the file system or sqlite said the disk is full
+  static bool _isDiskFull(Object error) {
+    // ENOSPC, on Android, iOS and macOS alike
+    const noSpaceLeft = 28;
+    // SQLITE_FULL
+    const databaseFull = 13;
+    final cause = error is DriftRemoteException ? error.remoteCause : error;
+    return switch (cause) {
+      FileSystemException(:final osError?) => osError.errorCode == noSpaceLeft,
+      SqliteException() => cause.resultCode == databaseFull,
+      _ => false,
+    };
   }
 
   /// Opens the diary with the master key cached on this device.
