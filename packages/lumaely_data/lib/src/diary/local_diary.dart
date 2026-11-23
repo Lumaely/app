@@ -205,6 +205,55 @@ final class LocalDiary {
     await _lockWithNewPassword(await _files.readKeyFile(), newPassword);
   }
 
+  /// True once the person confirmed they saved the recovery key.
+  Future<bool> isRecoveryKeyConfirmed() async {
+    _ensureOpen();
+
+    final row =
+        await (database.select(database.databaseMeta)
+              ..where((meta) => meta.name.equals(_recoveryKeyConfirmedAt)))
+            .getSingleOrNull();
+
+    return row != null;
+  }
+
+  /// Remembers that the person saved the recovery key.
+  Future<void> confirmRecoveryKey() async {
+    _ensureOpen();
+
+    await database
+        .into(database.databaseMeta)
+        .insertOnConflictUpdate(
+          DatabaseMetaCompanion.insert(
+            name: _recoveryKeyConfirmedAt,
+            value: DateTime.now().toUtc().toIso8601String(),
+          ),
+        );
+  }
+
+  /// Replaces the recovery key with a new one and returns it, to show once.
+  ///
+  /// The old recovery key stops working; the password and the database
+  /// don't change. For a key that was never confirmed (the app was closed
+  /// before), since it can't be shown again.
+  Future<RecoveryKey> replaceRecoveryKey() async {
+    _ensureOpen();
+
+    final recoveryKey = _crypto.generateRecoveryKey();
+    final keyFile = await _files.readKeyFile();
+
+    await _files.writeKeyFile(
+      keyFile.withRecoveryLock(
+        _crypto.lockWithRecoveryKey(_masterKey, recoveryKey),
+      ),
+    );
+
+    return recoveryKey;
+  }
+
+  /// database_meta name of the recovery key confirmation (a stored value)
+  static const _recoveryKeyConfirmedAt = 'recovery_key_confirmed_at';
+
   static Future<LocalDiary> _openDatabase(
     DiaryFiles files,
     SecureKey masterKey,

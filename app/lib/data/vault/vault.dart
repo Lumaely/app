@@ -13,6 +13,7 @@ class Vault extends _$Vault {
   @override
   Future<VaultState> build() async {
     final files = ref.watch(diaryFilesProvider);
+
     if (!files.exists()) {
       return const VaultEmpty();
     }
@@ -22,7 +23,8 @@ class Vault extends _$Vault {
       crypto: ref.watch(cryptoEngineProvider),
       cache: ref.watch(masterKeyCacheProvider),
     );
-    return diary == null ? const VaultLocked() : _opened(diary);
+
+    return diary == null ? const VaultLocked() : await _opened(diary);
   }
 
   /// Creates the diary and opens it.
@@ -41,7 +43,10 @@ class Vault extends _$Vault {
     );
 
     state = AsyncData(
-      _opened(createdDiary.diary, newRecoveryKey: createdDiary.recoveryKey),
+      await _opened(
+        createdDiary.diary,
+        newRecoveryKey: createdDiary.recoveryKey,
+      ),
     );
     return createdDiary.recoveryKey;
   }
@@ -50,13 +55,14 @@ class Vault extends _$Vault {
   ///
   /// must be only called when we are sure user has written down the recovery
   /// key.
-  void confirmRecoveryKey() {
+  Future<void> confirmRecoveryKey() async {
     final current = state.value;
 
     if (current is! VaultOpen || current.newRecoveryKey == null) {
       throw StateError('No new recovery key to confirm, got $current');
     }
 
+    await current.diary.confirmRecoveryKey();
     state = AsyncData(VaultOpen(current.diary));
   }
 
@@ -71,20 +77,24 @@ class Vault extends _$Vault {
       cache: _cache,
     );
 
-    state = AsyncData(_opened(diary));
+    state = AsyncData(await _opened(diary));
   }
 
   /// Throws [WrongSecretException] if the recovery key is wrong. The app should
   /// then ask for a new password.
   Future<void> unlockWithRecoveryKey(RecoveryKey recoveryKey) async {
     _expect<VaultLocked>();
+
     final diary = await LocalDiary.openWithRecoveryKey(
       files: _files,
       recoveryKey: recoveryKey,
       crypto: _crypto,
       cache: _cache,
     );
-    state = AsyncData(_opened(diary));
+
+    await diary.confirmRecoveryKey();
+
+    state = AsyncData(await _opened(diary));
   }
 
   /// debug builds only: puts the vault in error, to see the error page
@@ -92,15 +102,32 @@ class Vault extends _$Vault {
   ///   at once would break the one-diary rule
   Future<void> debugSimulateError() async {
     assert(kDebugMode, 'debug builds only');
+
     if (state.value case VaultOpen(:final diary)) {
       await diary.close();
     }
+
     state = AsyncError(StateError('Simulated vault error'), StackTrace.current);
   }
 
-  VaultOpen _opened(LocalDiary diary, {RecoveryKey? newRecoveryKey}) {
+  /// [diary] now belongs to the vault, which closes it
+  /// - a recovery key never confirmed can't be shown again (the app was
+  ///   closed before): a new one replaces it, to show now
+  Future<VaultOpen> _opened(
+    LocalDiary diary, {
+    RecoveryKey? newRecoveryKey,
+  }) async {
     ref.onDispose(diary.close);
-    return VaultOpen(diary, newRecoveryKey: newRecoveryKey);
+
+    final unconfirmed =
+        newRecoveryKey == null && !await diary.isRecoveryKeyConfirmed();
+
+    return VaultOpen(
+      diary,
+      newRecoveryKey: unconfirmed
+          ? await diary.replaceRecoveryKey()
+          : newRecoveryKey,
+    );
   }
 
   void _expect<T extends VaultState>() {

@@ -164,7 +164,7 @@ void main() {
       ),
     );
 
-    container.read(vaultProvider.notifier).confirmRecoveryKey();
+    await container.read(vaultProvider.notifier).confirmRecoveryKey();
 
     expect(
       container.read(vaultProvider).value,
@@ -174,9 +174,42 @@ void main() {
         isNull,
       ),
     );
-    expect(
-      () => container.read(vaultProvider.notifier).confirmRecoveryKey(),
+    await expectLater(
+      container.read(vaultProvider.notifier).confirmRecoveryKey(),
       throwsStateError,
+    );
+  });
+
+  test('closed before the confirmation: a new recovery key is shown', () async {
+    final container = makeContainer();
+    final shown = await createDiary(container);
+
+    final reopened = await restart(container);
+
+    expect(
+      reopened,
+      isA<VaultOpen>().having(
+        (open) => open.newRecoveryKey,
+        'newRecoveryKey',
+        allOf(isNotNull, isNot(shown)),
+      ),
+    );
+  });
+
+  test('a confirmed recovery key is not shown again', () async {
+    final container = makeContainer();
+    await createDiary(container);
+    await container.read(vaultProvider.notifier).confirmRecoveryKey();
+
+    final reopened = await restart(container);
+
+    expect(
+      reopened,
+      isA<VaultOpen>().having(
+        (open) => open.newRecoveryKey,
+        'newRecoveryKey',
+        isNull,
+      ),
     );
   });
 

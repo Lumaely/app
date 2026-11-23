@@ -33,6 +33,7 @@ Future<FakeVault> launchApp(
   Future<VaultOpen> Function(String password)? onCreate,
 }) async {
   final vault = FakeVault(load, onCreate: onCreate);
+
   await tester.pumpWidget(
     ProviderScope(
       overrides: [vaultProvider.overrideWith(() => vault)],

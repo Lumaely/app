@@ -4,7 +4,11 @@ import 'package:material_ui/material_ui.dart';
 
 const _mark = Key('mark');
 
-Widget _app({double textScale = 1, double size = 6}) {
+Widget _app({
+  double textScale = 1,
+  double size = 6,
+  LmLineMarkAlign align = LmLineMarkAlign.lowercase,
+}) {
   return MaterialApp(
     home: MediaQuery(
       data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
@@ -13,6 +17,7 @@ Widget _app({double textScale = 1, double size = 6}) {
         child: LmLineMark(
           style: LmTypography.bodySmall,
           size: size,
+          align: align,
           child: const ColoredBox(key: _mark, color: Color(0xFFFF0000)),
         ),
       ),
@@ -42,5 +47,14 @@ void main() {
     await tester.pumpWidget(_app(textScale: 2));
 
     expect(_markTop(tester), greaterThan(normal));
+  });
+
+  testWidgets('on the capitals, a mark sits higher', (tester) async {
+    await tester.pumpWidget(_app());
+    final lowercase = _markTop(tester);
+
+    await tester.pumpWidget(_app(align: LmLineMarkAlign.capitals));
+
+    expect(_markTop(tester), lessThan(lowercase));
   });
 }

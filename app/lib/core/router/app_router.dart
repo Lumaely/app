@@ -9,6 +9,7 @@ import 'package:lumaely/debug/vault_debug_page.dart';
 import 'package:lumaely/features/launch/ui/splash_page.dart';
 import 'package:lumaely/features/launch/ui/vault_error_page.dart';
 import 'package:lumaely/features/onboarding/ui/diary_password_page.dart';
+import 'package:lumaely/features/onboarding/ui/recovery_key_page.dart';
 import 'package:lumaely/features/onboarding/ui/start_page.dart';
 import 'package:lumaely/features/onboarding/ui/welcome_page.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -53,11 +54,11 @@ GoRouter appRouter(Ref ref) {
         path: RouterPaths.onboardingPassword,
         builder: (_, _) => const DiaryPasswordPage(),
       ),
-      // FIXME: placeholders lol
       GoRoute(
         path: RouterPaths.onboardingRecoveryKey,
-        builder: (_, _) => const PlaceholderPage(title: 'Recovery key'),
+        builder: (_, _) => const RecoveryKeyPage(),
       ),
+      // FIXME: placeholders lol
       GoRoute(
         path: RouterPaths.unlock,
         builder: (_, _) => const PlaceholderPage(title: 'Unlock'),

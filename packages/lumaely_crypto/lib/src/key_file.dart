@@ -96,6 +96,10 @@ final class KeyFile {
   KeyFile withPasswordLock(PasswordLock lock) =>
       KeyFile(passwordLock: lock, recoveryLock: recoveryLock);
 
+  /// Same file with a new recovery lock; the password lock is kept.
+  KeyFile withRecoveryLock(RecoveryLock lock) =>
+      KeyFile(passwordLock: passwordLock, recoveryLock: lock);
+
   /// The text to write to `diary.lmkey`.
   String encode() {
     return const JsonEncoder.withIndent('  ').convert({
