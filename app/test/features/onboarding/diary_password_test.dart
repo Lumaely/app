@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lumaely/core/router/placeholder_page.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely/features/onboarding/ui/diary_password_page.dart';
 import 'package:lumaely/features/onboarding/ui/recovery_key_page.dart';
@@ -17,17 +19,24 @@ void main() {
   setUpAll(() async => diary = await createTestDiary());
 
   // a new install, already on the password step
+  // - [createError]: what creating the diary throws, if anything
+  // - [created]: completes the creation, to see what happens meanwhile
+  // - [afterReload]: what the vault loads the second time
   Future<List<String>> openPasswordStep(
     WidgetTester tester, {
-    bool createFails = false,
+    Exception? createError,
+    Future<void>? created,
+    VaultState afterReload = const VaultEmpty(),
   }) async {
     final passwords = <String>[];
+    var loads = 0;
     await launchApp(
       tester,
-      () async => const VaultEmpty(),
+      () async => loads++ == 0 ? const VaultEmpty() : afterReload,
       onCreate: (password) async {
         passwords.add(password);
-        if (createFails) throw Exception('disk full');
+        await created;
+        if (createError != null) throw createError;
         return VaultOpen(
           diary,
           newRecoveryKey: RecoveryKey.fromEntropy(Uint8List(32)),
@@ -137,7 +146,7 @@ void main() {
   });
 
   testWidgets('a failed creation says so and stays', (tester) async {
-    await openPasswordStep(tester, createFails: true);
+    await openPasswordStep(tester, createError: Exception('unknown'));
 
     await type(
       tester,
@@ -165,5 +174,92 @@ void main() {
     await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
     await expectLater(tester, meetsGuideline(textContrastGuideline));
     semantics.dispose();
+  });
+
+  Future<void> createWith(WidgetTester tester) async {
+    await type(
+      tester,
+      'purple tea on the balcony',
+      'purple tea on the balcony',
+    );
+    await tapContinue(tester);
+  }
+
+  testWidgets('a full phone says so', (tester) async {
+    await openPasswordStep(
+      tester,
+      createError: const NotEnoughSpaceException(),
+    );
+
+    await createWith(tester);
+
+    expect(find.text('Your phone is full'), findsOneWidget);
+  });
+
+  testWidgets('a refused secure storage says so', (tester) async {
+    await openPasswordStep(
+      tester,
+      createError: const MasterKeyCacheException(),
+    );
+
+    await createWith(tester);
+
+    expect(find.text('Secure storage isn’t available'), findsOneWidget);
+  });
+
+  testWidgets('a diary already there: the vault reloads, then unlock', (
+    tester,
+  ) async {
+    await openPasswordStep(
+      tester,
+      createError: const DiaryAlreadyExistsException(),
+      afterReload: const VaultLocked(),
+    );
+
+    await createWith(tester);
+
+    expect(find.byType(DiaryPasswordPage), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is PlaceholderPage && widget.title == 'Unlock',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('while creating: back is blocked, readers are told', (
+    tester,
+  ) async {
+    final creation = Completer<void>();
+    await openPasswordStep(tester, created: creation.future);
+    await type(
+      tester,
+      'purple tea on the balcony',
+      'purple tea on the balcony',
+    );
+
+    await tester.tap(find.text('Continue'));
+    await tester.pump();
+
+    expect(
+      tester.takeAnnouncements().map((announcement) => announcement.message),
+      contains('Creating your diary'),
+    );
+
+    bool canGoBack() => tester
+        .widget<PopScope>(
+          find.descendant(
+            of: find.byType(DiaryPasswordPage),
+            matching: find.byWidgetPredicate((widget) => widget is PopScope),
+          ),
+        )
+        .canPop;
+
+    expect(canGoBack(), isFalse);
+
+    creation.complete();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(RecoveryKeyPage), findsOneWidget);
   });
 }
