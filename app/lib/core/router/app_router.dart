@@ -8,6 +8,8 @@ import 'package:lumaely/data/vault/vault.dart';
 import 'package:lumaely/debug/vault_debug_page.dart';
 import 'package:lumaely/features/launch/ui/splash_page.dart';
 import 'package:lumaely/features/launch/ui/vault_error_page.dart';
+import 'package:lumaely/features/onboarding/ui/start_page.dart';
+import 'package:lumaely/features/onboarding/ui/welcome_page.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
@@ -36,10 +38,20 @@ GoRouter appRouter(Ref ref) {
         path: RouterPaths.vaultError,
         builder: (_, _) => const VaultErrorPage(),
       ),
-      // FIXME: placeholders lol
+
+      // onboarding: each step is pushed, so back goes to the step before
       GoRoute(
         path: RouterPaths.onboarding,
-        builder: (_, _) => const PlaceholderPage(title: 'Welcome'),
+        builder: (_, _) => const WelcomePage(),
+      ),
+      GoRoute(
+        path: RouterPaths.onboardingStart,
+        builder: (_, _) => const StartPage(),
+      ),
+      // FIXME: placeholders lol
+      GoRoute(
+        path: RouterPaths.onboardingPassword,
+        builder: (_, _) => const PlaceholderPage(title: 'Diary password'),
       ),
       GoRoute(
         path: RouterPaths.unlock,
