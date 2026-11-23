@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:lumaely_data/src/exceptions/master_key_cache_exception.dart';
+
 /// Keeps the unlocked master key on this device, so the diary opens without
 /// a password every day.
 ///
@@ -9,6 +11,8 @@ abstract interface class MasterKeyCache {
   Future<Uint8List?> read();
 
   /// Saves [masterKey] on this device.
+  ///
+  /// Throws [MasterKeyCacheException] if the secure storage refuses it.
   Future<void> write(Uint8List masterKey);
 
   /// Forgets the cached key (reset, sign out…).
