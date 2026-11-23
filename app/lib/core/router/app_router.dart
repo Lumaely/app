@@ -53,6 +53,11 @@ GoRouter appRouter(Ref ref) {
         path: RouterPaths.onboardingPassword,
         builder: (_, _) => const PlaceholderPage(title: 'Diary password'),
       ),
+      // FIXME: placeholders lol
+      GoRoute(
+        path: RouterPaths.onboardingRecoveryKey,
+        builder: (_, _) => const PlaceholderPage(title: 'Recovery key'),
+      ),
       GoRoute(
         path: RouterPaths.unlock,
         builder: (_, _) => const PlaceholderPage(title: 'Unlock'),
