@@ -35,16 +35,19 @@ void main() {
 
     test('moments: one decimal average, word and count', () {
       final moods = _moments([MoodScore.good, MoodScore.good, MoodScore.okay]);
-      expect(moodLine(moods), '3.7/5 · $good · 3 moments');
+      expect(moodLine(moods), '3.7/5 · $good · 3\u00A0moments');
     });
 
     test('drops ".0" from a round average', () {
       final moods = _moments([MoodScore.great, MoodScore.okay]);
-      expect(moodLine(moods), '4/5 · $good · 2 moments');
+      expect(moodLine(moods), '4/5 · $good · 2\u00A0moments');
     });
 
     test('says "moment" for one moment', () {
-      expect(moodLine(_moments([MoodScore.okay])), '3/5 · $okay · 1 moment');
+      expect(
+        moodLine(_moments([MoodScore.okay])),
+        '3/5 · $okay · 1\u00A0moment',
+      );
     });
   });
 

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lumaely/core/router/router_paths.dart';
 import 'package:lumaely/features/entry/application/entry_editor.dart';
+import 'package:lumaely/features/entry/ui/entry_saved_step.dart';
 import 'package:lumaely/features/entry/ui/journal_step.dart';
 import 'package:lumaely/features/entry/ui/mood_step.dart';
 import 'package:lumaely_core/lumaely_core.dart';
@@ -9,7 +10,7 @@ import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// the steps of the entry flow, in order
-enum _EntryStep { mood, journal }
+enum _EntryStep { mood, journal, saved }
 
 /// writes the day at [date], full screen
 /// - Next saves the moods, Finish saves the journal
@@ -45,8 +46,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   Future<void> _finish() async {
-    if (await _save(_editor.saveJournal) && mounted) {
-      _leave();
+    if (await _save(_editor.saveJournal)) {
+      _showSaved();
     }
   }
 
@@ -55,7 +56,13 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
     if (!draft.hasJournalChanges ||
         await _confirmDiscard('What you wrote here won’t be saved.')) {
-      _leave();
+      _showSaved();
+    }
+  }
+
+  void _showSaved() {
+    if (mounted) {
+      setState(() => _step = _EntryStep.saved);
     }
   }
 
@@ -141,10 +148,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   @override
   Widget build(BuildContext context) {
     final draft = ref.watch(_provider);
-    final canLeave =
-        _step == _EntryStep.mood &&
-        !_saving &&
-        !(draft.value?.hasChanges ?? false);
+    final canLeave = switch (_step) {
+      _EntryStep.mood => !_saving && !(draft.value?.hasChanges ?? false),
+      _EntryStep.journal => false,
+      _EntryStep.saved => true,
+    };
 
     return PopScope(
       canPop: canLeave,
@@ -154,7 +162,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: context.colors.surface,
+        backgroundColor: _step == _EntryStep.saved
+            ? context.colors.background
+            : context.colors.surface,
         // see EntryStepLayout
         resizeToAvoidBottomInset: false,
         body: switch (draft) {
@@ -174,6 +184,14 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               onFinish: _finish,
               onSkip: _skip,
               onBack: _back,
+            ),
+            _EntryStep.saved => EntrySavedStep(
+              date: widget.date,
+              // never null here: "Next" button saved em
+              moods: value.savedMoods!,
+              onToday: () => context.go(RouterPaths.today),
+              // FIXME: open the day itself, once the page exists
+              onJournal: () => context.go(RouterPaths.journal),
             ),
           },
           AsyncValue(hasError: true) => _LoadError(

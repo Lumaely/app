@@ -37,7 +37,8 @@ String moodLine(DayMoods moods) {
 
   return switch (moods) {
     WholeDayMood() => line,
-    MomentMoods(:final scores) => '$line · ${_momentCount(scores.length)}',
+    MomentMoods(:final scores) =>
+      '$line · ${_momentCount(scores.length).replaceAll(' ', '\u00A0')}',
   };
 }
 

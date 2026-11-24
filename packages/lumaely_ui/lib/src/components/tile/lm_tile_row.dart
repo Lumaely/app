@@ -10,7 +10,7 @@ import 'package:material_ui/material_ui.dart';
 /// - [onTap] null -> plain row, no chevron, no ripple
 /// - read as one item by screen readers (one button when tappable)
 /// - at least 48 high, texts wrap instead of being cut
-/// - big text (1.5x and more): the value goes under the title, like ios
+/// - the value goes under the title when both don't fit on one line
 /// - needs a Material above it for the ink: put it in an LmTile / LmTileGroup
 class LmTileRow extends StatefulWidget {
   const new({
@@ -46,9 +46,6 @@ class LmTileRow extends StatefulWidget {
 
   static const minHeight = 48.0;
 
-  /// text scale from which the value goes under the title
-  static const stackedTextScale = 1.5;
-
   // focus ring drawn inside the row (the tile clips what's outside)
   static const double focusInset = LmSpace.s1;
   static const double focusRadius = LmRadius.small;
@@ -78,13 +75,6 @@ class _LmTileRowState extends State<LmTileRow> {
     final semanticLabel = widget.semanticLabel;
     final onTap = widget.onTap;
 
-    // measured on the title size: android scales big fonts less than small
-    final titleSize = LmTypography.bodyLarge.fontSize!;
-    final scale = MediaQuery.textScalerOf(context).scale(titleSize) / titleSize;
-    final stacked = scale >= LmTileRow.stackedTextScale;
-    final valueStyle = LmTypography.bodyMedium.copyWith(
-      color: colors.textSecondary,
-    );
     final smallStyle = LmTypography.bodySmall.copyWith(
       color: colors.textSecondary,
     );
@@ -96,15 +86,20 @@ class _LmTileRowState extends State<LmTileRow> {
           horizontal: LmSpace.s4,
           vertical: LmSpace.s3,
         ),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Row(
-              spacing: LmSpace.s3,
-              children: [
-                ?widget.leading,
-                Expanded(
-                  child: Column(
+        child: Row(
+          spacing: LmSpace.s3,
+          children: [
+            ?widget.leading,
+            Expanded(
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: LmSpace.s3,
+                runSpacing: 2,
+                children: [
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     spacing: 2,
                     children: [
                       Text(
@@ -121,33 +116,25 @@ class _LmTileRowState extends State<LmTileRow> {
                           overflow: TextOverflow.ellipsis,
                           style: smallStyle,
                         ),
-                      if (value != null && stacked)
-                        Text(value, style: valueStyle),
                     ],
                   ),
-                ),
-                if (value != null && !stacked)
-                  // at most half the row: a long value wraps, the title
-                  // keeps some room
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: constraints.maxWidth / 2,
-                    ),
-                    child: Text(
+                  if (value != null)
+                    Text(
                       value,
-                      textAlign: TextAlign.end,
-                      style: valueStyle,
+                      style: LmTypography.bodyMedium.copyWith(
+                        color: colors.textSecondary,
+                      ),
                     ),
-                  ),
-                if (onTap != null)
-                  LmIcon(
-                    LmIcons.chevronRight,
-                    size: 16,
-                    color: colors.borderStrong,
-                  ),
-              ],
-            );
-          },
+                ],
+              ),
+            ),
+            if (onTap != null)
+              LmIcon(
+                LmIcons.chevronRight,
+                size: 16,
+                color: colors.borderStrong,
+              ),
+          ],
         ),
       ),
     );

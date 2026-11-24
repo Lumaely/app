@@ -23,8 +23,8 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
 - Tiles: `LmTile` (rounded `surface` card, any child), `LmTileGroup`
   (optional title, rows in one tile with dividers) and `LmTileRow` (leading,
   title, subtitle, value, chevron when tappable; one button for screen
-  readers, value under the title at large text sizes). `LmTileIcon` is the
-  small icon box of the settings rows.
+  readers, value under the title when both don't fit on one line).
+  `LmTileIcon` is the small icon box of the settings rows.
 
 - Days: `LmMoodDot` (round mood mark: a score, an average in a blended
   color, or a dashed circle when empty) and `LmDayRow` (one day in a list:
