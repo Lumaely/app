@@ -54,6 +54,41 @@ void main() {
     );
   });
 
+  testWidgets('outlined: as high as a button, in the action color', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: LmThemeData.dawn,
+        home: Scaffold(
+          body: Center(
+            child: LmIconButton(
+              icon: LmIcons.chevronUpDown,
+              label: 'Switch',
+              outlined: true,
+              onPressed: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final material = tester.widget<Material>(
+      find.descendant(
+        of: find.byType(LmIconButton),
+        matching: find.byType(Material),
+      ),
+    );
+    expect(
+      tester.getSize(find.byWidget(material)),
+      const Size.square(LmIconButton.outlinedSize),
+    );
+    expect(
+      (material.shape! as OutlinedBorder).side.color,
+      LmColors.dawn.actionPrimary,
+    );
+  });
+
   final themes = {'Dawn': LmThemeData.dawn, 'Firefly': LmThemeData.firefly};
   for (final MapEntry(key: name, value: theme) in themes.entries) {
     testWidgets('$name meets the accessibility guidelines', (tester) async {
