@@ -35,7 +35,7 @@ void main() {
     editor
       ..setMomentScore(Moment.morning, MoodScore.good)
       ..setMomentScore(Moment.night, MoodScore.low);
-    await editor.save();
+    await editor.saveMoods();
 
     expect(
       (await saved())!.moods,
@@ -51,11 +51,11 @@ void main() {
     final editor = await openEditor();
 
     editor.setMomentScore(Moment.morning, MoodScore.good);
-    await editor.save();
+    await editor.saveMoods();
     editor
       ..switchMode()
       ..setDayScore(MoodScore.great);
-    await editor.save();
+    await editor.saveMoods();
 
     expect((await saved())!.moods, const WholeDayMood(MoodScore.great));
   });
@@ -69,17 +69,73 @@ void main() {
     final editor = await openEditor();
 
     editor.setDayScore(MoodScore.good);
-    await editor.save();
+    await editor.saveMoods();
 
     final entry = (await saved())!;
     expect(entry.moods, const WholeDayMood(MoodScore.good));
     expect(entry.journal, 'Long walk');
   });
 
+  test('saves the journal, without the spaces around it', () async {
+    final editor = await openEditor();
+
+    editor
+      ..switchMode()
+      ..setDayScore(MoodScore.good);
+    await editor.saveMoods();
+    editor.setJournal('  Long walk\n');
+    await editor.saveJournal();
+
+    final entry = (await saved())!;
+    expect(entry.moods, const WholeDayMood(MoodScore.good));
+    expect(entry.journal, 'Long walk');
+    expect(editor.state.requireValue.hasChanges, isFalse);
+  });
+
+  test('an emptied journal is erased', () async {
+    await diary.entries.save(
+      date,
+      moods: const WholeDayMood(MoodScore.okay),
+      journal: 'Long walk',
+    );
+    final editor = await openEditor();
+
+    editor.setJournal('');
+    await editor.saveJournal();
+
+    expect((await saved())!.journal, isEmpty);
+  });
+
+  test('saving the moods leaves the text being written alone', () async {
+    final editor = await openEditor();
+
+    editor
+      ..switchMode()
+      ..setDayScore(MoodScore.good);
+    await editor.saveMoods();
+    editor
+      ..setJournal('Long walk')
+      ..setDayScore(MoodScore.low);
+    await editor.saveMoods();
+
+    expect((await saved())!.journal, isEmpty);
+    expect(editor.state.requireValue.journal, 'Long walk');
+    expect(editor.state.requireValue.hasJournalChanges, isTrue);
+  });
+
+  test('no journal without moods', () async {
+    final editor = await openEditor();
+
+    editor.setJournal('Long walk');
+
+    await expectLater(editor.saveJournal(), throwsStateError);
+    expect(await saved(), isNull);
+  });
+
   test('nothing to save without a mood', () async {
     final editor = await openEditor();
 
-    await expectLater(editor.save(), throwsStateError);
+    await expectLater(editor.saveMoods(), throwsStateError);
     expect(await saved(), isNull);
   });
 }

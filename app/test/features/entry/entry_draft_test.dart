@@ -69,4 +69,23 @@ void main() {
 
     expect(saved.copyWith(wholeDay: false).hasChanges, isFalse);
   });
+
+  test('the journal counts as a change, without the spaces around it', () {
+    final saved = EntryDraft.fromEntry(
+      entry(const WholeDayMood(MoodScore.good), journal: 'Long walk'),
+    );
+
+    expect(saved.copyWith(journal: 'Long walk\n ').hasChanges, isFalse);
+    expect(saved.copyWith(journal: '').hasChanges, isTrue);
+
+    final changed = saved.copyWith(journal: ' Rain ');
+    expect(changed.journalText, 'Rain');
+    expect(changed.hasJournalChanges, isTrue);
+    expect(changed.hasMoodChanges, isFalse);
+    expect(changed.copyWith(savedJournal: 'Rain').hasChanges, isFalse);
+  });
+
+  test('a text of spaces is an empty one', () {
+    expect(const EntryDraft(journal: ' \n ').hasChanges, isFalse);
+  });
 }
