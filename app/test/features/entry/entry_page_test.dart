@@ -83,6 +83,11 @@ void main() {
     await tapText(tester, 'Next');
   }
 
+  Future<void> goToSaved(WidgetTester tester) async {
+    await goToJournal(tester);
+    await tapText(tester, 'Skip');
+  }
+
   Future<void> write(WidgetTester tester, String text) async {
     await tester.enterText(find.byType(LmJournalField), text);
     await tester.pump();
@@ -97,9 +102,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Finder onToday() => find.byWidgetPredicate(
-    (widget) => widget is PlaceholderPage && widget.title == 'Today',
+  Finder onTab(String title) => find.byWidgetPredicate(
+    (widget) => widget is PlaceholderPage && widget.title == title,
   );
+
+  Finder onToday() => onTab('Today');
 
   testWidgets('a new day: every moment, all empty', (tester) async {
     await openToday(tester);
@@ -139,7 +146,7 @@ void main() {
     expect(find.byType(LmMoodSlider), findsNothing);
   });
 
-  testWidgets('Finish saves the journal and goes back to Today', (
+  testWidgets('Finish saves the journal, then shows what was saved', (
     tester,
   ) async {
     await goToJournal(tester);
@@ -150,7 +157,7 @@ void main() {
     final entry = entries.days[today]!;
     expect(entry.moods, const WholeDayMood(MoodScore.okay));
     expect(entry.journal, 'Long walk');
-    expect(onToday(), findsOneWidget);
+    expect(find.text('Entry saved'), findsOneWidget);
   });
 
   testWidgets('Finish without a text is fine', (tester) async {
@@ -159,7 +166,7 @@ void main() {
     await tapText(tester, 'Finish');
 
     expect(entries.days[today]!.journal, isEmpty);
-    expect(onToday(), findsOneWidget);
+    expect(find.text('Entry saved'), findsOneWidget);
   });
 
   testWidgets('Skip keeps the moods, and the journal as it was', (
@@ -177,7 +184,7 @@ void main() {
     await tapText(tester, 'Skip');
 
     expect(entries.days[today]!.journal, 'Rain');
-    expect(onToday(), findsOneWidget);
+    expect(find.text('Entry saved'), findsOneWidget);
   });
 
   testWidgets('Skip with a new text asks first', (tester) async {
@@ -193,7 +200,7 @@ void main() {
     await tapText(tester, 'Skip');
     await tapText(tester, 'Discard changes');
     expect(entries.days[today]!.journal, isEmpty);
-    expect(onToday(), findsOneWidget);
+    expect(find.text('Entry saved'), findsOneWidget);
   });
 
   testWidgets('back from the journal: the moods, the text is kept', (
@@ -241,7 +248,7 @@ void main() {
     entries.saveError = null;
     await tapText(tester, 'Finish');
     expect(entries.days[today]!.journal, 'Long walk');
-    expect(onToday(), findsOneWidget);
+    expect(find.text('Entry saved'), findsOneWidget);
   });
 
   testWidgets('nothing can change while the journal is saving', (tester) async {
@@ -263,6 +270,47 @@ void main() {
 
     saved.complete();
     await tester.pumpAndSettle();
+    expect(find.text('Entry saved'), findsOneWidget);
+  });
+
+  testWidgets('the day saved: its date and its moods', (tester) async {
+    await goToSaved(tester);
+
+    expect(find.text('Thursday, October 29'), findsOneWidget);
+    expect(find.text('3/5 · Okay'), findsOneWidget);
+    expect(find.byType(LmTopBar), findsNothing);
+    expect(find.byType(LmProgressSteps), findsNothing);
+  });
+
+  testWidgets('Back to today', (tester) async {
+    await goToSaved(tester);
+
+    await tapText(tester, 'Back to today');
+
+    expect(find.byType(EntryPage), findsNothing);
+    expect(onToday(), findsOneWidget);
+  });
+
+  testWidgets('View in journal', (tester) async {
+    await goToSaved(tester);
+
+    await tapText(tester, 'View in journal');
+
+    expect(find.byType(EntryPage), findsNothing);
+    expect(onTab('Journal'), findsOneWidget);
+  });
+
+  testWidgets('once saved, the system back leaves', (tester) async {
+    await goToJournal(tester);
+    // a discarded text must not ask again
+    await write(tester, 'Long walk');
+    await tapText(tester, 'Skip');
+    await tapText(tester, 'Discard changes');
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Discard changes?'), findsNothing);
     expect(onToday(), findsOneWidget);
   });
 
@@ -274,6 +322,13 @@ void main() {
       tester.getSemantics(find.text('Anything about your day?')),
       isSemantics(isHeader: true, namesRoute: true),
     );
+
+    await tapText(tester, 'Skip');
+    expect(
+      tester.getSemantics(find.text('Entry saved')),
+      isSemantics(isHeader: true, namesRoute: true),
+    );
+    expect(find.bySemanticsLabel('Mood: Okay, 3 of 5'), findsOneWidget);
     semantics.dispose();
   });
 
@@ -515,6 +570,34 @@ void main() {
     );
     await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
     await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+    semantics.dispose();
+  });
+
+  testWidgets('the day saved fits with large text', (tester) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    tester.view
+      ..physicalSize = const Size(375, 667)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await entries.save(
+      today,
+      moods: MomentMoods(const {
+        Moment.morning: MoodScore.good,
+        Moment.night: MoodScore.okay,
+      }),
+    );
+    final semantics = tester.ensureSemantics();
+    await openToday(tester);
+    await tapText(tester, 'Next');
+    await tapText(tester, 'Skip');
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Back to today').hitTestable(), findsOneWidget);
+    expect(find.text('View in journal').hitTestable(), findsOneWidget);
+    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(textContrastGuideline));
     semantics.dispose();
   });
 }
