@@ -9,7 +9,6 @@ import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// first step of the entry: the moods of the day
 /// - [showErrors]: after the first Next
 class MoodStep extends ConsumerWidget {
   const new({
