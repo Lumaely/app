@@ -41,6 +41,29 @@ void main() {
     semantics.dispose();
   });
 
+  testWidgets('large text: the axis words stay on one line', (tester) async {
+    Future<double> greatHeight(double scale) async {
+      await tester.pumpWidget(
+        _app(
+          MediaQuery.withClampedTextScaling(
+            minScaleFactor: scale,
+            maxScaleFactor: scale,
+            child: LmMoodCurve(
+              moments: _moments,
+              scores: const {},
+              onChanged: (_, _) {},
+            ),
+          ),
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      return tester.getSize(find.text('Great')).height;
+    }
+
+    final normal = await greatHeight(1);
+    expect(await greatHeight(2), moreOrLessEquals(normal * 2, epsilon: 1));
+  });
+
   testWidgets('screen readers get each moment as a slider', (tester) async {
     final semantics = tester.ensureSemantics();
     await tester.pumpWidget(

@@ -5,9 +5,10 @@ import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:material_ui/material_ui.dart';
 
 class PlaceholderPage extends StatelessWidget {
-  const new({required this.title, super.key});
+  const new({required this.title, this.action, super.key});
 
   final String title;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +33,7 @@ class PlaceholderPage extends StatelessWidget {
                   ),
                 ),
               ),
+              ?action,
               if (kDebugMode)
                 LmButton(
                   label: 'Vault debug page',

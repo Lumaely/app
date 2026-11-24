@@ -5,7 +5,7 @@ import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/src/components/mood/lm_mood_labels.dart';
 import 'package:lumaely_ui/src/tokens/lm_colors.dart';
 
-// drawing shared by the mood curve and the mood slider (not exported)
+// drawing shared by the mood curve, slider and orb (not exported)
 // sizes of the mood marks in the entry flow
 
 const double knobSize = 26;
@@ -31,8 +31,14 @@ void paintRail(Canvas canvas, Offset start, Offset end, LmColors colors) {
 
 /// knob in the mood color with a dark outline
 /// [score] null -> empty: dashed circle
-void paintKnob(Canvas canvas, Offset center, MoodScore? score, LmColors c) {
-  const radius = knobSize / 2;
+void paintKnob(
+  Canvas canvas,
+  Offset center,
+  MoodScore? score,
+  LmColors c, {
+  double size = knobSize,
+}) {
+  final radius = size / 2;
 
   if (score == null) {
     canvas.drawCircle(center, radius, Paint()..color = c.surface);

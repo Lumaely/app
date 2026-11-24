@@ -10,6 +10,9 @@ enum LmLineMarkAlign {
   /// the capitals: marks as tall as the text or more (a checkbox), which the
   /// eye compares to the whole word
   capitals,
+
+  /// halfway between both: a title next to a bigger button
+  balanced,
 }
 
 /// a mark (dot, icon, box) of [size] before a text in [style], centred on the
@@ -38,9 +41,12 @@ class LmLineMark extends StatelessWidget {
   /// height of its capitals (sCapHeight 745 / unitsPerEm 1000)
   static const capHeight = 0.745;
 
-  @override
-  Widget build(BuildContext context) {
-    final scaler = MediaQuery.textScalerOf(context);
+  /// middle of the letters of a line in [style], from the top of the line
+  static double lettersMiddle(
+    TextStyle style, {
+    required TextScaler scaler,
+    LmLineMarkAlign align = LmLineMarkAlign.lowercase,
+  }) {
     final painter = TextPainter(
       text: TextSpan(text: 'x', style: style),
       textDirection: TextDirection.ltr,
@@ -54,8 +60,19 @@ class LmLineMark extends StatelessWidget {
     final letters = switch (align) {
       LmLineMarkAlign.lowercase => xHeight,
       LmLineMarkAlign.capitals => capHeight,
+      LmLineMarkAlign.balanced => (xHeight + capHeight) / 2,
     };
-    final middle = baseline - scaler.scale(style.fontSize!) * letters / 2;
+
+    return baseline - scaler.scale(style.fontSize!) * letters / 2;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final middle = lettersMiddle(
+      style,
+      scaler: MediaQuery.textScalerOf(context),
+      align: align,
+    );
 
     return Padding(
       padding: EdgeInsets.only(top: math.max(0, middle - size / 2)),

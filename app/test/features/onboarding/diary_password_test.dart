@@ -46,6 +46,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Get started'));
     await tester.pumpAndSettle();
+    // off screen with large text
+    await tester.ensureVisible(find.text('I’m new'));
     await tester.tap(find.text('I’m new'));
     await tester.pumpAndSettle();
     return passwords;
@@ -169,6 +171,7 @@ void main() {
     final semantics = tester.ensureSemantics();
     await openPasswordStep(tester);
 
+    expect(find.byType(DiaryPasswordPage), findsOneWidget);
     expect(tester.takeException(), isNull);
     await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
     await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));

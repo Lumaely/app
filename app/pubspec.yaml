@@ -19,6 +19,7 @@ dependencies:
   flutter_riverpod: ^3.4.3
   flutter_secure_storage: ^11.2.0
   go_router: ^18.1.4
+  intl: ^0.20.3
   lumaely_core:
     path: ../packages/lumaely_core
   lumaely_crypto:

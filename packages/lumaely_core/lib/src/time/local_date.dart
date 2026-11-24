@@ -1,3 +1,4 @@
+import 'package:lumaely_core/src/time/clock.dart';
 import 'package:meta/meta.dart';
 
 /// A calendar day as the person lived it, with no time and no time zone.
@@ -8,9 +9,7 @@ import 'package:meta/meta.dart';
 final class LocalDate implements Comparable<LocalDate> {
   /// Creates a date, or throws if it does not exist (e.g. Feb 30).
   new(this.year, this.month, this.day) {
-    final check = DateTime.utc(year, month, day);
-
-    if (check.year != year || check.month != month || check.day != day) {
+    if (!_exists(year, month, day)) {
       throw ArgumentError('Invalid date: $year-$month-$day');
     }
   }
@@ -19,17 +18,31 @@ final class LocalDate implements Comparable<LocalDate> {
   factory fromDateTime(DateTime dateTime) =>
       LocalDate(dateTime.year, dateTime.month, dateTime.day);
 
+  /// Today, where the device is.
+  factory today(Clock clock) => LocalDate.fromDateTime(clock().toLocal());
+
   /// Parses `YYYY-MM-DD`, the format stored in the database.
-  factory parse(String text) {
+  factory parse(String text) =>
+      tryParse(text) ??
+      (throw FormatException('Expected an existing YYYY-MM-DD', text));
+
+  /// Like [LocalDate.parse], or null if [text] is not an existing date.
+  static LocalDate? tryParse(String text) {
     final match = RegExp(r'^(\d{4})-(\d{2})-(\d{2})$').firstMatch(text);
     if (match == null) {
-      throw FormatException('Expected YYYY-MM-DD', text);
+      return null;
     }
-    return LocalDate(
-      int.parse(match.group(1)!),
-      int.parse(match.group(2)!),
-      int.parse(match.group(3)!),
-    );
+
+    final year = int.parse(match.group(1)!);
+    final month = int.parse(match.group(2)!);
+    final day = int.parse(match.group(3)!);
+
+    return _exists(year, month, day) ? LocalDate(year, month, day) : null;
+  }
+
+  static bool _exists(int year, int month, int day) {
+    final check = DateTime.utc(year, month, day);
+    return check.year == year && check.month == month && check.day == day;
   }
 
   final int year;
@@ -47,6 +60,9 @@ final class LocalDate implements Comparable<LocalDate> {
 
   bool isBefore(LocalDate other) => compareTo(other) < 0;
   bool isAfter(LocalDate other) => compareTo(other) > 0;
+
+  /// Midnight of this day in the device's time zone, to format it.
+  DateTime toDateTime() => DateTime(year, month, day);
 
   DateTime get _asUtc => DateTime.utc(year, month, day);
 

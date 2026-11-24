@@ -4,14 +4,18 @@ import 'package:lumaely/core/router/app_shell.dart';
 import 'package:lumaely/core/router/placeholder_page.dart';
 import 'package:lumaely/core/router/router_paths.dart';
 import 'package:lumaely/core/router/vault_redirect.dart';
+import 'package:lumaely/core/time/clock_provider.dart';
 import 'package:lumaely/data/vault/vault.dart';
 import 'package:lumaely/debug/vault_debug_page.dart';
+import 'package:lumaely/features/entry/ui/entry_page.dart';
 import 'package:lumaely/features/launch/ui/splash_page.dart';
 import 'package:lumaely/features/launch/ui/vault_error_page.dart';
 import 'package:lumaely/features/onboarding/ui/diary_password_page.dart';
 import 'package:lumaely/features/onboarding/ui/recovery_key_page.dart';
 import 'package:lumaely/features/onboarding/ui/start_page.dart';
 import 'package:lumaely/features/onboarding/ui/welcome_page.dart';
+import 'package:lumaely_core/lumaely_core.dart';
+import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
@@ -28,6 +32,8 @@ GoRouter appRouter(Ref ref) {
   ref
     ..listen(vaultProvider, (_, next) => vault.value = next)
     ..onDispose(vault.dispose);
+
+  LocalDate today() => LocalDate.today(ref.read(clockProvider));
 
   final router = GoRouter(
     initialLocation: RouterPaths.splash,
@@ -74,7 +80,13 @@ GoRouter appRouter(Ref ref) {
             routes: [
               GoRoute(
                 path: RouterPaths.today,
-                builder: (_, _) => const PlaceholderPage(title: 'Today'),
+                builder: (context, _) => PlaceholderPage(
+                  title: 'Today',
+                  action: LmButton(
+                    label: 'Write today',
+                    onPressed: () => context.push(RouterPaths.entryOn(today())),
+                  ),
+                ),
               ),
             ],
           ),
@@ -105,6 +117,18 @@ GoRouter appRouter(Ref ref) {
         ],
       ),
 
+      // above the tabs; no such day, or a day to come: back to today
+      GoRoute(
+        path: RouterPaths.entry,
+        redirect: (_, state) {
+          final date = _entryDate(state);
+          return date == null || date.isAfter(today())
+              ? RouterPaths.today
+              : null;
+        },
+        builder: (_, state) => EntryPage(date: _entryDate(state)!),
+      ),
+
       if (kDebugMode)
         GoRoute(
           path: RouterPaths.debug,
@@ -117,3 +141,6 @@ GoRouter appRouter(Ref ref) {
 
   return router;
 }
+
+LocalDate? _entryDate(GoRouterState state) =>
+    LocalDate.tryParse(state.pathParameters[RouterPaths.entryDate]!);

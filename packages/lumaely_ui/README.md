@@ -16,8 +16,9 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   offline, no font.
 
 - Mood: `LmMoodCurve` (moment by moment, 2 to 5 columns, empty moments as a
-  dashed circle) and `LmMoodSlider` (one mood for the whole day). Both are
-  sliders for screen readers and work with the arrow keys.
+  dashed circle) and `LmMoodSlider` (one mood for the whole day, under
+  `LmMoodOrb`). Both are sliders for screen readers and work with the arrow
+  keys.
 
 - Tiles: `LmTile` (rounded `surface` card, any child), `LmTileGroup`
   (optional title, rows in one tile with dividers) and `LmTileRow` (leading,
@@ -47,6 +48,9 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
 - Chart: `LmMoodChart` (mood over a period on a fixed 1 to 5 axis, 5 grid
   lines; the line is cut where nothing was written; per day, 7 day rolling
   average, per week or per month; read as a summary by screen readers).
+
+- Flows: `LmTopBar` (back, title, one action) and `LmProgressSteps` (one bar
+  per step, read as "Step 1 of 2").
 
 ## Rules
 

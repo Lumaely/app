@@ -20,6 +20,28 @@ void main() {
       expect(() => LocalDate.parse('29/10/2026'), throwsFormatException);
     });
 
+    test('tryParse: null when it is not an existing date', () {
+      expect(LocalDate.tryParse('2026-10-29'), LocalDate(2026, 10, 29));
+      for (final text in ['2026-02-30', '2026-13-01', '29/10/2026', '']) {
+        expect(LocalDate.tryParse(text), isNull, reason: text);
+        expect(
+          () => LocalDate.parse(text),
+          throwsFormatException,
+          reason: text,
+        );
+      }
+    });
+
+    test('today is the day shown on the device', () {
+      final noon = DateTime(2026, 10, 29, 12);
+      expect(LocalDate.today(noon.toUtc), LocalDate(2026, 10, 29));
+    });
+
+    test('toDateTime is the same day', () {
+      final date = LocalDate(2026, 10, 29);
+      expect(LocalDate.fromDateTime(date.toDateTime()), date);
+    });
+
     test('date calculus & DST change', () {
       expect(LocalDate(2026, 10, 31).addDays(1), LocalDate(2026, 11, 1));
       expect(LocalDate(2026, 12, 31).addDays(1), LocalDate(2027, 1, 1));
