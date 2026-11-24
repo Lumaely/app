@@ -266,6 +266,33 @@ void main() {
       ]);
     });
 
+    test('watchDates gives every day with an entry', () async {
+      const good = WholeDayMood(MoodScore.good);
+      expect(await repository.watchDates().first, isEmpty);
+
+      await repository.save(day, moods: eveningAndMorning);
+      await repository.save(day.addDays(-40), moods: good);
+      await repository.save(day.addDays(-1), moods: good);
+      await repository.delete(day.addDays(-1));
+
+      expect(await repository.watchDates().first, {day, day.addDays(-40)});
+    });
+
+    test('watchDates updates by itself', () async {
+      final dates = expectLater(
+        repository.watchDates(),
+        emitsInOrder([
+          isEmpty,
+          {day},
+        ]),
+      );
+      await pumpEventQueue();
+
+      await repository.save(day, moods: eveningAndMorning);
+
+      await dates;
+    });
+
     test('updates by itself after a save', () async {
       final saved = repository
           .watchDay(day)

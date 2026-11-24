@@ -11,6 +11,7 @@ Lumaely's domain model: days, moods and their rules, in pure Dart.
 - `DayMoods`: either `WholeDayMood` or `MomentMoods`, never both.
 - `DayEntry`: what was recorded for one day.
 - `EntryRepository`: the contract the data layer implements.
+- `streakOf`: the days written in a row. Computed, never stored.
 - `Clock`: the current time, injected so tests control it.
 
 ## Rules
