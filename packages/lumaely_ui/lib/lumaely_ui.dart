@@ -20,6 +20,7 @@ export 'src/components/mood/lm_mood_labels.dart';
 export 'src/components/mood/lm_mood_orb.dart';
 export 'src/components/mood/lm_mood_slider.dart';
 export 'src/components/password/lm_password_strength.dart';
+export 'src/components/pill/lm_pill.dart';
 export 'src/components/progress/lm_progress_steps.dart';
 export 'src/components/recovery/lm_recovery_key_words.dart';
 export 'src/components/sheet/lm_sheet.dart';
