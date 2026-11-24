@@ -49,6 +49,8 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   lines; the line is cut where nothing was written; per day, 7 day rolling
   average, per week or per month; read as a summary by screen readers).
 
+- Pill: `LmPill` (short text in a rounded box, e.g. the streak).
+
 - Text: `LmTextField` (label above, error under it, password eye button) and
   `LmJournalField` (the journal of a day: big, grows with the text, no label).
 
