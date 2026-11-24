@@ -77,6 +77,26 @@ void main() {
     await tester.pump();
   }
 
+  Future<void> goToJournal(WidgetTester tester) async {
+    await openToday(tester);
+    await setDayToOkay(tester);
+    await tapText(tester, 'Next');
+  }
+
+  Future<void> write(WidgetTester tester, String text) async {
+    await tester.enterText(find.byType(LmJournalField), text);
+    await tester.pump();
+  }
+
+  Future<void> showKeyboard(WidgetTester tester) async {
+    await tester.tap(find.byType(LmJournalField));
+    tester.view.viewInsets = FakeViewPadding(
+      bottom: 260 * tester.view.devicePixelRatio,
+    );
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pumpAndSettle();
+  }
+
   Finder onToday() => find.byWidgetPredicate(
     (widget) => widget is PlaceholderPage && widget.title == 'Today',
   );
@@ -105,7 +125,9 @@ void main() {
     expect(find.text('Set at least one mood first.'), findsNothing);
   });
 
-  testWidgets('Next saves the moods and goes back to Today', (tester) async {
+  testWidgets('Next saves the moods, then asks for the journal', (
+    tester,
+  ) async {
     await openToday(tester);
     await setDayToOkay(tester);
 
@@ -113,8 +135,146 @@ void main() {
     await tapText(tester, 'Next');
 
     expect(entries.days[today]!.moods, const WholeDayMood(MoodScore.okay));
-    expect(find.byType(EntryPage), findsNothing);
+    expect(find.text('Anything about your day?'), findsOneWidget);
+    expect(find.byType(LmMoodSlider), findsNothing);
+  });
+
+  testWidgets('Finish saves the journal and goes back to Today', (
+    tester,
+  ) async {
+    await goToJournal(tester);
+    await write(tester, 'Long walk');
+
+    await tapText(tester, 'Finish');
+
+    final entry = entries.days[today]!;
+    expect(entry.moods, const WholeDayMood(MoodScore.okay));
+    expect(entry.journal, 'Long walk');
     expect(onToday(), findsOneWidget);
+  });
+
+  testWidgets('Finish without a text is fine', (tester) async {
+    await goToJournal(tester);
+
+    await tapText(tester, 'Finish');
+
+    expect(entries.days[today]!.journal, isEmpty);
+    expect(onToday(), findsOneWidget);
+  });
+
+  testWidgets('Skip keeps the moods, and the journal as it was', (
+    tester,
+  ) async {
+    await entries.save(
+      today,
+      moods: const WholeDayMood(MoodScore.low),
+      journal: 'Rain',
+    );
+    await openToday(tester);
+    await tapText(tester, 'Next');
+    expect(find.text('Rain'), findsOneWidget);
+
+    await tapText(tester, 'Skip');
+
+    expect(entries.days[today]!.journal, 'Rain');
+    expect(onToday(), findsOneWidget);
+  });
+
+  testWidgets('Skip with a new text asks first', (tester) async {
+    await goToJournal(tester);
+    await write(tester, 'Long walk');
+
+    await tapText(tester, 'Skip');
+    expect(find.text('Discard changes?'), findsOneWidget);
+
+    await tapText(tester, 'Cancel');
+    expect(find.text('Long walk'), findsOneWidget);
+
+    await tapText(tester, 'Skip');
+    await tapText(tester, 'Discard changes');
+    expect(entries.days[today]!.journal, isEmpty);
+    expect(onToday(), findsOneWidget);
+  });
+
+  testWidgets('back from the journal: the moods, the text is kept', (
+    tester,
+  ) async {
+    await goToJournal(tester);
+    await write(tester, 'Long walk');
+
+    await goBack(tester);
+    expect(find.text('How did your day feel?'), findsOneWidget);
+    expect(find.text('Okay · 3/5'), findsOneWidget);
+
+    await tapText(tester, 'Next');
+    expect(find.text('Long walk'), findsOneWidget);
+    expect(entries.days[today]!.journal, isEmpty);
+
+    // the system back too
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text('How did your day feel?'), findsOneWidget);
+  });
+
+  testWidgets('leaving with a text not saved asks first', (tester) async {
+    await goToJournal(tester);
+    await write(tester, 'Long walk');
+    await goBack(tester);
+
+    await goBack(tester);
+
+    expect(find.text('Discard changes?'), findsOneWidget);
+    expect(find.byType(EntryPage), findsOneWidget);
+  });
+
+  testWidgets('a failed save keeps the text on screen', (tester) async {
+    await goToJournal(tester);
+    await write(tester, 'Long walk');
+    entries.saveError = Exception('disk');
+
+    await tapText(tester, 'Finish');
+    expect(find.text('Your day could not be saved'), findsOneWidget);
+
+    await tapText(tester, 'OK');
+    expect(find.text('Long walk'), findsOneWidget);
+
+    entries.saveError = null;
+    await tapText(tester, 'Finish');
+    expect(entries.days[today]!.journal, 'Long walk');
+    expect(onToday(), findsOneWidget);
+  });
+
+  testWidgets('nothing can change while the journal is saving', (tester) async {
+    await goToJournal(tester);
+    await write(tester, 'Long walk');
+    final saved = Completer<void>();
+    entries.saved = saved.future;
+    await tester.tap(find.text('Finish'));
+    await tester.pump();
+
+    expect(
+      tester.widget<LmJournalField>(find.byType(LmJournalField)).readOnly,
+      isTrue,
+    );
+    await tester.tap(find.text('Skip'));
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    expect(find.text('Anything about your day?'), findsOneWidget);
+
+    saved.complete();
+    await tester.pumpAndSettle();
+    expect(onToday(), findsOneWidget);
+  });
+
+  testWidgets('screen readers hear each step as a new page', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await goToJournal(tester);
+
+    expect(
+      tester.getSemantics(find.text('Anything about your day?')),
+      isSemantics(isHeader: true, namesRoute: true),
+    );
+    semantics.dispose();
   });
 
   testWidgets('a moment can be set alone', (tester) async {
@@ -214,7 +374,7 @@ void main() {
 
     saved.complete();
     await tester.pumpAndSettle();
-    expect(onToday(), findsOneWidget);
+    expect(find.text('Anything about your day?'), findsOneWidget);
   });
 
   testWidgets('a failed save keeps the moods on screen', (tester) async {
@@ -230,7 +390,7 @@ void main() {
 
     entries.saveError = null;
     await tapText(tester, 'Next');
-    expect(onToday(), findsOneWidget);
+    expect(find.text('Anything about your day?'), findsOneWidget);
   });
 
   testWidgets('a past day is named', (tester) async {
@@ -238,6 +398,11 @@ void main() {
 
     expect(find.text('Past day'), findsOneWidget);
     expect(find.text('How did Tuesday feel?'), findsOneWidget);
+
+    await setDayToOkay(tester);
+    await tapText(tester, 'Next');
+    expect(find.text('Anything about Tuesday?'), findsOneWidget);
+    await goBack(tester);
 
     // opened by its path: back still goes somewhere
     await goBack(tester);
@@ -276,6 +441,80 @@ void main() {
       await expectLater(tester, meetsGuideline(textContrastGuideline));
       await switchMode(tester);
     }
+    semantics.dispose();
+  });
+
+  testWidgets('the keyboard leaves the buttons where they are', (tester) async {
+    await goToJournal(tester);
+    final finish = tester.getRect(find.text('Finish'));
+
+    await showKeyboard(tester);
+
+    expect(tester.getRect(find.text('Finish')), finish);
+  });
+
+  testWidgets('a tap outside hides the keyboard', (tester) async {
+    await goToJournal(tester);
+    await showKeyboard(tester);
+    expect(tester.testTextInput.isVisible, isTrue);
+
+    await tester.tap(find.text('Anything about your day?'));
+    await tester.pump();
+
+    expect(tester.testTextInput.isVisible, isFalse);
+  });
+
+  testWidgets('scrolling the text keeps the keyboard', (tester) async {
+    await goToJournal(tester);
+    await showKeyboard(tester);
+    await write(tester, 'A line\n' * 30);
+    await tester.pumpAndSettle();
+    final before = tester.getTopLeft(find.byType(LmJournalField)).dy;
+
+    await tester.drag(find.byType(SingleChildScrollView), const Offset(0, 100));
+    await tester.pump();
+
+    expect(
+      tester.getTopLeft(find.byType(LmJournalField)).dy,
+      greaterThan(before),
+    );
+    expect(tester.testTextInput.isVisible, isTrue);
+  });
+
+  testWidgets('the journal fits with large text and the keyboard', (
+    tester,
+  ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    tester.view
+      ..physicalSize = const Size(375, 667)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await entries.save(today, moods: const WholeDayMood(MoodScore.low));
+    final semantics = tester.ensureSemantics();
+    await openToday(tester);
+    await tapText(tester, 'Next');
+    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(textContrastGuideline));
+
+    tester.view.viewInsets = const FakeViewPadding(bottom: 260);
+    await tester.ensureVisible(find.byType(LmJournalField));
+    await write(tester, 'A line\n' * 20);
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    // what is being written is above the keyboard
+    final field = tester.state<EditableTextState>(find.byType(EditableText));
+    final caret = field.renderEditable.getLocalRectForCaret(
+      field.textEditingValue.selection.extent,
+    );
+    expect(
+      field.renderEditable.localToGlobal(caret.bottomLeft).dy,
+      lessThan(667 - 260),
+    );
+    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
     semantics.dispose();
   });
 }

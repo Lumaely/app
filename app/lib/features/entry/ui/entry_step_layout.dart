@@ -5,6 +5,9 @@ import 'package:material_ui/material_ui.dart';
 
 /// the layout of every step of the entry input flow: top bar, date, progress,
 /// question, then [child], and then the actions at the bottom
+/// - screen readers hear each step as a new page
+/// - the keyboard covers the actions instead of pushing them up (the page must
+///   not resize for it)
 class EntryStepLayout extends StatelessWidget {
   const new({
     required this.date,
@@ -38,60 +41,82 @@ class EntryStepLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final subtitle = this.subtitle;
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
 
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          LmSpace.s5,
-          LmSpace.s2,
-          LmSpace.s5,
-          LmSpace.s5,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LmSpace.s4,
-          children: [
-            LmTopBar(title: isToday ? 'Today' : 'Past day', onBack: onBack),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      DateFormat('EEEE, MMMM d').format(date.toDateTime()),
-                      style: LmTypography.labelMedium.copyWith(
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: LmSpace.s4),
-                    LmProgressSteps(current: step, count: stepCount),
-                    const SizedBox(height: LmSpace.s8),
-                    Semantics(
-                      header: true,
-                      child: Text(
-                        title,
-                        style: LmTypography.headlineLarge.copyWith(
-                          color: colors.textPrimary,
-                        ),
-                      ),
-                    ),
-                    if (subtitle != null) ...[
-                      const SizedBox(height: 6),
+    return Semantics(
+      scopesRoute: true,
+      explicitChildNodes: true,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            LmSpace.s5,
+            LmSpace.s2,
+            LmSpace.s5,
+            0,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: LmSpace.s4,
+            children: [
+              LmTopBar(title: isToday ? 'Today' : 'Past day', onBack: onBack),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
                       Text(
-                        subtitle,
-                        style: LmTypography.bodySmall.copyWith(
+                        DateFormat('EEEE, MMMM d').format(date.toDateTime()),
+                        style: LmTypography.labelMedium.copyWith(
                           color: colors.textSecondary,
                         ),
                       ),
+                      const SizedBox(height: LmSpace.s4),
+                      LmProgressSteps(current: step, count: stepCount),
+                      const SizedBox(height: LmSpace.s8),
+                      Semantics(
+                        header: true,
+                        namesRoute: true,
+                        child: Text(
+                          title,
+                          style: LmTypography.headlineLarge.copyWith(
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          subtitle,
+                          style: LmTypography.bodySmall.copyWith(
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: LmSpace.s4),
+                      child,
                     ],
-                    const SizedBox(height: LmSpace.s4),
-                    child,
-                  ],
+                  ),
                 ),
               ),
-            ),
-            actions,
-          ],
+              // at least as high as the keyboard, the actions at its bottom
+              ConstrainedBox(
+                constraints: BoxConstraints(minHeight: keyboard),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  heightFactor: 1,
+                  child: SafeArea(
+                    top: false,
+                    maintainBottomViewPadding: true,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: LmSpace.s5),
+                      child: actions,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

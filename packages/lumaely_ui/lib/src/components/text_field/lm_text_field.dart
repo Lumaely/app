@@ -10,6 +10,7 @@ import 'package:material_ui/material_ui.dart';
 /// - [error] -> red border + message under the field
 /// - [password] -> hidden text + button to show it
 /// - [maxLines] null -> grows with the text
+/// - a tap outside hides the keyboard
 class LmTextField extends StatefulWidget {
   const new({
     required this.label,
@@ -90,6 +91,7 @@ class _LmTextFieldState extends State<LmTextField> {
             autofillHints: widget.autofillHints,
             onChanged: widget.onChanged,
             onSubmitted: widget.onSubmitted,
+            onTapOutside: (_) => FocusScope.of(context).unfocus(),
             style: LmTypography.bodyMedium.copyWith(
               color: widget.enabled ? colors.textPrimary : colors.textDisabled,
             ),

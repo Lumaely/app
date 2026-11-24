@@ -55,6 +55,43 @@ void main() {
     expect(find.byTooltip('Hide password'), findsOneWidget);
   });
 
+  testWidgets('a tap outside hides the keyboard', (tester) async {
+    await tester.pumpWidget(_app(const LmTextField(label: 'Email')));
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+    expect(tester.testTextInput.isVisible, isTrue);
+
+    await tester.tapAt(const Offset(400, 580));
+    await tester.pump();
+
+    expect(tester.testTextInput.isVisible, isFalse);
+  });
+
+  testWidgets('the eye button and the next field keep the keyboard', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        const Column(
+          children: [
+            LmTextField(label: 'Password', password: true),
+            LmTextField(label: 'Confirm password'),
+          ],
+        ),
+      ),
+    );
+    await tester.tap(find.byType(TextField).first);
+    await tester.pump();
+
+    await tester.tap(find.byTooltip('Show password'));
+    await tester.pump();
+    expect(tester.testTextInput.isVisible, isTrue);
+
+    await tester.tap(find.byType(TextField).last);
+    await tester.pump();
+    expect(tester.testTextInput.isVisible, isTrue);
+  });
+
   testWidgets('keyboards never learn from what is typed', (tester) async {
     await tester.pumpWidget(_app(const LmTextField(label: 'Journal')));
 

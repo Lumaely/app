@@ -27,6 +27,7 @@ export 'src/components/tab_bar/lm_tab_bar.dart';
 export 'src/components/text/lm_field_error.dart';
 export 'src/components/text/lm_line_mark.dart';
 export 'src/components/text_field/lm_input_decoration_theme.dart';
+export 'src/components/text_field/lm_journal_field.dart';
 export 'src/components/text_field/lm_text_field.dart';
 export 'src/components/tile/lm_tile.dart';
 export 'src/components/tile/lm_tile_group.dart';
