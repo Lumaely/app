@@ -45,6 +45,18 @@ void main() {
     );
   });
 
+  testWidgets('a tap outside stops writing', (tester) async {
+    await tester.pumpWidget(_app(const LmJournalField()));
+    await tester.tap(find.byType(LmJournalField));
+    await tester.pump();
+    expect(tester.testTextInput.isVisible, isTrue);
+
+    await tester.tapAt(const Offset(400, 580));
+    await tester.pump();
+
+    expect(tester.testTextInput.isVisible, isFalse);
+  });
+
   testWidgets('says what is typed', (tester) async {
     String? typed;
     await tester.pumpWidget(

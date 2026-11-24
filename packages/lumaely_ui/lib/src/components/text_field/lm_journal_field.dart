@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 
 /// big text field to write the journal of a day
 /// - grows with the text
+/// - a tap outside hides the keyboard (it has no done key: enter = new line)
 /// - [readOnly]: while saving
 class LmJournalField extends StatelessWidget {
   const new({
@@ -31,6 +32,7 @@ class LmJournalField extends StatelessWidget {
           controller: controller,
           readOnly: readOnly,
           onChanged: onChanged,
+          onTapOutside: (_) => FocusScope.of(context).unfocus(),
           keyboardType: TextInputType.multiline,
           textCapitalization: TextCapitalization.sentences,
           enableIMEPersonalizedLearning: false,
