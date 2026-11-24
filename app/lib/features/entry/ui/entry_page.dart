@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lumaely/core/router/router_paths.dart';
+import 'package:lumaely/core/ui/load_error.dart';
 import 'package:lumaely/features/entry/application/entry_editor.dart';
 import 'package:lumaely/features/entry/ui/entry_saved_step.dart';
 import 'package:lumaely/features/entry/ui/journal_step.dart';
@@ -194,48 +195,13 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               onJournal: () => context.go(RouterPaths.journal),
             ),
           },
-          AsyncValue(hasError: true) => _LoadError(
+          AsyncValue(hasError: true) => LoadError(
+            message: 'This day could not be read.',
             onRetry: () => ref.invalidate(_provider),
             onBack: _leave,
           ),
           _ => const SizedBox.shrink(),
         },
-      ),
-    );
-  }
-}
-
-class _LoadError extends StatelessWidget {
-  const new({required this.onRetry, required this.onBack});
-
-  final VoidCallback onRetry;
-  final VoidCallback onBack;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(LmSpace.s5),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LmSpace.s4,
-          children: [
-            Text(
-              'This day could not be read.',
-              textAlign: TextAlign.center,
-              style: LmTypography.bodyLarge.copyWith(
-                color: context.colors.textPrimary,
-              ),
-            ),
-            LmButton(label: 'Try again', onPressed: onRetry),
-            LmButton(
-              label: 'Back',
-              variant: LmButtonVariant.text,
-              onPressed: onBack,
-            ),
-          ],
-        ),
       ),
     );
   }

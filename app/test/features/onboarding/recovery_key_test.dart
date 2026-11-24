@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lumaely/core/router/placeholder_page.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely/features/onboarding/ui/recovery_key_page.dart';
+import 'package:lumaely/features/today/ui/today_page.dart';
 import 'package:lumaely_crypto/lumaely_crypto.dart';
 import 'package:lumaely_data/lumaely_data.dart';
 
@@ -102,12 +102,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(RecoveryKeyPage), findsNothing);
-    expect(
-      find.byWidgetPredicate(
-        (widget) => widget is PlaceholderPage && widget.title == 'Today',
-      ),
-      findsOneWidget,
-    );
+    expect(find.byType(TodayPage), findsOneWidget);
   });
 
   testWidgets('large text fits, and the guidelines are met', (tester) async {

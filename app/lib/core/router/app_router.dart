@@ -14,8 +14,8 @@ import 'package:lumaely/features/onboarding/ui/diary_password_page.dart';
 import 'package:lumaely/features/onboarding/ui/recovery_key_page.dart';
 import 'package:lumaely/features/onboarding/ui/start_page.dart';
 import 'package:lumaely/features/onboarding/ui/welcome_page.dart';
+import 'package:lumaely/features/today/ui/today_page.dart';
 import 'package:lumaely_core/lumaely_core.dart';
-import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
@@ -80,13 +80,7 @@ GoRouter appRouter(Ref ref) {
             routes: [
               GoRoute(
                 path: RouterPaths.today,
-                builder: (context, _) => PlaceholderPage(
-                  title: 'Today',
-                  action: LmButton(
-                    label: 'Write today',
-                    onPressed: () => context.push(RouterPaths.entryOn(today())),
-                  ),
-                ),
+                builder: (_, _) => const TodayPage(),
               ),
             ],
           ),

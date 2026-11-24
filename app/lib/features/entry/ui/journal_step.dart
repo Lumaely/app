@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:lumaely/core/time/clock_provider.dart';
+import 'package:lumaely/core/time/today_provider.dart';
 import 'package:lumaely/features/entry/application/entry_draft.dart';
 import 'package:lumaely/features/entry/application/entry_editor.dart';
 import 'package:lumaely/features/entry/ui/entry_step_layout.dart';
@@ -44,7 +44,7 @@ class _JournalStepState extends ConsumerState<JournalStep> {
   Widget build(BuildContext context) {
     final date = widget.date;
     final saving = widget.saving;
-    final isToday = date == LocalDate.today(ref.watch(clockProvider));
+    final isToday = date == ref.watch(todayProvider);
     final weekday = DateFormat('EEEE').format(date.toDateTime());
 
     return EntryStepLayout(

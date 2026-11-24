@@ -8,6 +8,8 @@ import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_crypto/lumaely_crypto.dart';
 
+import 'fake_entry_repository.dart';
+
 /// a vault that loads whatever the test says, without files or keys
 /// - [onCreate]: what creating a diary does (it must open it)
 class FakeVault extends Vault {
@@ -30,7 +32,7 @@ class FakeVault extends Vault {
 }
 
 /// pumps the whole app on a [FakeVault] that loads with [load]
-/// - [entries]: used instead of the entries of the open diary
+/// - [entries]: used instead of the entries of the open diary, none by default
 /// - [clock]: used instead of the device's clock
 Future<FakeVault> launchApp(
   WidgetTester tester,
@@ -45,7 +47,9 @@ Future<FakeVault> launchApp(
     ProviderScope(
       overrides: [
         vaultProvider.overrideWith(() => vault),
-        if (entries != null) entryRepositoryProvider.overrideWithValue(entries),
+        entryRepositoryProvider.overrideWithValue(
+          entries ?? FakeEntryRepository(),
+        ),
         if (clock != null) clockProvider.overrideWithValue(clock),
       ],
       child: const App(),
