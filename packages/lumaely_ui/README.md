@@ -49,6 +49,9 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   lines; the line is cut where nothing was written; per day, 7 day rolling
   average, per week or per month; read as a summary by screen readers).
 
+- Text: `LmTextField` (label above, error under it, password eye button) and
+  `LmJournalField` (the journal of a day: big, grows with the text, no label).
+
 - Flows: `LmTopBar` (back, title, one action) and `LmProgressSteps` (one bar
   per step, read as "Step 1 of 2").
 
