@@ -12,6 +12,10 @@ abstract interface class EntryRepository {
   /// Emits again after every change to them.
   Stream<List<DayEntry>> watchRange(LocalDate from, LocalDate to);
 
+  /// Every day that has an entry.
+  /// Emits again after every change to the entries.
+  Stream<Set<LocalDate>> watchDates();
+
   /// Creates the entry for [date], or replaces its moods and journal.
   Future<void> save(
     LocalDate date, {
