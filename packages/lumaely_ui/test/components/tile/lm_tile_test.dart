@@ -196,6 +196,51 @@ void main() {
       expect(value.left, greaterThan(title.right));
     });
 
+    testWidgets('a value longer than half the row fits next to a short title', (
+      tester,
+    ) async {
+      tester.view
+        ..physicalSize = const Size(320, 800)
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      // with the test font: 14 px per letter, so 168 px
+      const value = '123456789012';
+      await tester.pumpWidget(
+        _app(
+          const LmTile(
+            child: LmTileRow(title: 'Mood', value: value),
+          ),
+        ),
+      );
+
+      final row = tester.getRect(find.byType(LmTileRow));
+      final text = tester.getRect(find.text(value));
+      expect(text.width, greaterThan(row.width / 2));
+      expect(text.height, lessThan(LmTypography.bodyMedium.fontSize! * 2));
+      expect(
+        text.left,
+        greaterThanOrEqualTo(tester.getRect(find.text('Mood')).right),
+      );
+    });
+
+    testWidgets('a value that does not fit goes under the title', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _app(
+          LmTile(
+            child: LmTileRow(title: 'Title ' * 20, value: 'Value ' * 20),
+          ),
+        ),
+      );
+
+      final title = tester.getRect(find.textContaining('Title'));
+      final value = tester.getRect(find.textContaining('Value'));
+      expect(value.top, greaterThan(title.bottom));
+      expect(value.left, title.left);
+    });
+
     testWidgets('wraps long texts at text scale 200 %', (tester) async {
       tester.view.physicalSize = const Size(320, 800);
       tester.view.devicePixelRatio = 1;
