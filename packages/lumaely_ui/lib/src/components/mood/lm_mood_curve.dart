@@ -35,11 +35,9 @@ class LmMoodCurve extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final small = LmTypography.labelSmall.copyWith(color: colors.textSecondary);
+    final textScaler = MediaQuery.textScalerOf(context);
     // room for 2 lines of moment names, even with a big text size
-    final namesHeight =
-        MediaQuery.textScalerOf(context).scale(small.fontSize!) *
-        small.height! *
-        2;
+    final namesHeight = textScaler.scale(small.fontSize!) * small.height! * 2;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,7 +46,8 @@ class LmMoodCurve extends StatelessWidget {
         // the moods are read by each column, no need to read this
         ExcludeSemantics(
           child: SizedBox(
-            width: _axisWidth,
+            // wider with the text: "Great" never breaks
+            width: textScaler.scale(_axisWidth),
             height: _height,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: LmSpace.s3),
@@ -56,8 +55,16 @@ class LmMoodCurve extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(moodLabel(MoodScore.great), style: small),
-                  Text(moodLabel(MoodScore.rough), style: small),
+                  Text(
+                    moodLabel(MoodScore.great),
+                    softWrap: false,
+                    style: small,
+                  ),
+                  Text(
+                    moodLabel(MoodScore.rough),
+                    softWrap: false,
+                    style: small,
+                  ),
                 ],
               ),
             ),
