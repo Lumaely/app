@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:lumaely_core/lumaely_core.dart';
 
-/// entries in memory (a real database doesn't run inside testWidgets)
+/// entries in memory (a real database doesn't run inside testWidgets), live
 /// - [readError] / [saveError]: what reading / saving throws, if anything
 /// - [saved]: completes the saves, to see what happens meanwhile
 class FakeEntryRepository implements EntryRepository {
@@ -12,27 +12,31 @@ class FakeEntryRepository implements EntryRepository {
   Future<void>? saved;
   int saves = 0;
 
-  @override
-  Stream<DayEntry?> watchDay(LocalDate date) async* {
+  final _changes = StreamController<void>.broadcast();
+
+  // what [read] gives, again after every change
+  Stream<T> _live<T>(T Function() read) async* {
     if (readError case final error?) {
       throw error;
     }
 
-    yield days[date];
+    yield read();
+    yield* _changes.stream.map((_) => read());
   }
 
   @override
-  Stream<List<DayEntry>> watchRange(LocalDate from, LocalDate to) async* {
-    yield [
+  Stream<DayEntry?> watchDay(LocalDate date) => _live(() => days[date]);
+
+  @override
+  Stream<List<DayEntry>> watchRange(LocalDate from, LocalDate to) => _live(
+    () => [
       for (final day in days.values)
         if (!day.date.isBefore(from) && !day.date.isAfter(to)) day,
-    ];
-  }
+    ],
+  );
 
   @override
-  Stream<Set<LocalDate>> watchDates() async* {
-    yield days.keys.toSet();
-  }
+  Stream<Set<LocalDate>> watchDates() => _live(() => days.keys.toSet());
 
   @override
   Future<void> save(
@@ -58,8 +62,12 @@ class FakeEntryRepository implements EntryRepository {
       createdAt: now,
       updatedAt: now,
     );
+    _changes.add(null);
   }
 
   @override
-  Future<void> delete(LocalDate date) async => days.remove(date);
+  Future<void> delete(LocalDate date) async {
+    days.remove(date);
+    _changes.add(null);
+  }
 }
