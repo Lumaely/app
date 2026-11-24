@@ -29,7 +29,7 @@ class MoodStep extends ConsumerWidget {
   final VoidCallback onNext;
   final VoidCallback onBack;
 
-  /// TODO: get user-set setting. For now, all are chosen.
+  // TODO(issue-144): get user-set setting. For now, all are chosen.
   static const List<Moment> _moments = Moment.values;
 
   @override
