@@ -220,6 +220,19 @@ final class DriftEntryRepository implements EntryRepository {
             entries.day.isBetweenValues(from.toString(), to.toString()),
       );
 
+  @override
+  Stream<Set<LocalDate>> watchDates() {
+    final entries = _database.entries;
+    final query = _database.selectOnly(entries)
+      ..addColumns([entries.day])
+      ..where(entries.deletedAt.isNull());
+
+    return query
+        .map((row) => row.readWithConverter(entries.day)!)
+        .watch()
+        .map((days) => days.toSet());
+  }
+
   /// The live entries matching [where], oldest first, with their live moods.
   Stream<List<DayEntry>> _watchEntries(
     Expression<bool> Function($EntriesTable entries) where,
