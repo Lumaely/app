@@ -6,6 +6,7 @@ import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely/features/launch/ui/splash_page.dart';
 import 'package:lumaely/features/launch/ui/vault_error_page.dart';
 import 'package:lumaely/features/onboarding/ui/welcome_page.dart';
+import 'package:lumaely/features/today/ui/today_page.dart';
 import 'package:lumaely_data/lumaely_data.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
 
@@ -51,7 +52,7 @@ void main() {
     await launch(tester, () async => VaultOpen(diary));
     await tester.pumpAndSettle();
 
-    expect(placeholder('Today'), findsOneWidget);
+    expect(find.byType(TodayPage), findsOneWidget);
   });
 
   testWidgets('follows the vault: unlocking moves to today', (tester) async {
@@ -62,7 +63,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(placeholder('Unlock'), findsNothing);
-    expect(placeholder('Today'), findsOneWidget);
+    expect(find.byType(TodayPage), findsOneWidget);
   });
 
   testWidgets('vault error: retry reloads the vault and moves on', (
@@ -104,11 +105,16 @@ void main() {
     Finder tab(String label) =>
         find.descendant(of: find.byType(LmTabBar), matching: find.text(label));
 
-    for (final label in ['Journal', 'Insights', 'Settings', 'Today']) {
+    for (final label in ['Journal', 'Insights', 'Settings']) {
       await tester.tap(tab(label));
       await tester.pumpAndSettle();
 
       expect(placeholder(label), findsOneWidget, reason: label);
     }
+
+    await tester.tap(tab('Today'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(TodayPage), findsOneWidget);
   });
 }

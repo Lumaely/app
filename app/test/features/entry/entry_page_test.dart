@@ -8,6 +8,7 @@ import 'package:lumaely/core/router/placeholder_page.dart';
 import 'package:lumaely/core/router/router_paths.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely/features/entry/ui/entry_page.dart';
+import 'package:lumaely/features/today/ui/today_page.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_data/lumaely_data.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
@@ -39,7 +40,13 @@ void main() {
 
   Future<void> openToday(WidgetTester tester) async {
     await launch(tester);
-    await tester.tap(find.text('Write today'));
+    final write = find.descendant(
+      of: find.byType(TodayPage),
+      matching: find.byType(LmButton),
+    );
+    // off screen with large text
+    await tester.ensureVisible(write);
+    await tester.tap(write);
     await tester.pumpAndSettle();
   }
 
@@ -102,11 +109,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Finder onTab(String title) => find.byWidgetPredicate(
-    (widget) => widget is PlaceholderPage && widget.title == title,
-  );
-
-  Finder onToday() => onTab('Today');
+  Finder onToday() => find.byType(TodayPage);
 
   testWidgets('a new day: every moment, all empty', (tester) async {
     await openToday(tester);
@@ -297,7 +300,7 @@ void main() {
     await tapText(tester, 'View in journal');
 
     expect(find.byType(EntryPage), findsNothing);
-    expect(onTab('Journal'), findsOneWidget);
+    expect(find.widgetWithText(PlaceholderPage, 'Journal'), findsOneWidget);
   });
 
   testWidgets('once saved, the system back leaves', (tester) async {
