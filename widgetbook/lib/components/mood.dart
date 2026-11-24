@@ -63,3 +63,18 @@ Widget moodSliderPlayground(BuildContext context) {
     ),
   );
 }
+
+@widgetbook.UseCase(name: 'Playground', type: LmMoodOrb, path: '[Components]')
+Widget moodOrbPlayground(BuildContext context) {
+  final score = context.knobs.int.slider(
+    label: 'Mood (0: empty)',
+    initialValue: 4,
+    max: 5,
+  );
+
+  return Scaffold(
+    body: Center(
+      child: LmMoodOrb(score: score == 0 ? null : MoodScore.fromValue(score)),
+    ),
+  );
+}
