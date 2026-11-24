@@ -30,6 +30,11 @@ class FakeEntryRepository implements EntryRepository {
   }
 
   @override
+  Stream<Set<LocalDate>> watchDates() async* {
+    yield days.keys.toSet();
+  }
+
+  @override
   Future<void> save(
     LocalDate date, {
     required DayMoods moods,
