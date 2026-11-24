@@ -31,3 +31,20 @@ Widget iconButtons(BuildContext context) {
     ),
   );
 }
+
+// next to the main button of a page
+@widgetbook.UseCase(name: 'Outlined', type: LmIconButton, path: '[Components]')
+Widget outlinedIconButton(BuildContext context) {
+  final enabled = context.knobs.boolean(label: 'Enabled', initialValue: true);
+
+  return Scaffold(
+    body: Center(
+      child: LmIconButton(
+        icon: LmIcons.chevronUpDown,
+        label: 'Switch mode',
+        outlined: true,
+        onPressed: enabled ? () {} : null,
+      ),
+    ),
+  );
+}
