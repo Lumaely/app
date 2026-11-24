@@ -155,6 +155,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       },
       child: Scaffold(
         backgroundColor: context.colors.surface,
+        // see EntryStepLayout
+        resizeToAvoidBottomInset: false,
         body: switch (draft) {
           AsyncValue(:final value?) => switch (_step) {
             _EntryStep.mood => MoodStep(

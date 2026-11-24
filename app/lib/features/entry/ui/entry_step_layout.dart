@@ -6,6 +6,8 @@ import 'package:material_ui/material_ui.dart';
 /// the layout of every step of the entry input flow: top bar, date, progress,
 /// question, then [child], and then the actions at the bottom
 /// - screen readers hear each step as a new page
+/// - the keyboard covers the actions instead of pushing them up (the page must
+///   not resize for it)
 class EntryStepLayout extends StatelessWidget {
   const new({
     required this.date,
@@ -39,17 +41,19 @@ class EntryStepLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final subtitle = this.subtitle;
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
 
     return Semantics(
       scopesRoute: true,
       explicitChildNodes: true,
       child: SafeArea(
+        bottom: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
             LmSpace.s5,
             LmSpace.s2,
             LmSpace.s5,
-            LmSpace.s5,
+            0,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -95,7 +99,22 @@ class EntryStepLayout extends StatelessWidget {
                   ),
                 ),
               ),
-              actions,
+              // at least as high as the keyboard, the actions at its bottom
+              ConstrainedBox(
+                constraints: BoxConstraints(minHeight: keyboard),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  heightFactor: 1,
+                  child: SafeArea(
+                    top: false,
+                    maintainBottomViewPadding: true,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: LmSpace.s5),
+                      child: actions,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

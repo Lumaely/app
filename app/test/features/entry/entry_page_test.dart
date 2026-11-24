@@ -88,6 +88,15 @@ void main() {
     await tester.pump();
   }
 
+  Future<void> showKeyboard(WidgetTester tester) async {
+    await tester.tap(find.byType(LmJournalField));
+    tester.view.viewInsets = FakeViewPadding(
+      bottom: 260 * tester.view.devicePixelRatio,
+    );
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pumpAndSettle();
+  }
+
   Finder onToday() => find.byWidgetPredicate(
     (widget) => widget is PlaceholderPage && widget.title == 'Today',
   );
@@ -435,6 +444,43 @@ void main() {
     semantics.dispose();
   });
 
+  testWidgets('the keyboard leaves the buttons where they are', (tester) async {
+    await goToJournal(tester);
+    final finish = tester.getRect(find.text('Finish'));
+
+    await showKeyboard(tester);
+
+    expect(tester.getRect(find.text('Finish')), finish);
+  });
+
+  testWidgets('a tap outside hides the keyboard', (tester) async {
+    await goToJournal(tester);
+    await showKeyboard(tester);
+    expect(tester.testTextInput.isVisible, isTrue);
+
+    await tester.tap(find.text('Anything about your day?'));
+    await tester.pump();
+
+    expect(tester.testTextInput.isVisible, isFalse);
+  });
+
+  testWidgets('scrolling the text keeps the keyboard', (tester) async {
+    await goToJournal(tester);
+    await showKeyboard(tester);
+    await write(tester, 'A line\n' * 30);
+    await tester.pumpAndSettle();
+    final before = tester.getTopLeft(find.byType(LmJournalField)).dy;
+
+    await tester.drag(find.byType(SingleChildScrollView), const Offset(0, 100));
+    await tester.pump();
+
+    expect(
+      tester.getTopLeft(find.byType(LmJournalField)).dy,
+      greaterThan(before),
+    );
+    expect(tester.testTextInput.isVisible, isTrue);
+  });
+
   testWidgets('the journal fits with large text and the keyboard', (
     tester,
   ) async {
@@ -458,7 +504,17 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Finish').hitTestable(), findsOneWidget);
+    // what is being written is above the keyboard
+    final field = tester.state<EditableTextState>(find.byType(EditableText));
+    final caret = field.renderEditable.getLocalRectForCaret(
+      field.textEditingValue.selection.extent,
+    );
+    expect(
+      field.renderEditable.localToGlobal(caret.bottomLeft).dy,
+      lessThan(667 - 260),
+    );
+    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
     semantics.dispose();
   });
 }
