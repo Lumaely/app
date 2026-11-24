@@ -19,6 +19,11 @@ EntryRepository entryRepository(Ref ref) {
   return state.diary.entries;
 }
 
+/// Every day that has an entry.
+@riverpod
+Stream<Set<LocalDate>> writtenDates(Ref ref) =>
+    ref.watch(entryRepositoryProvider).watchDates();
+
 /// The entry for [date], or null if there is none.
 @riverpod
 Stream<DayEntry?> dayEntry(Ref ref, LocalDate date) =>
