@@ -57,4 +57,19 @@ void main() {
 
     expect(_markTop(tester), lessThan(lowercase));
   });
+
+  testWidgets('balanced, a mark sits between both', (tester) async {
+    await tester.pumpWidget(_app());
+    final lowercase = _markTop(tester);
+
+    await tester.pumpWidget(_app(align: LmLineMarkAlign.capitals));
+    final capitals = _markTop(tester);
+
+    await tester.pumpWidget(_app(align: LmLineMarkAlign.balanced));
+
+    expect(
+      _markTop(tester),
+      moreOrLessEquals((lowercase + capitals) / 2, epsilon: 0.1),
+    );
+  });
 }

@@ -10,6 +10,9 @@ enum LmLineMarkAlign {
   /// the capitals: marks as tall as the text or more (a checkbox), which the
   /// eye compares to the whole word
   capitals,
+
+  /// halfway between both: a title next to a bigger button
+  balanced,
 }
 
 /// a mark (dot, icon, box) of [size] before a text in [style], centred on the
@@ -57,6 +60,7 @@ class LmLineMark extends StatelessWidget {
     final letters = switch (align) {
       LmLineMarkAlign.lowercase => xHeight,
       LmLineMarkAlign.capitals => capHeight,
+      LmLineMarkAlign.balanced => (xHeight + capHeight) / 2,
     };
 
     return baseline - scaler.scale(style.fontSize!) * letters / 2;

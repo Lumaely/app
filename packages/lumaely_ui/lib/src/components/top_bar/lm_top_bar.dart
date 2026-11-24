@@ -30,7 +30,11 @@ class LmTopBar extends StatelessWidget {
     // the letters are lower than the middle of their line: moved up, to be
     // centred on the back button
     final lineMiddle = scaler.scale(style.fontSize!) * style.height! / 2;
-    final lettersMiddle = LmLineMark.lettersMiddle(style, scaler: scaler);
+    final lettersMiddle = LmLineMark.lettersMiddle(
+      style,
+      scaler: scaler,
+      align: LmLineMarkAlign.balanced,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),

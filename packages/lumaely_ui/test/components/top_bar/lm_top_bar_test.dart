@@ -71,7 +71,10 @@ void main() {
         TextBaseline.alphabetic,
       )!;
       final letters =
-          LmTypography.titleLarge.fontSize! * textScale * LmLineMark.xHeight;
+          LmTypography.titleLarge.fontSize! *
+          textScale *
+          (LmLineMark.xHeight + LmLineMark.capHeight) /
+          2;
 
       expect(
         tester.getTopLeft(find.text('Today')).dy + baseline - letters / 2,
