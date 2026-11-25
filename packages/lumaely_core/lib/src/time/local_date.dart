@@ -55,6 +55,9 @@ final class LocalDate implements Comparable<LocalDate> {
     return LocalDate(moved.year, moved.month, moved.day);
   }
 
+  /// The Monday of its week.
+  LocalDate get firstOfWeek => addDays(DateTime.monday - _asUtc.weekday);
+
   LocalDate get firstOfMonth => LocalDate(year, month, 1);
 
   // day 0 of next month = last day of this one
