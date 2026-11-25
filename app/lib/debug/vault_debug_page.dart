@@ -129,6 +129,7 @@ class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
       ),
     ),
     _button('Delete today', _deleteToday),
+    _button('Write 2,500 test days', _writeTestDays),
     const Divider(),
     _button('Read database', () => _readDatabase(diary)),
     _button('Simulate restart', _restart),
@@ -209,6 +210,28 @@ class _VaultDebugPageState extends ConsumerState<VaultDebugPage> {
 
   Future<String?> _deleteToday() async {
     await ref.read(entryRepositoryProvider).delete(_today);
+    return null;
+  }
+
+  /// A diary of almost seven years, to see how the app behaves with it.
+  /// The days already written stay as they are.
+  Future<String?> _writeTestDays() async {
+    final entries = ref.read(entryRepositoryProvider);
+    final written = await entries.watchDates().first;
+
+    for (var i = 0; i < 2500; i++) {
+      final date = _today.addDays(-i);
+      if (written.contains(date)) continue;
+
+      final score = MoodScore.values[i % MoodScore.values.length];
+      await entries.save(
+        date,
+        moods: i.isEven
+            ? WholeDayMood(score)
+            : MomentMoods({for (final moment in Moment.values) moment: score}),
+        journal: i % 3 == 0 ? '' : 'Test day $i. ${'Long walk. ' * 30}',
+      );
+    }
     return null;
   }
 
