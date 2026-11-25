@@ -30,6 +30,24 @@ void main() {
     expect(taps, 1);
   });
 
+  testWidgets('the top bar of a tab has no back, and is as high', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_app(onBack: () {}));
+    final height = tester.getSize(find.byType(LmTopBar)).height;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: LmThemeData.dawn,
+        home: const Scaffold(body: LmTopBar.tab(title: 'Journal')),
+      ),
+    );
+
+    expect(find.byTooltip('Back'), findsNothing);
+    expect(tester.getSize(find.byType(LmTopBar)).height, height);
+    expect(tester.getTopLeft(find.text('Journal')).dx, 0);
+  });
+
   testWidgets('the title is a header', (tester) async {
     final semantics = tester.ensureSemantics();
     await tester.pumpWidget(_app(onBack: () {}));
