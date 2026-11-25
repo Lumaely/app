@@ -50,6 +50,17 @@ void main() {
       expect(LocalDate(2026, 3, 1).addDays(-1), LocalDate(2026, 2, 28));
     });
 
+    test('first and last day of the month', () {
+      LocalDate last(int year, int month, int day) =>
+          LocalDate(year, month, day).lastOfMonth;
+
+      expect(LocalDate(2026, 10, 29).firstOfMonth, LocalDate(2026, 10, 1));
+      expect(last(2026, 10, 1), LocalDate(2026, 10, 31));
+      expect(last(2026, 12, 31), LocalDate(2026, 12, 31));
+      expect(last(2027, 2, 10), LocalDate(2027, 2, 28));
+      expect(last(2028, 2, 10), LocalDate(2028, 2, 29));
+    });
+
     test('counts days between two dates', () {
       expect(LocalDate(2026, 10, 29).daysSince(LocalDate(2020, 1, 1)), 2493);
     });
