@@ -91,3 +91,19 @@ Widget tileRowPlayground(BuildContext context) {
     ),
   );
 }
+
+@widgetbook.UseCase(name: 'Playground', type: LmTileSlice, path: '[Components]')
+Widget tileSlicePlayground(BuildContext context) {
+  return _screen(
+    Column(
+      children: [
+        for (final (index, (_, title, value)) in _rows.indexed)
+          LmTileSlice(
+            first: index == 0,
+            last: index == _rows.length - 1,
+            child: LmTileRow(title: title, value: value, onTap: () {}),
+          ),
+      ],
+    ),
+  );
+}
