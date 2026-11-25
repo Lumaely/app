@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumaely/app.dart';
 import 'package:lumaely/core/router/app_router.dart';
-import 'package:lumaely/core/router/placeholder_page.dart';
 import 'package:lumaely/core/router/router_paths.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely/features/entry/ui/entry_page.dart';
+import 'package:lumaely/features/journal/ui/journal_page.dart';
 import 'package:lumaely/features/today/ui/today_page.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_data/lumaely_data.dart';
@@ -114,8 +114,8 @@ void main() {
   testWidgets('a new day: every moment, all empty', (tester) async {
     await openToday(tester);
 
-    expect(find.text('How did your day feel?'), findsOneWidget);
-    expect(find.text('Thursday, October 29'), findsOneWidget);
+    expect(find.text('How did today feel?'), findsOneWidget);
+    expect(find.text('Thursday, October 29, 2026'), findsOneWidget);
     final curve = tester.widget<LmMoodCurve>(find.byType(LmMoodCurve));
     expect(curve.moments, Moment.values);
     expect(curve.scores, isEmpty);
@@ -145,7 +145,7 @@ void main() {
     await tapText(tester, 'Next');
 
     expect(entries.days[today]!.moods, const WholeDayMood(MoodScore.okay));
-    expect(find.text('Anything about your day?'), findsOneWidget);
+    expect(find.text('Anything about today?'), findsOneWidget);
     expect(find.byType(LmMoodSlider), findsNothing);
   });
 
@@ -213,7 +213,7 @@ void main() {
     await write(tester, 'Long walk');
 
     await goBack(tester);
-    expect(find.text('How did your day feel?'), findsOneWidget);
+    expect(find.text('How did today feel?'), findsOneWidget);
     expect(find.text('Okay · 3/5'), findsOneWidget);
 
     await tapText(tester, 'Next');
@@ -223,7 +223,7 @@ void main() {
     // the system back too
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
-    expect(find.text('How did your day feel?'), findsOneWidget);
+    expect(find.text('How did today feel?'), findsOneWidget);
   });
 
   testWidgets('leaving with a text not saved asks first', (tester) async {
@@ -269,7 +269,7 @@ void main() {
     await tester.tap(find.text('Skip'));
     await tester.binding.handlePopRoute();
     await tester.pump();
-    expect(find.text('Anything about your day?'), findsOneWidget);
+    expect(find.text('Anything about today?'), findsOneWidget);
 
     saved.complete();
     await tester.pumpAndSettle();
@@ -279,7 +279,7 @@ void main() {
   testWidgets('the day saved: its date and its moods', (tester) async {
     await goToSaved(tester);
 
-    expect(find.text('Thursday, October 29'), findsOneWidget);
+    expect(find.text('Thursday, October 29, 2026'), findsOneWidget);
     expect(find.text('3/5 · Okay'), findsOneWidget);
     expect(find.byType(LmTopBar), findsNothing);
     expect(find.byType(LmProgressSteps), findsNothing);
@@ -300,7 +300,7 @@ void main() {
     await tapText(tester, 'View in journal');
 
     expect(find.byType(EntryPage), findsNothing);
-    expect(find.widgetWithText(PlaceholderPage, 'Journal'), findsOneWidget);
+    expect(find.byType(JournalPage), findsOneWidget);
   });
 
   testWidgets('once saved, the system back leaves', (tester) async {
@@ -322,7 +322,7 @@ void main() {
     await goToJournal(tester);
 
     expect(
-      tester.getSemantics(find.text('Anything about your day?')),
+      tester.getSemantics(find.text('Anything about today?')),
       isSemantics(isHeader: true, namesRoute: true),
     );
 
@@ -432,7 +432,7 @@ void main() {
 
     saved.complete();
     await tester.pumpAndSettle();
-    expect(find.text('Anything about your day?'), findsOneWidget);
+    expect(find.text('Anything about today?'), findsOneWidget);
   });
 
   testWidgets('a failed save keeps the moods on screen', (tester) async {
@@ -448,7 +448,18 @@ void main() {
 
     entries.saveError = null;
     await tapText(tester, 'Next');
-    expect(find.text('Anything about your day?'), findsOneWidget);
+    expect(find.text('Anything about today?'), findsOneWidget);
+  });
+
+  testWidgets('a day of another week is not only its weekday', (tester) async {
+    await openPath(tester, RouterPaths.entryOn(LocalDate(2021, 5, 2)));
+
+    expect(find.text('Sunday, May 2, 2021'), findsOneWidget);
+    expect(find.text('How did that day feel?'), findsOneWidget);
+
+    await setDayToOkay(tester);
+    await tapText(tester, 'Next');
+    expect(find.text('Anything about that day?'), findsOneWidget);
   });
 
   testWidgets('a past day is named', (tester) async {
@@ -516,7 +527,7 @@ void main() {
     await showKeyboard(tester);
     expect(tester.testTextInput.isVisible, isTrue);
 
-    await tester.tap(find.text('Anything about your day?'));
+    await tester.tap(find.text('Anything about today?'));
     await tester.pump();
 
     expect(tester.testTextInput.isVisible, isFalse);
