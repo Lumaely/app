@@ -55,6 +55,12 @@ final class LocalDate implements Comparable<LocalDate> {
     return LocalDate(moved.year, moved.month, moved.day);
   }
 
+  LocalDate get firstOfMonth => LocalDate(year, month, 1);
+
+  // day 0 of next month = last day of this one
+  LocalDate get lastOfMonth =>
+      LocalDate.fromDateTime(DateTime.utc(year, month + 1, 0));
+
   /// Whole days from [other] to this date.
   int daysSince(LocalDate other) => _asUtc.difference(other._asUtc).inDays;
 
