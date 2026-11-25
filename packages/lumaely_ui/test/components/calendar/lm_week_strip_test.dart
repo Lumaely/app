@@ -45,14 +45,6 @@ Finder _day(LocalDate date) => find.byWidgetPredicate(
 );
 
 void main() {
-  test('mondayOf finds the monday of any day', () {
-    for (var i = 0; i < 7; i++) {
-      expect(LmWeekStrip.mondayOf(_monday.addDays(i)), _monday);
-    }
-    // a sunday belongs to the week before, not the next one
-    expect(LmWeekStrip.mondayOf(LocalDate(2026, 11, 1)), _monday);
-  });
-
   testWidgets('shows monday to sunday, across the end of the month', (
     tester,
   ) async {

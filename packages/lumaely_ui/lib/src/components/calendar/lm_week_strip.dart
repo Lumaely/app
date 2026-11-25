@@ -25,16 +25,9 @@ class LmWeekStrip extends StatelessWidget {
 
   final ValueChanged<LocalDate>? onDayTap;
 
-  /// monday of the week of [date]
-  static LocalDate mondayOf(LocalDate date) {
-    final weekday = DateTime(date.year, date.month, date.day).weekday;
-
-    return date.addDays(DateTime.monday - weekday);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final monday = mondayOf(week);
+    final monday = week.firstOfWeek;
     final onDayTap = this.onDayTap;
 
     return Column(

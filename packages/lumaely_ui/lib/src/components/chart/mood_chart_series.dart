@@ -75,12 +75,18 @@ List<List<MoodChartPoint>> moodChartLines({
       to,
       (day) => _average([for (var i = 0; i < 7; i++) ?moods[day.addDays(-i)]]),
     ),
-    LmMoodChartSmoothing.weekly => _byBucket(from, to, moods, _mondayOf, 7),
+    LmMoodChartSmoothing.weekly => _byBucket(
+      from,
+      to,
+      moods,
+      (day) => day.firstOfWeek,
+      7,
+    ),
     LmMoodChartSmoothing.monthly => _byBucket(
       from,
       to,
       moods,
-      (day) => LocalDate(day.year, day.month, 1),
+      (day) => day.firstOfMonth,
       null,
     ),
   };
@@ -149,9 +155,4 @@ List<List<MoodChartPoint>> _byBucket(
 double? _average(List<double> values) {
   if (values.isEmpty) return null;
   return values.reduce((a, b) => a + b) / values.length;
-}
-
-LocalDate _mondayOf(LocalDate day) {
-  final weekday = DateTime(day.year, day.month, day.day).weekday;
-  return day.addDays(DateTime.monday - weekday);
 }
