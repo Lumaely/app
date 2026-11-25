@@ -29,9 +29,24 @@ Stream<Set<LocalDate>> writtenDates(Ref ref) =>
 Stream<DayEntry?> dayEntry(Ref ref, LocalDate date) =>
     ref.watch(entryRepositoryProvider).watchDay(date);
 
-/// The entries of the week from [monday] to Sunday, by date.
+/// The entries from [from] to [to] included, by date, oldest first.
 @riverpod
-Stream<Map<LocalDate, DayEntry>> weekEntries(Ref ref, LocalDate monday) => ref
+Stream<Map<LocalDate, DayEntry>> entriesBetween(
+  Ref ref,
+  LocalDate from,
+  LocalDate to,
+) => ref
     .watch(entryRepositoryProvider)
-    .watchRange(monday, monday.addDays(6))
+    .watchRange(from, to)
     .map((entries) => {for (final entry in entries) entry.date: entry});
+
+/// The months that have an entry (their first day), newest first.
+///
+/// The journal is read one month at a time, see [entriesBetween].
+@riverpod
+Future<List<LocalDate>> writtenMonths(Ref ref) async {
+  final dates = await ref.watch(writtenDatesProvider.future);
+  final months = {for (final date in dates) date.firstOfMonth};
+
+  return months.toList()..sort((a, b) => b.compareTo(a));
+}

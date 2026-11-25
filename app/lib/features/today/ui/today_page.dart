@@ -19,7 +19,8 @@ class TodayPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final today = ref.watch(todayProvider);
     final written = ref.watch(writtenDatesProvider);
-    final weekProvider = weekEntriesProvider(LmWeekStrip.mondayOf(today));
+    final monday = LmWeekStrip.mondayOf(today);
+    final weekProvider = entriesBetweenProvider(monday, monday.addDays(6));
     final week = ref.watch(weekProvider);
 
     void write(LocalDate date) => context.push(RouterPaths.entryOn(date));
