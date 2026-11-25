@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely/features/entry/ui/entry_page.dart';
+import 'package:lumaely/features/today/ui/today_card.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_data/lumaely_data.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
@@ -92,7 +93,14 @@ void main() {
       expect(find.text(moodLine(moods)), findsOneWidget);
       expect(find.text('Long walk'), findsOneWidget);
       expect(
-        tester.widget<LmMoodDot>(find.byType(LmMoodDot)).average,
+        tester
+            .widget<LmMoodDot>(
+              find.descendant(
+                of: find.byType(TodayCard),
+                matching: find.byType(LmMoodDot),
+              ),
+            )
+            .average,
         moods.average,
       );
       expect(button(tester).label, 'Edit today’s entry');
@@ -107,6 +115,44 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.widget<EntryPage>(find.byType(EntryPage)).date, today);
+  });
+
+  testWidgets('this week: its days, monday to sunday', (tester) async {
+    await writeDays([0, 2, 5]);
+    await launch(tester);
+
+    final strip = tester.widget<LmWeekStrip>(find.byType(LmWeekStrip));
+    expect(strip.today, today);
+    // 5 days ago was last week
+    expect(strip.entries.keys, unorderedEquals([today.addDays(-2), today]));
+    expect(find.text('Your week fills in as you write.'), findsNothing);
+  });
+
+  testWidgets('this week: a new diary says what it is for', (tester) async {
+    await launch(tester);
+
+    expect(find.text('Your week fills in as you write.'), findsOneWidget);
+  });
+
+  testWidgets('a day of the week opens its entry', (tester) async {
+    await launch(tester);
+
+    await tester.tap(find.text('27'));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<EntryPage>(find.byType(EntryPage)).date,
+      LocalDate(2026, 10, 27),
+    );
+  });
+
+  testWidgets('a day to come can’t be opened', (tester) async {
+    await launch(tester);
+
+    await tester.tap(find.text('30'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(EntryPage), findsNothing);
   });
 
   testWidgets('follows the diary', (tester) async {
