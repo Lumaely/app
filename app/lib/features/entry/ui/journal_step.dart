@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:lumaely/core/time/today_provider.dart';
 import 'package:lumaely/features/entry/application/entry_draft.dart';
 import 'package:lumaely/features/entry/application/entry_editor.dart';
 import 'package:lumaely/features/entry/ui/entry_step_layout.dart';
+import 'package:lumaely/features/entry/ui/entry_texts.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -44,14 +44,14 @@ class _JournalStepState extends ConsumerState<JournalStep> {
   Widget build(BuildContext context) {
     final date = widget.date;
     final saving = widget.saving;
-    final isToday = date == ref.watch(todayProvider);
-    final weekday = DateFormat('EEEE').format(date.toDateTime());
+    final today = ref.watch(todayProvider);
+    final day = entryDayName(date, today: today);
 
     return EntryStepLayout(
       date: date,
-      isToday: isToday,
+      isToday: date == today,
       step: 2,
-      title: isToday ? 'Anything about your day?' : 'Anything about $weekday?',
+      title: 'Anything about $day?',
       onBack: saving ? null : widget.onBack,
       actions: Row(
         spacing: LmSpace.s3,

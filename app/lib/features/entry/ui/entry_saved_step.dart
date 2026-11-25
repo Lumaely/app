@@ -1,4 +1,4 @@
-import 'package:intl/intl.dart';
+import 'package:lumaely/features/entry/ui/entry_texts.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -106,7 +106,7 @@ class _Title extends StatelessWidget {
           ),
         ),
         Text(
-          DateFormat('EEEE, MMMM d').format(date.toDateTime()),
+          entryDateText(date),
           textAlign: TextAlign.center,
           style: LmTypography.bodyMedium.copyWith(color: colors.textSecondary),
         ),
