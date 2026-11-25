@@ -1,3 +1,4 @@
+export 'src/components/badge/lm_icon_badge.dart';
 export 'src/components/brand/lm_cover_rise.dart';
 export 'src/components/brand/lm_logo.dart';
 export 'src/components/button/lm_button.dart';
