@@ -37,37 +37,26 @@ void main() {
     expect(days[month]!.moods, good);
   });
 
-  test('the written months, each once, newest first', () async {
-    for (final date in [
-      LocalDate(2026, 9, 30),
-      LocalDate(2026, 11, 2),
-      LocalDate(2025, 11, 2),
-      LocalDate(2026, 9, 1),
-    ]) {
+  test(
+    'the written dates change only when a day is added or deleted',
+    () async {
+      final date = LocalDate(2026, 10, 29);
+      final changes = <Set<LocalDate>>[];
+      container.listen(writtenDatesProvider, (_, next) {
+        if (next.value case final dates?) changes.add(dates);
+      });
+      await container.read(writtenDatesProvider.future);
+
       await entries.save(date, moods: good);
-    }
-    container.listen(writtenMonthsProvider, (_, _) {});
+      await entries.save(date, moods: good, journal: 'Long walk');
+      await entries.delete(date);
+      await pumpEventQueue();
 
-    expect(await container.read(writtenMonthsProvider.future), [
-      LocalDate(2026, 11, 1),
-      LocalDate(2026, 9, 1),
-      LocalDate(2025, 11, 1),
-    ]);
-  });
-
-  test('the written months follow the diary', () async {
-    final date = LocalDate(2026, 10, 29);
-    container.listen(writtenMonthsProvider, (_, _) {});
-    expect(await container.read(writtenMonthsProvider.future), isEmpty);
-
-    await entries.save(date, moods: good);
-    await pumpEventQueue();
-    expect(await container.read(writtenMonthsProvider.future), [
-      date.firstOfMonth,
-    ]);
-
-    await entries.delete(date);
-    await pumpEventQueue();
-    expect(await container.read(writtenMonthsProvider.future), isEmpty);
-  });
+      expect(changes, [
+        isEmpty,
+        {date},
+        isEmpty,
+      ]);
+    },
+  );
 }
