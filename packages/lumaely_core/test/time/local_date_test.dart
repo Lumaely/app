@@ -50,6 +50,16 @@ void main() {
       expect(LocalDate(2026, 3, 1).addDays(-1), LocalDate(2026, 2, 28));
     });
 
+    test('first day of the week: its monday', () {
+      final monday = LocalDate(2026, 10, 26);
+
+      for (var i = 0; i < 7; i++) {
+        expect(monday.addDays(i).firstOfWeek, monday);
+      }
+      expect(monday.addDays(7).firstOfWeek, monday.addDays(7));
+      expect(LocalDate(2026, 1, 1).firstOfWeek, LocalDate(2025, 12, 29));
+    });
+
     test('first and last day of the month', () {
       LocalDate last(int year, int month, int day) =>
           LocalDate(year, month, day).lastOfMonth;

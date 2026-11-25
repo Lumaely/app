@@ -1,4 +1,4 @@
-import 'package:intl/intl.dart';
+import 'package:lumaely/features/entry/ui/entry_texts.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -17,9 +17,6 @@ class EntrySavedStep extends StatelessWidget {
   final DayMoods moods;
   final VoidCallback onToday;
   final VoidCallback onJournal;
-
-  static const badgeSize = 88.0;
-  static const badgeIconSize = 40.0;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +42,7 @@ class EntrySavedStep extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Center(child: _Badge()),
+                        const Center(child: LmIconBadge(LmIcons.check)),
                         const SizedBox(height: LmSpace.s4),
                         _Title(date: date),
                         const SizedBox(height: LmSpace.s8),
@@ -84,28 +81,6 @@ class EntrySavedStep extends StatelessWidget {
   }
 }
 
-/// decorative
-class _Badge extends StatelessWidget {
-  const new();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return Container(
-      width: EntrySavedStep.badgeSize,
-      height: EntrySavedStep.badgeSize,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(color: colors.surface, shape: BoxShape.circle),
-      child: LmIcon(
-        LmIcons.check,
-        size: EntrySavedStep.badgeIconSize,
-        color: colors.actionPrimary,
-      ),
-    );
-  }
-}
-
 class _Title extends StatelessWidget {
   const new({required this.date});
 
@@ -131,7 +106,7 @@ class _Title extends StatelessWidget {
           ),
         ),
         Text(
-          DateFormat('EEEE, MMMM d').format(date.toDateTime()),
+          entryDateText(date),
           textAlign: TextAlign.center,
           style: LmTypography.bodyMedium.copyWith(color: colors.textSecondary),
         ),

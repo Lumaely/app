@@ -1,4 +1,4 @@
-import 'package:intl/intl.dart';
+import 'package:lumaely/features/entry/ui/entry_texts.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -66,7 +66,7 @@ class EntryStepLayout extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        DateFormat('EEEE, MMMM d').format(date.toDateTime()),
+                        entryDateText(date),
                         style: LmTypography.labelMedium.copyWith(
                           color: colors.textSecondary,
                         ),

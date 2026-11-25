@@ -8,6 +8,7 @@ import 'package:lumaely/core/time/clock_provider.dart';
 import 'package:lumaely/data/vault/vault.dart';
 import 'package:lumaely/debug/vault_debug_page.dart';
 import 'package:lumaely/features/entry/ui/entry_page.dart';
+import 'package:lumaely/features/journal/ui/journal_page.dart';
 import 'package:lumaely/features/launch/ui/splash_page.dart';
 import 'package:lumaely/features/launch/ui/vault_error_page.dart';
 import 'package:lumaely/features/onboarding/ui/diary_password_page.dart';
@@ -88,7 +89,7 @@ GoRouter appRouter(Ref ref) {
             routes: [
               GoRoute(
                 path: RouterPaths.journal,
-                builder: (_, _) => const PlaceholderPage(title: 'Journal'),
+                builder: (_, _) => const JournalPage(),
               ),
             ],
           ),

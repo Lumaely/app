@@ -12,6 +12,9 @@ class FakeEntryRepository implements EntryRepository {
   Future<void>? saved;
   int saves = 0;
 
+  /// the ranges read, one for each watchRange
+  final List<(LocalDate, LocalDate)> ranges = [];
+
   final _changes = StreamController<void>.broadcast();
 
   // what [read] gives, again after every change
@@ -28,12 +31,16 @@ class FakeEntryRepository implements EntryRepository {
   Stream<DayEntry?> watchDay(LocalDate date) => _live(() => days[date]);
 
   @override
-  Stream<List<DayEntry>> watchRange(LocalDate from, LocalDate to) => _live(
-    () => [
-      for (final day in days.values)
-        if (!day.date.isBefore(from) && !day.date.isAfter(to)) day,
-    ],
-  );
+  Stream<List<DayEntry>> watchRange(LocalDate from, LocalDate to) {
+    ranges.add((from, to));
+
+    return _live(
+      () => [
+        for (final day in days.values)
+          if (!day.date.isBefore(from) && !day.date.isAfter(to)) day,
+      ],
+    );
+  }
 
   @override
   Stream<Set<LocalDate>> watchDates() => _live(() => days.keys.toSet());

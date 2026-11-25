@@ -27,3 +27,15 @@ Widget topBarPlayground(BuildContext context) {
     ),
   );
 }
+
+@widgetbook.UseCase(name: 'Tab', type: LmTopBar, path: '[Components]')
+Widget tabTopBar(BuildContext context) {
+  return const Scaffold(
+    body: SafeArea(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: LmSpace.s5),
+        child: LmTopBar.tab(title: 'Journal'),
+      ),
+    ),
+  );
+}

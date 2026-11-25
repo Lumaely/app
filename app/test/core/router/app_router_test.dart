@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumaely/core/router/placeholder_page.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
+import 'package:lumaely/features/journal/ui/journal_page.dart';
 import 'package:lumaely/features/launch/ui/splash_page.dart';
 import 'package:lumaely/features/launch/ui/vault_error_page.dart';
 import 'package:lumaely/features/onboarding/ui/welcome_page.dart';
@@ -105,12 +106,17 @@ void main() {
     Finder tab(String label) =>
         find.descendant(of: find.byType(LmTabBar), matching: find.text(label));
 
-    for (final label in ['Journal', 'Insights', 'Settings']) {
+    for (final label in ['Insights', 'Settings']) {
       await tester.tap(tab(label));
       await tester.pumpAndSettle();
 
       expect(placeholder(label), findsOneWidget, reason: label);
     }
+
+    await tester.tap(tab('Journal'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(JournalPage), findsOneWidget);
 
     await tester.tap(tab('Today'));
     await tester.pumpAndSettle();

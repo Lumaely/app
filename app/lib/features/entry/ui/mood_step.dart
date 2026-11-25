@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:lumaely/core/time/today_provider.dart';
 import 'package:lumaely/data/moments/moments_provider.dart';
 import 'package:lumaely/features/entry/application/entry_draft.dart';
 import 'package:lumaely/features/entry/application/entry_editor.dart';
 import 'package:lumaely/features/entry/ui/entry_step_layout.dart';
+import 'package:lumaely/features/entry/ui/entry_texts.dart';
 import 'package:lumaely/features/entry/ui/mood_input.dart';
 import 'package:lumaely_core/lumaely_core.dart';
 import 'package:lumaely_ui/lumaely_ui.dart';
@@ -33,14 +33,14 @@ class MoodStep extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final editor = ref.read(entryEditorProvider(date).notifier);
     final moments = ref.watch(momentsProvider);
-    final isToday = date == ref.watch(todayProvider);
-    final weekday = DateFormat('EEEE').format(date.toDateTime());
+    final today = ref.watch(todayProvider);
+    final day = entryDayName(date, today: today);
 
     return EntryStepLayout(
       date: date,
-      isToday: isToday,
+      isToday: date == today,
       step: 1,
-      title: isToday ? 'How did your day feel?' : 'How did $weekday feel?',
+      title: 'How did $day feel?',
       subtitle: _subtitle(moments),
       onBack: saving ? null : onBack,
       actions: Row(

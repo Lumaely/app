@@ -24,7 +24,8 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   (optional title, rows in one tile with dividers) and `LmTileRow` (leading,
   title, subtitle, value, chevron when tappable; one button for screen
   readers, value under the title when both don't fit on one line).
-  `LmTileIcon` is the small icon box of the settings rows.
+  `LmTileIcon` is the small icon box of the settings rows. `LmTileSlice` is
+  one row of a tile too long to be built at once (the journal).
 
 - Days: `LmMoodDot` (round mood mark: a score, an average in a blended
   color, or a dashed circle when empty) and `LmDayRow` (one day in a list:
@@ -49,12 +50,14 @@ Lumaely's design system: tokens, theme and widgets, in Flutter.
   lines; the line is cut where nothing was written; per day, 7 day rolling
   average, per week or per month; read as a summary by screen readers).
 
+- Badge: `LmIconBadge` (big round icon above a short page: done, empty).
+
 - Pill: `LmPill` (short text in a rounded box, e.g. the streak).
 
 - Text: `LmTextField` (label above, error under it, password eye button) and
   `LmJournalField` (the journal of a day: big, grows with the text, no label).
 
-- Flows: `LmTopBar` (back, title, one action) and `LmProgressSteps` (one bar
+- Flows: `LmTopBar` (back, title, one action; `.tab` without back) and `LmProgressSteps` (one bar
   per step, read as "Step 1 of 2").
 
 ## Rules

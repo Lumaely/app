@@ -19,7 +19,7 @@ class TodayPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final today = ref.watch(todayProvider);
     final written = ref.watch(writtenDatesProvider);
-    final monday = LmWeekStrip.mondayOf(today);
+    final monday = today.firstOfWeek;
     final weekProvider = entriesBetweenProvider(monday, monday.addDays(6));
     final week = ref.watch(weekProvider);
 

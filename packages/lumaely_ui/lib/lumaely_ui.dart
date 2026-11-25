@@ -1,3 +1,4 @@
+export 'src/components/badge/lm_icon_badge.dart';
 export 'src/components/brand/lm_cover_rise.dart';
 export 'src/components/brand/lm_logo.dart';
 export 'src/components/button/lm_button.dart';
@@ -34,6 +35,7 @@ export 'src/components/tile/lm_tile.dart';
 export 'src/components/tile/lm_tile_group.dart';
 export 'src/components/tile/lm_tile_icon.dart';
 export 'src/components/tile/lm_tile_row.dart';
+export 'src/components/tile/lm_tile_slice.dart';
 export 'src/components/top_bar/lm_top_bar.dart';
 export 'src/icons/lm_icon.dart';
 export 'src/icons/lm_icons.dart';
