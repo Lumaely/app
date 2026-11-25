@@ -28,3 +28,10 @@ Stream<Set<LocalDate>> writtenDates(Ref ref) =>
 @riverpod
 Stream<DayEntry?> dayEntry(Ref ref, LocalDate date) =>
     ref.watch(entryRepositoryProvider).watchDay(date);
+
+/// The entries of the week from [monday] to Sunday, by date.
+@riverpod
+Stream<Map<LocalDate, DayEntry>> weekEntries(Ref ref, LocalDate monday) => ref
+    .watch(entryRepositoryProvider)
+    .watchRange(monday, monday.addDays(6))
+    .map((entries) => {for (final entry in entries) entry.date: entry});
