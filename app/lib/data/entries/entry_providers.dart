@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:lumaely/data/vault/vault.dart';
 import 'package:lumaely/data/vault/vault_state.dart';
 import 'package:lumaely_core/lumaely_core.dart';
@@ -22,7 +23,7 @@ EntryRepository entryRepository(Ref ref) {
 /// Every day that has an entry.
 @riverpod
 Stream<Set<LocalDate>> writtenDates(Ref ref) =>
-    ref.watch(entryRepositoryProvider).watchDates();
+    ref.watch(entryRepositoryProvider).watchDates().distinct(setEquals);
 
 /// The entry for [date], or null if there is none.
 @riverpod
@@ -39,14 +40,3 @@ Stream<Map<LocalDate, DayEntry>> entriesBetween(
     .watch(entryRepositoryProvider)
     .watchRange(from, to)
     .map((entries) => {for (final entry in entries) entry.date: entry});
-
-/// The months that have an entry (their first day), newest first.
-///
-/// The journal is read one month at a time, see [entriesBetween].
-@riverpod
-Future<List<LocalDate>> writtenMonths(Ref ref) async {
-  final dates = await ref.watch(writtenDatesProvider.future);
-  final months = {for (final date in dates) date.firstOfMonth};
-
-  return months.toList()..sort((a, b) => b.compareTo(a));
-}
